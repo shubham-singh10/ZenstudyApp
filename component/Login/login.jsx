@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
@@ -12,6 +13,7 @@ import Header from '../Header';
 import LoginStyle from './LoginStyle';
 import { Call, Key } from '../Icons/MyIcon';
 
+const { height } = Dimensions.get('window');
 
 const LoginScreen = ({navigation}) => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -22,7 +24,7 @@ const LoginScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{height:height,  backgroundColor:'#fff'}}>
       <Header/>
       <View style={LoginStyle.container}>
         <View style={LoginStyle.section1}>
@@ -98,9 +100,10 @@ const LoginScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-      <View style={LoginStyle.footer}>
-      <Text style={LoginStyle.footerText}>Copyright (c). All Rights Reserved</Text>
+    </View>
+
+    <View style={LoginStyle.footer}>
+    <Text style={LoginStyle.footerText}>Copyright (c). All Rights Reserved</Text>
     </View>
     </ScrollView>
   );

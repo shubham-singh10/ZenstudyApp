@@ -19,7 +19,7 @@ const SignupScreen = ({navigation}) => {
 
 
   return (
-    <ScrollView>
+    <ScrollView >
       <Header />
       <View style={{height:height, paddingHorizontal:30, backgroundColor:'#fff'}}>
         <View style={LoginStyle.section2}>

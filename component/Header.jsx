@@ -11,7 +11,10 @@ function Header() {
           <Text style={styles.logoh1}>ZenStudy.</Text>
           <Text style={styles.logoh2}>Make Education Imaginative</Text>
         </View>
-        <Text style={styles.helpText}><Help fill='#054bb4'/> Help</Text>
+        <View style={{flexDirection:'row', gap:3, alignItems:'center',justifyContent:'center'}}>
+        <Text><Help fill='#054bb4'/></Text>
+        <Text style={styles.helpText}> Help</Text>
+        </View>
       </View>
     </View>
   );

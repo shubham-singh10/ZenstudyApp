@@ -1,4 +1,6 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet} from 'react-native';
+
+
 
 const LoginStyle = StyleSheet.create({
   container: {
@@ -8,7 +10,7 @@ const LoginStyle = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 3,
     alignSelf: 'center',
   },
   footerText: {
@@ -102,7 +104,7 @@ const LoginStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
-    marginBottom: 70,
+    marginBottom:70,
   },
   signupText: {
     fontSize: 14,
