@@ -10,7 +10,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
 import Header from '../Header';
 import LoginStyle from './LoginStyle';
-import { Key } from '../Icons/MyIcon';
+import { Call, Key } from '../Icons/MyIcon';
 
 
 const LoginScreen = ({navigation}) => {
@@ -53,10 +53,10 @@ const LoginScreen = ({navigation}) => {
           {/* Mobile Number Input */}
           <View style={LoginStyle.inputContainer}>
           <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> + 91 </Text>
+              <Text style={LoginStyle.inputlogoContent}> <Call fill="#fff"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+              
             </View>
 
             <TextInput
@@ -74,7 +74,7 @@ const LoginScreen = ({navigation}) => {
               <Text  style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+              
             </View>
             <TextInput
               style={LoginStyle.input}

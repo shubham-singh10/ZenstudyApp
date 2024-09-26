@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Header from '../Header';
 import LoginStyle from '../Login/LoginStyle';
-import { Key, User } from '../Icons/MyIcon';
+import { Call, Key, Lock, Profile, User } from '../Icons/MyIcon';
 
 const { height } = Dimensions.get('window');
 
@@ -28,10 +28,10 @@ const SignupScreen = ({navigation}) => {
           {/* Mobile Number Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> ✏️ </Text>
+              <Text style={LoginStyle.inputlogoContent}> <Call fill='#fff'/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+              
             </View>
 
             <TextInput
@@ -45,10 +45,10 @@ const SignupScreen = ({navigation}) => {
 
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}><User fill="white"/> </Text>
+              <Text style={LoginStyle.inputlogoContent}><Profile fill='white'/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+              
             </View>
 
             <TextInput
@@ -65,7 +65,7 @@ const SignupScreen = ({navigation}) => {
               <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+              
             </View>
 
             <TextInput
@@ -83,7 +83,8 @@ const SignupScreen = ({navigation}) => {
               <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
-              <Text> + 91 </Text>
+            
+              
             </View>
             <TextInput
               style={LoginStyle.input}
