@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Header from '../Header';
 import LoginStyle from '../Login/LoginStyle';
+import { Key, User } from '../Icons/MyIcon';
 
 const { height } = Dimensions.get('window');
 
@@ -44,7 +45,7 @@ const SignupScreen = ({navigation}) => {
 
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> ✏️ </Text>
+              <Text style={LoginStyle.inputlogoContent}><User fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
               <Text> + 91 </Text>
@@ -61,7 +62,7 @@ const SignupScreen = ({navigation}) => {
 
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> ✏️ </Text>
+              <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
               <Text> + 91 </Text>
@@ -79,7 +80,7 @@ const SignupScreen = ({navigation}) => {
           {/* Password Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> ✏️ </Text>
+              <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
               <Text> + 91 </Text>

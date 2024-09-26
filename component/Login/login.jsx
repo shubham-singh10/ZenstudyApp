@@ -10,6 +10,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
 import Header from '../Header';
 import LoginStyle from './LoginStyle';
+import { Key } from '../Icons/MyIcon';
 
 
 const LoginScreen = ({navigation}) => {
@@ -70,7 +71,7 @@ const LoginScreen = ({navigation}) => {
           {/* Password Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text  style={LoginStyle.inputlogoContent}> + 91 </Text>
+              <Text  style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
             </View>
             <View style={LoginStyle.inputlogo2}>
               <Text> + 91 </Text>
