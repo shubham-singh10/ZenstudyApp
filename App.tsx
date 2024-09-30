@@ -7,6 +7,7 @@ import SignupScreen from './component/SignUp/SignupScreen';
 import HomeScreen from './component/HomeScreen/HomeScreen';
 import MainHeader from './component/MainHeader';
 import Footer from './component/Footer';
+import ProfileScreen from './component/Profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,11 @@ function App(): React.JSX.Element {
         <Stack.Screen
           name="homeScreen"
           component={HomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="profileScreen"
+          component={ProfileScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

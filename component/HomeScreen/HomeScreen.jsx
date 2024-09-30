@@ -4,10 +4,11 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  StyleSheet,
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { Course } from '../Icons/MyIcon';
+import homestyle from './homeStyle';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -39,7 +40,7 @@ const HomeScreen = () => {
       description:
         'Lorem Ipsum has been the standard dummy text ever since the 1500s, when an unknown printer took a galley',
       image: {
-        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726640310463-INDIAN%20SOCIETY.webp',
+        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1727009055230-INDIAN%20SOCIETY%20(1).webp',
       },
     },
     {
@@ -48,7 +49,7 @@ const HomeScreen = () => {
       description:
         'Lorem Ipsum has been the standard dummy text ever since the 1500s, when an unknown printer took a galley',
       image: {
-        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726640310463-INDIAN%20SOCIETY.webp',
+        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726573585694-IR%20THUMBNAIL%20WEBP.webp',
       },
     },
   ];
@@ -73,13 +74,6 @@ const HomeScreen = () => {
     setActiveBannerIndex(index);
   };
 
-  const scrollToCourseIndex = index => {
-    coursesScrollViewRef.current.scrollTo({
-      x: screenWidth * index,
-      animated: false,
-    });
-    setActiveCourseIndex(index);
-  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -92,10 +86,10 @@ const HomeScreen = () => {
   }, [activeBannerIndex, images.length]); // Dependency array
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <View style={homestyle.container}>
+      <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
         {/* Banner/Carousel */}
-        <View style={styles.carouselContainer}>
+        <View style={homestyle.carouselContainer}>
           <ScrollView
             ref={bannerScrollViewRef}
             horizontal
@@ -104,22 +98,22 @@ const HomeScreen = () => {
             onScroll={handleBannerScroll}
             scrollEventThrottle={16}>
             {images.map(item => (
-              <View key={item.id} style={styles.imageContainer}>
-                <Image source={item.image} style={styles.image} />
+              <View key={item.id} style={homestyle.imageContainer}>
+                <Image source={item.image} style={homestyle.image} />
               </View>
             ))}
           </ScrollView>
 
           {/* Pagination Indicators for Banner */}
-          <View style={styles.pagination}>
+          <View style={homestyle.pagination}>
             {images.map((_, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
-                  styles.paginationDot,
+                  homestyle.paginationDot,
                   activeBannerIndex === index
-                    ? styles.activeDot
-                    : styles.inactiveDot,
+                    ? homestyle.activeDot
+                    : homestyle.inactiveDot,
                 ]}
                 onPress={() => scrollToBannerIndex(index)}
               />
@@ -128,8 +122,8 @@ const HomeScreen = () => {
         </View>
 
         {/* Courses Section */}
-        <View style={styles.coursesContainer}>
-          <Text style={styles.coursesTitle}>Available Courses</Text>
+        <View style={homestyle.coursesContainer}>
+          <Text style={homestyle.coursesTitle}>Available Courses</Text>
           <ScrollView
             ref={coursesScrollViewRef}
             horizontal
@@ -138,123 +132,68 @@ const HomeScreen = () => {
             onScroll={handleCourseScroll}
             scrollEventThrottle={16}>
             {courses.map(course => (
-              <View key={course.id} style={styles.courseCard}>
-                <Text style={styles.title}>{course.title}</Text>
-                <View style={styles.cImgContainer}>
-                  <Image source={course.image} style={styles.courseImage} />
+              <View key={course.id} style={homestyle.courseCard}>
+                <Text style={homestyle.title}>{course.title}</Text>
+                <View style={homestyle.cImgContainer}>
+                  <Image source={course.image} style={homestyle.courseImage} />
                 </View>
-                <Text style={styles.courseDescription}>
+                <Text style={homestyle.courseDescription}>
                   {course.description}
                 </Text>
-                <View style={styles.afterDesc}>
-                  <Text style={styles.createdAt}>Created At</Text>
-                  <Text style={styles.price}>rs. 999</Text>
+                <View style={homestyle.afterDesc}>
+                  <Text style={homestyle.createdAt}>22-10-2024</Text>
+                  <Text style={homestyle.price}>₹ 999</Text>
+                </View>
+                <View style={homestyle.cardBtns}>
+                  <TouchableOpacity style={homestyle.exploreBtn}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                  <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
                 </View>
               </View>
             ))}
           </ScrollView>
         </View>
+
+         {/* Explore our */}
+          <View style={homestyle.exploreContainer}>
+            <Text style={homestyle.exploreText}>Explore Our</Text>
+            <View style={homestyle.exploreIcons}>
+              
+              <TouchableOpacity>
+                <Course fill="black"/>
+              </TouchableOpacity>
+              <TouchableOpacity>
+              <Course fill="black"/>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+          
+          <View style={homestyle.exploreCourses}>
+          {courses.map(course => (
+            <View key={course.id} style={homestyle.courseCard}>
+              <Text style={homestyle.title}>{course.title}</Text>
+              <View style={homestyle.cImgContainer}>
+                <Image source={course.image} style={homestyle.courseImage} />
+              </View>
+              <Text style={homestyle.courseDescription}>
+                {course.description}
+              </Text>
+              <View style={homestyle.afterDesc}>
+                <Text style={homestyle.createdAt}>22-10-2024</Text>
+                <Text style={homestyle.price}>₹ 999</Text>
+              </View>
+              <View style={homestyle.cardBtns}>
+                <TouchableOpacity style={homestyle.exploreBtn}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
+              </View>
+            </View>
+          ))}
+          </View>
+
       </ScrollView>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Ensures the container takes the full screen space
-    backgroundColor: '#fff',
-  },
-  scrollViewContent: {
-    flexGrow: 1, // Ensures ScrollView content stretches to full height
-  },
-  carouselContainer: {
-    marginHorizontal: 20,
-    height: 200,
-  },
-  imageContainer: {
-    width: screenWidth,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 140,
-    resizeMode: 'cover',
-  },
-  pagination: {
-    position: 'absolute',
-    bottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  paginationDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: '#007bff',
-  },
-  inactiveDot: {
-    backgroundColor: '#ddd',
-  },
-  coursesContainer: {
-    marginVertical: 20,
-    marginHorizontal: 20,
-  },
-  coursesTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  courseCard: {
-    flexDirection: 'column',
-    backgroundColor: '#f8f8f8',
-    borderRadius: 10,
-    padding: 30,
-    marginRight: 10,
-    width: screenWidth - 50,
-    elevation: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#054bb4',
-  },
-  cImgContainer: {
-    width: '100%',
-    height: 170,
-    paddingHorizontal: 25,
-    paddingVertical: 10,
-  },
-  courseImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    resizeMode: 'cover',
-  },
-  courseDescription: {
-    fontSize: 12,
-    color: '#666',
-  },
-  afterDesc: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  createdAt:{
-    fontSize:14,
-    color:'#054bb4',
-    fontWeight:'bold',
-  },
-  price:{
-    fontSize:16,
-    color:'#054bb4',
-    fontWeight:'bold',
-  },
-});
 
 export default HomeScreen;

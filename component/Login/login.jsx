@@ -13,20 +13,15 @@ import Header from '../Header';
 import LoginStyle from './LoginStyle';
 import { Call, Key } from '../Icons/MyIcon';
 
-const { height } = Dimensions.get('window');
 
 const LoginScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Login Button Clicked');
-  };
-
   return (
     <ScrollView 
       style={{ backgroundColor: '#fff' }} 
-      contentContainerStyle={{ flexGrow: 1 }}  // Added flexGrow to allow the content to grow naturally
+      contentContainerStyle={{ flexGrow: 1 }} 
     >
       <Header />
       <View style={LoginStyle.container}>

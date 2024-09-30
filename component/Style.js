@@ -60,7 +60,9 @@ mainHeader: {
   bellIcon: {
     color: '#fff',
   },
-
+  footcontainer:{
+    backgroundColor:'#fff',
+  },
   footer: {
     backgroundColor: '#054bb4',
     borderTopRightRadius: 40,
