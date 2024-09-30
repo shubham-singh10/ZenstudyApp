@@ -5,7 +5,6 @@ import { Bell, Search, User } from './Icons/MyIcon';
 
 function MainHeader() {
   return (
-    <View style={styles.mainHcontainer}>
       <View style={styles.mainHeader}>
         <View style={styles.leftContent}>
           <Text style={styles.userIcon}><User fill="white"/></Text>
@@ -18,7 +17,6 @@ function MainHeader() {
         </View>
 
       </View>
-    </View>
   );
 }
 

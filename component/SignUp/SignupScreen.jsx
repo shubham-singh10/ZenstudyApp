@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,31 +9,44 @@ import {
 } from 'react-native';
 import Header from '../Header';
 import LoginStyle from '../Login/LoginStyle';
-import { Call, Key, Lock, Profile, User } from '../Icons/MyIcon';
+import { Call, Key, Profile } from '../Icons/MyIcon';
 
-const { height } = Dimensions.get('window');
-
-const SignupScreen = ({navigation}) => {
+const SignupScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // State for error message
 
+  // Function to handle the form submission and validation
+  const handleContinue = () => {
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match'); // Set error message
+      return;
+    }
+    setErrorMessage(''); // Clear the error if passwords match
+    navigation.navigate('otpScreen'); // Proceed to the next screen if valid
+  };
 
   return (
-    <ScrollView >
+    <ScrollView 
+      style={{ backgroundColor: '#fff' }} 
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
       <Header />
-      <View style={{height:height, paddingHorizontal:30, backgroundColor:'#fff'}}>
+
+      <View style={[LoginStyle.container, { paddingHorizontal: 30 }]}>
+        {/* Sign Up Section */}
         <View style={LoginStyle.section2}>
-          <Text style={LoginStyle.loginText}>SignUp</Text>
+          <Text style={LoginStyle.loginText}>Sign Up</Text>
 
           {/* Mobile Number Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Call fill='#fff'/> </Text>
+              <Text style={LoginStyle.inputlogoContent}>
+                <Call fill='#fff' />
+              </Text>
             </View>
-            <View style={LoginStyle.inputlogo2}>
-              
-            </View>
-
             <TextInput
               style={LoginStyle.input}
               placeholder="Enter Your Mobile Number"
@@ -43,66 +56,67 @@ const SignupScreen = ({navigation}) => {
             />
           </View>
 
+          {/* Name Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}><Profile fill='white'/> </Text>
+              <Text style={LoginStyle.inputlogoContent}>
+                <Profile fill='white' />
+              </Text>
             </View>
-            <View style={LoginStyle.inputlogo2}>
-              
-            </View>
-
             <TextInput
               style={LoginStyle.input}
               placeholder="Enter Your Name"
-              keyboardType="phone-pad"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
-            />
-          </View>
-
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
-            </View>
-            <View style={LoginStyle.inputlogo2}>
-              
-            </View>
-
-            <TextInput
-              style={LoginStyle.input}
-              placeholder="Enter Your Password"
-              keyboardType="phone-pad"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
+              value={name}
+              onChangeText={setName}
             />
           </View>
 
           {/* Password Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
-            </View>
-            <View style={LoginStyle.inputlogo2}>
-            
-              
+              <Text style={LoginStyle.inputlogoContent}>
+                <Key fill="white" />
+              </Text>
             </View>
             <TextInput
               style={LoginStyle.input}
-              placeholder="Confirm Your Password"
+              placeholder="Enter Your Password"
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
             />
           </View>
 
-          {/* Login Button */}
+          {/* Confirm Password Input */}
+          <View style={LoginStyle.inputContainer}>
+            <View style={LoginStyle.inputlogo}>
+              <Text style={LoginStyle.inputlogoContent}>
+                <Key fill="white" />
+              </Text>
+            </View>
+            <TextInput
+              style={LoginStyle.input}
+              placeholder="Confirm Your Password"
+              secureTextEntry={true}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </View>
+
+          {/* Error Message for Password Mismatch */}
+          {errorMessage ? (
+            <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>
+          ) : null}
+
+          {/* Continue Button */}
           <TouchableOpacity
             style={LoginStyle.button}
-            onPress={() => navigation.navigate('otpScreen')}>
+            onPress={handleContinue} // Call the validation function
+          >
             <Text style={LoginStyle.buttonText}>Continue</Text>
           </TouchableOpacity>
 
-          {/* Sign Up Link */}
+          {/* Existing User Link */}
           <View style={LoginStyle.signupContainer}>
             <Text style={LoginStyle.signupText}>Existing User? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('loginScreen')}>
@@ -111,9 +125,11 @@ const SignupScreen = ({navigation}) => {
           </View>
         </View>
       </View>
+
+      {/* Footer */}
       <View style={LoginStyle.footer}>
         <Text style={LoginStyle.footerText}>
-          Copyright (c). All Rights Reserved
+          Copyright ©. All Rights Reserved
         </Text>
       </View>
     </ScrollView>

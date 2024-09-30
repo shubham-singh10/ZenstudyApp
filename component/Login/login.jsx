@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
 import Header from '../Header';
 import LoginStyle from './LoginStyle';
@@ -15,7 +15,7 @@ import { Call, Key } from '../Icons/MyIcon';
 
 const { height } = Dimensions.get('window');
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
 
@@ -24,8 +24,11 @@ const LoginScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView style={{height:height,  backgroundColor:'#fff'}}>
-      <Header/>
+    <ScrollView 
+      style={{ backgroundColor: '#fff' }} 
+      contentContainerStyle={{ flexGrow: 1 }}  // Added flexGrow to allow the content to grow naturally
+    >
+      <Header />
       <View style={LoginStyle.container}>
         <View style={LoginStyle.section1}>
           <View style={LoginStyle.titleContainer}>
@@ -54,13 +57,9 @@ const LoginScreen = ({navigation}) => {
 
           {/* Mobile Number Input */}
           <View style={LoginStyle.inputContainer}>
-          <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Call fill="#fff"/> </Text>
+            <View style={LoginStyle.inputlogo}>
+              <Text style={LoginStyle.inputlogoContent}> <Call fill="#fff" /> </Text>
             </View>
-            <View style={LoginStyle.inputlogo2}>
-              
-            </View>
-
             <TextInput
               style={LoginStyle.input}
               placeholder="Enter Your Mobile Number"
@@ -73,10 +72,7 @@ const LoginScreen = ({navigation}) => {
           {/* Password Input */}
           <View style={LoginStyle.inputContainer}>
             <View style={LoginStyle.inputlogo}>
-              <Text  style={LoginStyle.inputlogoContent}> <Key fill="white"/> </Text>
-            </View>
-            <View style={LoginStyle.inputlogo2}>
-              
+              <Text style={LoginStyle.inputlogoContent}> <Key fill="white" /> </Text>
             </View>
             <TextInput
               style={LoginStyle.input}
@@ -88,26 +84,26 @@ const LoginScreen = ({navigation}) => {
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity style={LoginStyle.button} onPress={() => handleLogin()}>
+          <TouchableOpacity style={LoginStyle.button} onPress={() => navigation.navigate('homeScreen')}>
             <Text style={LoginStyle.buttonText}>Continue</Text>
           </TouchableOpacity>
 
           {/* Sign Up Link */}
           <View style={LoginStyle.signupContainer}>
-            <Text style={LoginStyle.signupText}>New User ? </Text>
+            <Text style={LoginStyle.signupText}>New User? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('signupScreen')}>
-              <Text style={LoginStyle.signupLink}> SignUp</Text>
+              <Text style={LoginStyle.signupLink}> Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
-    </View>
+      </View>
 
-    <View style={LoginStyle.footer}>
-    <Text style={LoginStyle.footerText}>Copyright (c). All Rights Reserved</Text>
-    </View>
+      {/* Footer */}
+      <View style={LoginStyle.footer}>
+        <Text style={LoginStyle.footerText}>Copyright ©. All Rights Reserved</Text>
+      </View>
     </ScrollView>
   );
 };
-
 
 export default LoginScreen;

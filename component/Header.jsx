@@ -5,7 +5,6 @@ import { Help } from './Icons/MyIcon';
 
 function Header() {
   return (
-    <View style={styles.container}>
       <View style={styles.header}>
         <View>
           <Text style={styles.logoh1}>ZenStudy.</Text>
@@ -16,7 +15,7 @@ function Header() {
         <Text style={styles.helpText}> Help</Text>
         </View>
       </View>
-    </View>
+    
   );
 }
 

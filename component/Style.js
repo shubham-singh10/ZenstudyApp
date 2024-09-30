@@ -25,21 +25,17 @@ const styles = StyleSheet.create({
     color: '#007BFF',
   },
 
-  mainHcontainer: {
-    flex: 1,
-  },
-  mainHeader: {
+mainHeader: {
     backgroundColor: '#054bb4',
     height: 55,
     width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     zIndex: 1000,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center', 
+    paddingHorizontal: 20, 
   },
+
   leftContent: {
     flexDirection: 'row',
     gap: 10,
@@ -65,46 +61,38 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 
- footcontainer: {
-  flex: 1,
-},
-footer: {
-  backgroundColor: '#054bb4',
-  borderTopRightRadius: 40,
-  borderTopLeftRadius: 40,
-  position: 'absolute',
-  bottom: 0,
-  right: 0,
-  left: 0,
-  height: 70,
-  width: '100%',
-  padding: 20,
-  zIndex: 1000,
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingHorizontal: 30,
-},
-fnavbox: {
-  flexDirection: 'column',
-  alignItems: 'center',
-},
-ficons: {
-  color: '#fff', // Default icon color
-},
-ficonText: {
-  color: '#fff', // Default text color
-},
-activeTab: {
-  borderBottomColor: '#fff', // White bottom border for active tab
-  borderBottomWidth: 3, // 3px width
-},
-activeIcon: {
-  color: '#FFD700', // Gold color for active icon
-},
-activeText: {
-  color: '#FFD700', // Gold color for active text
-},
+  footer: {
+    backgroundColor: '#054bb4',
+    borderTopRightRadius: 40,
+    borderTopLeftRadius: 40,
+    height: 70,
+    width: '100%',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+  },
+  fnavbox: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  ficons: {
+    color: '#fff', 
+  },
+  ficonText: {
+    color: '#fff', 
+  },
+  activeTab: {
+    borderBottomColor: '#fff',
+    borderBottomWidth: 3, 
+  },
+  activeIcon: {
+    color: '#FFD700', 
+  },
+  activeText: {
+    color: '#FFD700', 
+  },
 
 });
 

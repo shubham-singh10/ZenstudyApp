@@ -1,6 +1,4 @@
-import { StyleSheet} from 'react-native';
-
-
+import { Dimensions, StyleSheet } from 'react-native';
 
 const LoginStyle = StyleSheet.create({
   container: {
@@ -40,7 +38,7 @@ const LoginStyle = StyleSheet.create({
     fontSize: 27,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'black',
+    color: '#000',
   },
   brandName: {
     color: '#054BB4',
@@ -51,14 +49,14 @@ const LoginStyle = StyleSheet.create({
     color: '#054BB4',
   },
   loginText: {
-    fontSize: 14,
+    fontSize: 18, // Increased size for better visibility
     fontWeight: 'bold',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 15,
+    color: '#054BB4',
   },
   inputContainer: {
     flexDirection: 'row',
-    gap: 4,
     alignItems: 'center',
     marginBottom: 15,
     borderWidth: 2,
@@ -69,30 +67,26 @@ const LoginStyle = StyleSheet.create({
     flex: 5,
     fontSize: 16,
     paddingVertical: 10,
+    paddingHorizontal: 10,
+    color: '#000',
   },
   inputlogo: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#054BB4',
-    paddingHorizontal: 5,
+    paddingHorizontal: 10,
     height: 50,
   },
   inputlogoContent: {
     color: '#fff',
   },
-
-  inputlogo2: {
-    flex: 0,
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   button: {
-    backgroundColor: '#054bb4',
+    backgroundColor: '#054BB4',
     paddingVertical: 15,
     borderRadius: 5,
     marginTop: 10,
+    marginBottom: 20, // added bottom margin for spacing
   },
   buttonText: {
     textAlign: 'center',
@@ -103,8 +97,7 @@ const LoginStyle = StyleSheet.create({
   signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
-    marginBottom:70,
+    marginBottom: 70,
   },
   signupText: {
     fontSize: 14,
