@@ -69,7 +69,8 @@ mainHeader: {
     borderTopLeftRadius: 40,
     height: 70,
     width: '100%',
-    padding: 20,
+    paddingTop: 25,
+    paddingBottom:10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -78,6 +79,7 @@ mainHeader: {
   fnavbox: {
     flexDirection: 'column',
     alignItems: 'center',
+    paddingBottom:5
   },
   ficons: {
     color: '#fff', 
@@ -90,10 +92,10 @@ mainHeader: {
     borderBottomWidth: 3, 
   },
   activeIcon: {
-    color: '#FFD700', 
+    color: 'gray', 
   },
   activeText: {
-    color: '#FFD700', 
+    color: 'gray', 
   },
 
 });

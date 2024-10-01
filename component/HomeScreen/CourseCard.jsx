@@ -13,6 +13,9 @@ const CourseCard = () => {
       <Text style={styles.description}>
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
       </Text>
+      <View style={styles.languageTag}>
+          <Text style={styles.languageText}>Hindi</Text>
+        </View>
       <Text style={styles.date}>02/05/2024</Text>
       <Text style={styles.price}>$999</Text>
       <View style={styles.buttonContainer}>
@@ -56,6 +59,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#333',
     marginBottom: 5,
+  },
+  languageTag: {
+    backgroundColor: '#e0e7ff',
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginTop: 10,
+    alignSelf: 'flex-start',
+  },
+  languageText: {
+    color: '#1e3a8a',
+    fontWeight: 'bold',
   },
   date: {
     fontSize: 12,

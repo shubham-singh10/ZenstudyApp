@@ -10,6 +10,7 @@ const homestyle = StyleSheet.create({
     },
     scrollViewContent: {
       flexGrow: 1,
+      backgroundColor: '#fff',
     },
     carouselContainer: {
       height: 200,
@@ -83,6 +84,18 @@ const homestyle = StyleSheet.create({
       color: '#666',
       marginTop:15,
     },
+    languageTag: {
+      backgroundColor: '#e0e7ff',
+      borderRadius: 5,
+      paddingHorizontal: 15,
+      paddingVertical: 4,
+      marginTop: 10,
+      alignSelf: 'flex-start',
+    },
+    languageText: {
+      color: '#1e3a8a',
+      fontWeight: 'bold',
+    },
     afterDesc: {
       marginTop: 15,
       flexDirection: 'row',
@@ -149,6 +162,17 @@ const homestyle = StyleSheet.create({
     exploreCourses:{
       marginTop:20
     },
+    exploreContent:{
+      flexDirection:'column',
+      justifyContent:'center',
+      alignItems:'center',
+      gap:0
+    },
+    exploreContentText:{
+      color:'#054bb4',
+      fontWeight:'bold',
+      fontSize:12,
+    }
    
   });
 

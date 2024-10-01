@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './Style';
 import { Course, Home, Live, Settings } from './Icons/MyIcon';
+import { useNavigation } from '@react-navigation/native';
 
 function Footer() {
-  const [activeTab, setActiveTab] = useState('Home'); // Initial active tab is 'Home'
-
-  const handleTabPress = (tabName) => {
+  const [activeTab, setActiveTab] = useState('Home');
+  const navigation = useNavigation();
+  const handleTabPress = (tabName, screenName) => {
     setActiveTab(tabName);
+    navigation.navigate(screenName);
   };
 
   return (
@@ -18,13 +20,13 @@ function Footer() {
             styles.fnavbox, 
             activeTab === 'Home' ? styles.activeTab : null
           ]}
-          onPress={() => handleTabPress('Home')}
+          onPress={() => handleTabPress('Home', 'homeScreen')}
         >
           <Text style={[
             styles.ficons, 
             activeTab === 'Home' ? styles.activeIcon : null
           ]}>
-            <Home fill={activeTab === 'Home' ? "#FFD700" : "white"} /> {/* Gold when active */}
+            <Home fill={activeTab === 'Home' ? "gray" : "white"} /> {/* Gold when active */}
           </Text>
           <Text style={[
             styles.ficonText, 
@@ -39,13 +41,13 @@ function Footer() {
             styles.fnavbox, 
             activeTab === 'Mycourse' ? styles.activeTab : null
           ]}
-          onPress={() => handleTabPress('Mycourse')}
+          onPress={() => handleTabPress('Mycourse', 'myCourseScreen')}
         >
           <Text style={[
             styles.ficons, 
             activeTab === 'Mycourse' ? styles.activeIcon : null
           ]}>
-            <Course fill={activeTab === 'Mycourse' ? "#FFD700" : "white"} /> {/* Gold when active */}
+            <Course fill={activeTab === 'Mycourse' ? "gray" : "white"} /> {/* Gold when active */}
           </Text>
           <Text style={[
             styles.ficonText, 
@@ -60,13 +62,13 @@ function Footer() {
             styles.fnavbox, 
             activeTab === 'LiveClass' ? styles.activeTab : null
           ]}
-          onPress={() => handleTabPress('LiveClass')}
+          onPress={() => handleTabPress('LiveClass', 'liveScreen')}
         >
           <Text style={[
             styles.ficons, 
             activeTab === 'LiveClass' ? styles.activeIcon : null
           ]}>
-            <Live fill={activeTab === 'LiveClass' ? "#FFD700" : "white"} /> {/* Gold when active */}
+            <Live fill={activeTab === 'LiveClass' ? "gray" : "white"} /> {/* Gold when active */}
           </Text>
           <Text style={[
             styles.ficonText, 
@@ -81,13 +83,13 @@ function Footer() {
             styles.fnavbox, 
             activeTab === 'Settings' ? styles.activeTab : null
           ]}
-          onPress={() => handleTabPress('Settings')}
+          onPress={() => handleTabPress('Settings', 'profileScreen')}
         >
           <Text style={[
             styles.ficons, 
             activeTab === 'Settings' ? styles.activeIcon : null
           ]}>
-            <Settings fill={activeTab === 'Settings' ? "#FFD700" : "white"} /> {/* Gold when active */}
+            <Settings fill={activeTab === 'Settings' ? "gray" : "white"} /> {/* Gold when active */}
           </Text>
           <Text style={[
             styles.ficonText, 

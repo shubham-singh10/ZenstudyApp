@@ -140,6 +140,9 @@ const HomeScreen = () => {
                 <Text style={homestyle.courseDescription}>
                   {course.description}
                 </Text>
+                <View style={homestyle.languageTag}>
+                <Text style={homestyle.languageText}>Hindi</Text>
+              </View>
                 <View style={homestyle.afterDesc}>
                   <Text style={homestyle.createdAt}>22-10-2024</Text>
                   <Text style={homestyle.price}>₹ 999</Text>
@@ -158,13 +161,14 @@ const HomeScreen = () => {
             <Text style={homestyle.exploreText}>Explore Our</Text>
             <View style={homestyle.exploreIcons}>
               
-              <TouchableOpacity>
-                <Course fill="black"/>
+              <TouchableOpacity style={homestyle.exploreContent}>
+                <Course fill="#054bb4"/>
+                <Text style={homestyle.exploreContentText}>Free Resourses</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-              <Course fill="black"/>
+              <TouchableOpacity style={homestyle.exploreContent}>
+              <Course fill="#054bb4"/>
+              <Text style={homestyle.exploreContentText}>Demo Content</Text>
               </TouchableOpacity>
-
             </View>
           </View>
           
@@ -178,6 +182,9 @@ const HomeScreen = () => {
               <Text style={homestyle.courseDescription}>
                 {course.description}
               </Text>
+              <View style={homestyle.languageTag}>
+                <Text style={homestyle.languageText}>Hindi</Text>
+              </View>
               <View style={homestyle.afterDesc}>
                 <Text style={homestyle.createdAt}>22-10-2024</Text>
                 <Text style={homestyle.price}>₹ 999</Text>
