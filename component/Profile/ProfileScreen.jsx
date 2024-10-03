@@ -10,7 +10,7 @@ import {
 import {Help, Logout} from '../Icons/MyIcon';
 import profileStyle from './profileStyle';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}) => {
   return (
     <ScrollView contentContainerStyle={profileStyle.scrollContainer}>
       <View style={profileStyle.profileSection}>
@@ -27,18 +27,18 @@ const ProfileScreen = () => {
             </Text>
             <Text style={profileStyle.welcomeText}>Welcome to ZenStudy</Text>
           </View>
-          <TouchableOpacity style={profileStyle.editButton}>
+          <TouchableOpacity style={profileStyle.editButton} onPress={()=> navigation.navigate('editScreen')}>
             <Text style={profileStyle.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={profileStyle.supportSection}>
+      <TouchableOpacity style={profileStyle.supportSection} onPress={()=> navigation.navigate('supportScreen')}>
         <Text style={profileStyle.supportText}>Support</Text>
         <Help fill="#054bb4" />
-      </View>
+      </TouchableOpacity>
 
-      <TouchableOpacity style={profileStyle.logoutButton}>
+      <TouchableOpacity style={profileStyle.logoutButton} onPress={()=> navigation.navigate('loginScreen')}>
         <Text style={profileStyle.logoutText}>Logout</Text>
         <Logout fill="#fff" />
       </TouchableOpacity>

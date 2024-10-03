@@ -1,6 +1,6 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 
-const LoginStyle = StyleSheet.create({
+const formStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -48,12 +48,22 @@ const LoginStyle = StyleSheet.create({
     fontSize: 12,
     color: '#054BB4',
   },
+  TopHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  backbtn: {
+    backgroundColor: '#054BB4',
+    padding: 5,
+    borderRadius: 3,
+  },
   loginText: {
     fontSize: 18, // Increased size for better visibility
     fontWeight: 'bold',
     marginTop: 20,
-    marginBottom: 15,
-    color: '#054BB4',
+    marginBottom: 30,
+    color: '#000000',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -88,6 +98,11 @@ const LoginStyle = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20, // added bottom margin for spacing
   },
+  forgotText:{
+    color:'#054bb4',
+    fontSize:14,
+    fontWeight:'500',
+  },
   buttonText: {
     textAlign: 'center',
     color: '#fff',
@@ -110,4 +125,4 @@ const LoginStyle = StyleSheet.create({
   },
 });
 
-export default LoginStyle;
+export default formStyles;

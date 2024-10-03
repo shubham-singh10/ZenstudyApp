@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect ,useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {NavigationContainer, NavigationState} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from './component/Login/login';
@@ -11,6 +11,9 @@ import ProfileScreen from './component/Profile/ProfileScreen';
 import LiveScreen from './component/LiveClass/LiveScreen';
 import MyCourses from './component/myCourseScreen/myCourseScreen';
 import SplashScreen from './component/SplashScreen/SplashScreen';
+import EditScreen from './component/EditScreen/EditScreen';
+import SupportScreen from './component/SupportScreen/SupportScreen';
+import ForgotScreen from './component/ForgotPassword/ForgotScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,11 +30,11 @@ function App(): React.JSX.Element {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, []);
 
   const shouldShowBottomNavigation = () => {
     const currentRoute = navigationState?.routes[navigationState.index]?.name;
-    return !['loginScreen', 'otpScreen', 'signupScreen'].includes(
+    return !['loginScreen', 'otpScreen', 'signupScreen', 'forgotPassword'].includes(
       currentRoute ?? '',
     );
   };
@@ -40,50 +43,69 @@ function App(): React.JSX.Element {
     <NavigationContainer
       onReady={() => setIsNavigationReady(true)}
       onStateChange={setNavigationState}>
+      {showSplash ? (
+        <SplashScreen />
+      ) : (
+        <Fragment>
+          {isNavigationReady && shouldShowBottomNavigation() && <MainHeader />}
+          <Stack.Navigator initialRouteName="homeScreen">
+            <Stack.Screen
+              name="loginScreen"
+              component={LoginScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="otpScreen"
+              component={OtpVerificationScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="signupScreen"
+              component={SignupScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="homeScreen"
+              component={HomeScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="profileScreen"
+              component={ProfileScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="liveScreen"
+              component={LiveScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="myCourseScreen"
+              component={MyCourses}
+              options={{headerShown: false}}
+            />
 
-        {showSplash ? (<SplashScreen/>):(
-          <Fragment>
-      <MainHeader />
-      <Stack.Navigator initialRouteName="homeScreen">
-        <Stack.Screen
-          name="loginScreen"
-          component={LoginScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="otpScreen"
-          component={OtpVerificationScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="signupScreen"
-          component={SignupScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="homeScreen"
-          component={HomeScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="profileScreen"
-          component={ProfileScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="liveScreen"
-          component={LiveScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="myCourseScreen"
-          component={MyCourses}
-          options={{headerShown: false}}
-        />
-      </Stack.Navigator>
-      {isNavigationReady && shouldShowBottomNavigation() && <Footer />}
-      
-      </Fragment>)}
+            <Stack.Screen
+              name="editScreen"
+              component={EditScreen}
+              options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+              name="supportScreen"
+              component={SupportScreen}
+              options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+              name="forgotPassword"
+              component={ForgotScreen}
+              options={{headerShown: false}}
+            />
+          </Stack.Navigator>
+          {isNavigationReady && shouldShowBottomNavigation() && <Footer />}
+        </Fragment>
+      )}
     </NavigationContainer>
   );
 }

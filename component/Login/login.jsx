@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
 import Header from '../Header';
-import LoginStyle from './LoginStyle';
+import formStyles from './formStyles';
 import { Call, Key } from '../Icons/MyIcon';
 
 
@@ -24,39 +24,39 @@ const LoginScreen = ({ navigation }) => {
       contentContainerStyle={{ flexGrow: 1 }} 
     >
       <Header />
-      <View style={LoginStyle.container}>
-        <View style={LoginStyle.section1}>
-          <View style={LoginStyle.titleContainer}>
-            <Text style={LoginStyle.loremText}>Lorem Ipsum has been</Text>
-            <Text style={LoginStyle.loremSubText}>
+      <View style={formStyles.container}>
+        <View style={formStyles.section1}>
+          <View style={formStyles.titleContainer}>
+            <Text style={formStyles.loremText}>Lorem Ipsum has been</Text>
+            <Text style={formStyles.loremSubText}>
               Lorem Ipsum has been the industry's standard dummy text ever since
               the 1500s
             </Text>
 
-            <SafeAreaView style={LoginStyle.imageContainer}>
+            <SafeAreaView style={formStyles.imageContainer}>
               <LoginSlider />
             </SafeAreaView>
           </View>
 
           {/* Login Section */}
-          <Text style={LoginStyle.welcomeText}>
-            Welcome To <Text style={LoginStyle.brandName}>ZenStudy</Text>
+          <Text style={formStyles.welcomeText}>
+            Welcome To <Text style={formStyles.brandName}>ZenStudy</Text>
           </Text>
-          <Text style={LoginStyle.taglineText}>
+          <Text style={formStyles.taglineText}>
             Curiosity | Intuitive Study | Imaginative
           </Text>
         </View>
 
-        <View style={LoginStyle.section2}>
-          <Text style={LoginStyle.loginText}>Login</Text>
+        <View style={formStyles.section2}>
+          <Text style={formStyles.loginText}>Login</Text>
 
           {/* Mobile Number Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Call fill="#fff" /> </Text>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}> <Call fill="#fff" /> </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Enter Your Mobile Number"
               keyboardType="phone-pad"
               value={mobileNumber}
@@ -65,12 +65,12 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           {/* Password Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}> <Key fill="white" /> </Text>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}> <Key fill="white" /> </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Enter Your Password"
               secureTextEntry={true}
               value={password}
@@ -78,24 +78,26 @@ const LoginScreen = ({ navigation }) => {
             />
           </View>
 
+          <TouchableOpacity onPress={()=>navigation.navigate('forgotPassword')}><Text style={formStyles.forgotText}>Forgot Password ?</Text></TouchableOpacity>
+
           {/* Login Button */}
-          <TouchableOpacity style={LoginStyle.button} onPress={() => navigation.navigate('homeScreen')}>
-            <Text style={LoginStyle.buttonText}>Continue</Text>
+          <TouchableOpacity style={formStyles.button} onPress={() => navigation.navigate('homeScreen')}>
+            <Text style={formStyles.buttonText}>Continue</Text>
           </TouchableOpacity>
 
           {/* Sign Up Link */}
-          <View style={LoginStyle.signupContainer}>
-            <Text style={LoginStyle.signupText}>New User? </Text>
+          <View style={formStyles.signupContainer}>
+            <Text style={formStyles.signupText}>New User? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('signupScreen')}>
-              <Text style={LoginStyle.signupLink}> Sign Up</Text>
+              <Text style={formStyles.signupLink}> Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
       {/* Footer */}
-      <View style={LoginStyle.footer}>
-        <Text style={LoginStyle.footerText}>Copyright ©. All Rights Reserved</Text>
+      <View style={formStyles.footer}>
+        <Text style={formStyles.footerText}>Copyright ©. All Rights Reserved</Text>
       </View>
     </ScrollView>
   );

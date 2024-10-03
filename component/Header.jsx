@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './Style';
 import { Help } from './Icons/MyIcon';
+import { useNavigation } from '@react-navigation/native';
 
 function Header() {
+  const navigation = useNavigation();
   return (
       <View style={styles.header}>
         <View>
@@ -11,7 +13,7 @@ function Header() {
           <Text style={styles.logoh2}>Make Education Imaginative</Text>
         </View>
         <View style={{flexDirection:'row', gap:3, alignItems:'center',justifyContent:'center'}}>
-        <Text><Help fill='#054bb4'/></Text>
+        <TouchableOpacity onPress={()=> navigation.navigate('supportScreen')}><Text><Help fill='#054bb4'/></Text></TouchableOpacity>
         <Text style={styles.helpText}> Help</Text>
         </View>
       </View>

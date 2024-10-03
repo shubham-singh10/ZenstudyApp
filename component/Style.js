@@ -1,16 +1,25 @@
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: 'white',
-    width: '100%',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    top: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+ header: {
+  backgroundColor: 'white',
+  width: '100%',
+  paddingHorizontal: 15,
+  paddingVertical: 15,
+  top: 0,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  
+  // Shadow for iOS
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+
+  // Shadow for Android
+  elevation: 5,
+},
   logoh1: {
     fontSize: 28,
     fontWeight: 'bold',

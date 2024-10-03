@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Header from '../Header';
-import LoginStyle from '../Login/LoginStyle';
+import formStyles from '../Login/formStyles';
 import { Call, Key, Profile } from '../Icons/MyIcon';
 
 const SignupScreen = ({ navigation }) => {
@@ -35,20 +35,20 @@ const SignupScreen = ({ navigation }) => {
     >
       <Header />
 
-      <View style={[LoginStyle.container, { paddingHorizontal: 30 }]}>
+      <View style={[formStyles.container, { paddingHorizontal: 30 }]}>
         {/* Sign Up Section */}
-        <View style={LoginStyle.section2}>
-          <Text style={LoginStyle.loginText}>Sign Up</Text>
+        <View style={formStyles.section2}>
+          <Text style={formStyles.loginText}>Sign Up</Text>
 
           {/* Mobile Number Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
                 <Call fill='#fff' />
               </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Enter Your Mobile Number"
               keyboardType="phone-pad"
               value={mobileNumber}
@@ -57,14 +57,14 @@ const SignupScreen = ({ navigation }) => {
           </View>
 
           {/* Name Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
                 <Profile fill='white' />
               </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Enter Your Name"
               value={name}
               onChangeText={setName}
@@ -72,14 +72,14 @@ const SignupScreen = ({ navigation }) => {
           </View>
 
           {/* Password Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
                 <Key fill="white" />
               </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Enter Your Password"
               secureTextEntry={true}
               value={password}
@@ -88,14 +88,14 @@ const SignupScreen = ({ navigation }) => {
           </View>
 
           {/* Confirm Password Input */}
-          <View style={LoginStyle.inputContainer}>
-            <View style={LoginStyle.inputlogo}>
-              <Text style={LoginStyle.inputlogoContent}>
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
                 <Key fill="white" />
               </Text>
             </View>
             <TextInput
-              style={LoginStyle.input}
+              style={formStyles.input}
               placeholder="Confirm Your Password"
               secureTextEntry={true}
               value={confirmPassword}
@@ -110,25 +110,25 @@ const SignupScreen = ({ navigation }) => {
 
           {/* Continue Button */}
           <TouchableOpacity
-            style={LoginStyle.button}
+            style={formStyles.button}
             onPress={handleContinue} // Call the validation function
           >
-            <Text style={LoginStyle.buttonText}>Continue</Text>
+            <Text style={formStyles.buttonText}>Continue</Text>
           </TouchableOpacity>
 
           {/* Existing User Link */}
-          <View style={LoginStyle.signupContainer}>
-            <Text style={LoginStyle.signupText}>Existing User? </Text>
+          <View style={formStyles.signupContainer}>
+            <Text style={formStyles.signupText}>Existing User? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('loginScreen')}>
-              <Text style={LoginStyle.signupLink}> Login</Text>
+              <Text style={formStyles.signupLink}> Login</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
       {/* Footer */}
-      <View style={LoginStyle.footer}>
-        <Text style={LoginStyle.footerText}>
+      <View style={formStyles.footer}>
+        <Text style={formStyles.footerText}>
           Copyright ©. All Rights Reserved
         </Text>
       </View>

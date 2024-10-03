@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import Header from '../Header';
 import Otpstyle from './OtpStyle';
-import Footer from '../Footer';
-import MainHeader from '../MainHeader';
+import formStyles from '../Login/formStyles';
+import { BackArrow } from '../Icons/MyIcon';
 
-const OtpVerificationScreen = () => {
+const OtpVerificationScreen = ({navigation}) => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const inputs = useRef([]);
 
@@ -35,13 +35,22 @@ const OtpVerificationScreen = () => {
   };
 
   return (
-    <View style={{flex: 1}}>
-      <MainHeader />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView 
+      style={{ backgroundColor: '#fff' }} 
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <Header />
         <View style={Otpstyle.container}>
-          <Text style={Otpstyle.title}>OTP Verification</Text>
+        <View style={formStyles.TopHead}>
+        <TouchableOpacity onPress={() => navigation.navigate('signupScreen')}>
+          <View style={formStyles.backbtn}>
+            <BackArrow fill="white" />
+          </View>
+        </TouchableOpacity>
+        <Text style={Otpstyle.title}>OTP Verification</Text>
+      </View>
 
-          <View style={Otpstyle.phoneContainer}>
+          <View style={[Otpstyle.phoneContainer, {marginTop:20}]}>
             <Text style={Otpstyle.phoneText}>OTP Sent To +91-798xxxx31</Text>
             <TouchableOpacity style={Otpstyle.editIcon}>
               <Text style={Otpstyle.editText}>✏️</Text>
@@ -76,9 +85,9 @@ const OtpVerificationScreen = () => {
             <Text style={Otpstyle.continueText}>Continue</Text>
           </TouchableOpacity>
         </View>
+     
       </ScrollView>
-      <Footer />
-    </View>
+    
   );
 };
 

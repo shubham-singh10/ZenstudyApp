@@ -1,16 +1,13 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
-const { height } = Dimensions.get('window');
-
 const Otpstyle = StyleSheet.create({
   container: {
     paddingHorizontal: 30,
-    paddingTop: 50,
+    paddingTop: 20,
     backgroundColor: '#fff',
-    minHeight: height - 100, 
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#000000',
