@@ -12,7 +12,7 @@ import homestyle from './homeStyle';
 
 const {width: screenWidth} = Dimensions.get('window');
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const bannerScrollViewRef = useRef(null);
   const coursesScrollViewRef = useRef(null);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
@@ -148,7 +148,7 @@ const HomeScreen = () => {
                   <Text style={homestyle.price}>₹ 999</Text>
                 </View>
                 <View style={homestyle.cardBtns}>
-                  <TouchableOpacity style={homestyle.exploreBtn}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                  <TouchableOpacity style={homestyle.exploreBtn} onPress={()=>navigation.navigate('courseDetail')}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
                   <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
                 </View>
               </View>
@@ -190,7 +190,7 @@ const HomeScreen = () => {
                 <Text style={homestyle.price}>₹ 999</Text>
               </View>
               <View style={homestyle.cardBtns}>
-                <TouchableOpacity style={homestyle.exploreBtn}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                <TouchableOpacity style={homestyle.exploreBtn} onPress={()=>navigation.navigate('courseDetail')}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
                 <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
               </View>
             </View>

@@ -4,43 +4,62 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Image, 
-  Text 
+  Image,
+  Text,
 } from 'react-native';
 
 const CourseDetail = () => {
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
       <View style={courseStyle.container}>
-        
-        <View style={courseStyle.contentSection}>
-          <Text style={courseStyle.text}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry
-          </Text>
-          <Image
-            source={{
-              uri: 'https://img.freepik.com/premium-photo/happy-man-ai-generated-portrait-user-profile_1119669-1.jpg',
-            }}
-            style={courseStyle.courseImage}
-          />
+        <Text style={courseStyle.title}>Title of the course</Text>
+
+        <Text style={courseStyle.text}>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry.
+        </Text>
+
+        <View style={courseStyle.aboutCourse}>
+          <View style={courseStyle.language}>
+            {/* Replace with your language icon */}
+            <Text style={courseStyle.languageText}>Hindi</Text>
+          </View>
+          <Text style={courseStyle.tutor}>Tutor Name</Text>
+        </View>
+      </View>
+
+      {/* Course Card */}
+      <View style={courseStyle.card}>
+        <Image
+          source={{ uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726640310463-INDIAN%20SOCIETY.webp' }} // Replace with your image URL
+          style={courseStyle.courseImage}
+        />
+
+        <View style={courseStyle.datePriceRow}>
+          <Text style={courseStyle.courseDate}>02/05/2024</Text>
+          <Text style={courseStyle.coursePrice}>$999</Text>
         </View>
 
-        
-        <View style={courseStyle.timingSection}>
-          <Text style={courseStyle.timingText}>Sat-Sun</Text>
-          <Text style={courseStyle.timingText}>5-6 PM</Text>
+        <TouchableOpacity style={courseStyle.buyButton}>
+          <Text style={courseStyle.buyButtonText}>Buy Now</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* About Course Section */}
+      <View style={courseStyle.aboutCourseSection}>
+        <Text style={courseStyle.aboutCourseTitle}>About Course</Text>
+
+        <View style={courseStyle.bulletPoint}>
+          <View style={courseStyle.customBullet} />
+          <Text style={courseStyle.bulletText}>Lorem Ipsum has been the industry’s standard dummy text.</Text>
         </View>
-        
-        
-        <View style={courseStyle.contentSection}>
-          <View style={courseStyle.liveBox}>
-          <Text style={courseStyle.liveDot}></Text>
-          <Text style={courseStyle.liveText}>Live Now</Text>
-          </View>
-          <TouchableOpacity style={courseStyle.joinBtn}>
-            <Text style={courseStyle.joinText}>Join Now</Text>
-          </TouchableOpacity>
+
+        <View style={courseStyle.bulletPoint}>
+          <View style={courseStyle.customBullet} />
+          <Text style={courseStyle.bulletText}>Lorem Ipsum has been the industry’s standard dummy text.</Text>
         </View>
+
+        {/* Add more bullet points as necessary */}
       </View>
     </ScrollView>
   );
@@ -48,79 +67,124 @@ const CourseDetail = () => {
 
 const courseStyle = StyleSheet.create({
   scrollContainer: {
-    paddingHorizontal: 20,
     paddingVertical: 10,
     flexGrow: 1,
     backgroundColor: '#fff',
   },
   container: {
+    paddingHorizontal: 20,
     backgroundColor: '#e6f0fe',
     borderRadius: 5,
     padding: 10,
-    marginVertical: 20,
-    alignItems: 'center',
+    paddingBottom: 50,
   },
-  contentSection: {
-    width: '100%', 
+  title: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#054bb4',
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 14,
+    color: '#494949',
+    fontWeight: '500',
+  },
+  aboutCourse: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginTop: 10,
   },
-  timingSection: {
-    width: '100%', 
+  language: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    justifyContent:'space-between',
+    gap: 5,
+  },
+  languageText: {
+    fontSize: 14,
+    color: '#000000',
+  },
+  tutor: {
+    color: '#054bb4',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+
+  // New Card Styles
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 15,
+    marginHorizontal: 20,
+    marginTop: -30,
+    // Shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    // Shadow for Android
+    elevation: 5,
   },
   courseImage: {
-    width: 180,
-    height: 100,
-    borderRadius: 5,
-    elevation:4,
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 15,
   },
-  text: {
-    flex: 1, 
-    marginRight: 10,
+  datePriceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  courseDate: {
     fontSize: 14,
     color: '#054bb4',
-    fontWeight:'500',
   },
-  timingText: {
-    fontSize: 14,
-    color: '#555',
-    fontWeight:'bold',
-    marginHorizontal:10
+  coursePrice: {
+    fontSize: 20,
+    color: '#054bb4',
+    fontWeight: '700',
   },
-  liveBox:{
-    flexDirection:'row',
-    gap:5,
-    alignItems:'center',
-  },
-  liveDot:{
-    width:10,
-    height:10,
-    borderRadius:5,
-    backgroundColor: "#2DD93B",
-  },
-  liveText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  joinBtn: {
+  buyButton: {
     backgroundColor: '#054bb4',
     paddingVertical: 10,
-    paddingHorizontal: 20,
     borderRadius: 30,
-    width:'70%'
+    alignItems: 'center',
   },
-  joinText: {
+  buyButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
-    alignSelf:'center'
+    fontWeight: '600',
+  },
+
+  // About Course Section
+  aboutCourseSection: {
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  aboutCourseTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 15,
+    color: '#054bb4',
+  },
+  bulletPoint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  bulletText: {
+    fontSize: 16,
+    color: '#494949',
+    marginLeft: 10, // Space between bullet and text
+  },
+  customBullet: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#054bb4',  // Blue bullet
+    borderRadius: 4,  // Circular bullet
+    marginRight: 10,  // Space between bullet and text
   },
 });
 
