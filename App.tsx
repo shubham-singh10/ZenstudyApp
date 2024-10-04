@@ -34,7 +34,7 @@ function App(): React.JSX.Element {
 
   const shouldShowBottomNavigation = () => {
     const currentRoute = navigationState?.routes[navigationState.index]?.name;
-    return !['loginScreen', 'otpScreen', 'signupScreen', 'forgotPassword'].includes(
+    return ![ 'otpScreen', 'signupScreen', 'forgotPassword'].includes(
       currentRoute ?? '',
     );
   };
@@ -48,7 +48,7 @@ function App(): React.JSX.Element {
       ) : (
         <Fragment>
           {isNavigationReady && shouldShowBottomNavigation() && <MainHeader />}
-          <Stack.Navigator initialRouteName="homeScreen">
+          <Stack.Navigator initialRouteName="loginScreen">
             <Stack.Screen
               name="loginScreen"
               component={LoginScreen}

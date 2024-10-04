@@ -1,27 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginSlider from './LoginSlider';
 import Header from '../Header';
 import formStyles from './formStyles';
 import { Call, Key } from '../Icons/MyIcon';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { loginData } from './store';
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
+  const { loading, error } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (error && hasAttemptedLogin) {
+      Alert.alert('Login Error', error, [{ text: 'OK' }]);
+      setHasAttemptedLogin(false);
+    }
+  }, [error, hasAttemptedLogin]);
+
+  const handleLogin = () => {
+    if (mobileNumber && password) {
+      dispatch(loginData({ phone: mobileNumber, password }));
+    } else {
+      // Handle case where fields are empty
+      Alert.alert('Missing Information', 'Please enter both your mobile number and password to proceed.', [{ text: 'OK' }]);
+    }
+  };
 
   return (
-    <ScrollView 
-      style={{ backgroundColor: '#fff' }} 
-      contentContainerStyle={{ flexGrow: 1 }} 
+    <ScrollView
+      style={{ backgroundColor: '#fff' }}
+      contentContainerStyle={{ flexGrow: 1 }}
     >
       <Header />
       <View style={formStyles.container}>
@@ -78,12 +99,18 @@ const LoginScreen = ({ navigation }) => {
             />
           </View>
 
-          <TouchableOpacity onPress={()=>navigation.navigate('forgotPassword')}><Text style={formStyles.forgotText}>Forgot Password ?</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('forgotPassword')}><Text style={formStyles.forgotText}>Forgot Password ?</Text></TouchableOpacity>
 
           {/* Login Button */}
-          <TouchableOpacity style={formStyles.button} onPress={() => navigation.navigate('homeScreen')}>
-            <Text style={formStyles.buttonText}>Continue</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <TouchableOpacity style={formStyles.button} onPress={handleLogin} disabled>
+              <ActivityIndicator size="small" color="#0000ff" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={formStyles.button} onPress={handleLogin}>
+              <Text style={formStyles.buttonText}>Continue</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Sign Up Link */}
           <View style={formStyles.signupContainer}>
@@ -99,7 +126,7 @@ const LoginScreen = ({ navigation }) => {
       <View style={formStyles.footer}>
         <Text style={formStyles.footerText}>Copyright ©. All Rights Reserved</Text>
       </View>
-    </ScrollView>
+    </ScrollView >
   );
 };
 
