@@ -15,13 +15,22 @@ import formStyles from './formStyles';
 import { Call, Key } from '../Icons/MyIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginData } from './store';
+import { useNavigation } from '@react-navigation/native';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ setIsLoggedIn }) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
-  const { loading, error } = useSelector((state) => state.auth);
+  const { userData, loading, error } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userData) {
+      setIsLoggedIn(true);
+      navigation.navigate('HomeScreen');
+    }
+  }, [userData, setIsLoggedIn, navigation]);
 
   useEffect(() => {
     if (error && hasAttemptedLogin) {

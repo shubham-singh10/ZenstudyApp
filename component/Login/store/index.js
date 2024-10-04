@@ -18,7 +18,7 @@ export const loginData = createAsyncThunk(
                     },
                 }
             );
-            console.log('Response: ', response.data);
+            // console.log('Response: ', response.data);
             return response.data;
         } catch (error) {
             let errorMessage;
