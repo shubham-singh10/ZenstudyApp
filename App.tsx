@@ -14,6 +14,7 @@ import SplashScreen from './component/SplashScreen/SplashScreen';
 import EditScreen from './component/EditScreen/EditScreen';
 import SupportScreen from './component/SupportScreen/SupportScreen';
 import ForgotScreen from './component/ForgotPassword/ForgotScreen';
+import CourseDetail from './component/CourseDetail/CourseDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,9 +35,12 @@ function App(): React.JSX.Element {
 
   const shouldShowBottomNavigation = () => {
     const currentRoute = navigationState?.routes[navigationState.index]?.name;
-    return ![ 'otpScreen', 'signupScreen', 'forgotPassword'].includes(
-      currentRoute ?? '',
-    );
+    return ![
+      'otpScreen',
+      'loginScreen',
+      'signupScreen',
+      'forgotPassword',
+    ].includes(currentRoute ?? '');
   };
 
   return (
@@ -100,6 +104,12 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="forgotPassword"
               component={ForgotScreen}
+              options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+              name="courseDetail"
+              component={CourseDetail}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

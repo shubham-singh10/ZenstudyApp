@@ -104,7 +104,7 @@ const LoginScreen = ({ navigation }) => {
           {/* Login Button */}
           {loading ? (
             <TouchableOpacity style={formStyles.button} onPress={handleLogin} disabled>
-              <ActivityIndicator size="small" color="#0000ff" />
+              <ActivityIndicator size="small" color="#ffffff" />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={formStyles.button} onPress={handleLogin}>
