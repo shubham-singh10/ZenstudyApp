@@ -5,7 +5,7 @@ import axios from 'axios';
 import { REACT_APP_API } from '@env';
 // Thunk to fetch login data
 export const loginData = createAsyncThunk(
-    'authentication/login',
+    'authentication/login',    
     async ({ phone, password }, thunkAPI) => {
         try {
             const response = await axios.post(

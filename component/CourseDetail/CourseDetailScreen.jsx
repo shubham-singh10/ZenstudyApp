@@ -7,8 +7,9 @@ import {
   Image,
   Text,
 } from 'react-native';
+import { Language } from '../Icons/MyIcon';
 
-const CourseDetail = () => {
+const CourseDetail = ({navigation}) => {
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
       <View style={courseStyle.container}>
@@ -21,7 +22,7 @@ const CourseDetail = () => {
 
         <View style={courseStyle.aboutCourse}>
           <View style={courseStyle.language}>
-            {/* Replace with your language icon */}
+            <Language fill='#054bb4'/>
             <Text style={courseStyle.languageText}>Hindi</Text>
           </View>
           <Text style={courseStyle.tutor}>Tutor Name</Text>
@@ -40,7 +41,7 @@ const CourseDetail = () => {
           <Text style={courseStyle.coursePrice}>$999</Text>
         </View>
 
-        <TouchableOpacity style={courseStyle.buyButton}>
+        <TouchableOpacity style={courseStyle.buyButton} onPress={()=>navigation.navigate('watchCourse')}>
           <Text style={courseStyle.buyButtonText}>Buy Now</Text>
         </TouchableOpacity>
       </View>
@@ -76,7 +77,7 @@ const courseStyle = StyleSheet.create({
     backgroundColor: '#e6f0fe',
     borderRadius: 5,
     padding: 10,
-    paddingBottom: 50,
+    paddingBottom: 60,
   },
   title: {
     fontSize: 18,

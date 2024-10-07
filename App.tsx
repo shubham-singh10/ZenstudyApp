@@ -1,6 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { NavigationContainer, NavigationState } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, {Fragment, useEffect, useState} from 'react';
+import {NavigationContainer, NavigationState} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from './component/Login/login';
 import OtpVerificationScreen from './component/OTP Screen/OtpVerificationScreen';
 import SignupScreen from './component/SignUp/SignupScreen';
@@ -15,81 +15,87 @@ import EditScreen from './component/EditScreen/EditScreen';
 import SupportScreen from './component/SupportScreen/SupportScreen';
 import ForgotScreen from './component/ForgotPassword/ForgotScreen';
 import CourseDetail from './component/CourseDetail/CourseDetailScreen';
-import { Alert } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { handleLogout } from './component/Login/store';
+import {Alert} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {handleLogout} from './component/Login/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import WatchCourse from './component/WatchCourse/WatchCourse';
 
 const Stack = createNativeStackNavigator();
 
-const AppStack = ({ onLogout }: any) => {
+const AppStack = ({onLogout}: any) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
 
-      <Stack.Screen name="profileScreen" options={{ headerShown: false }}>
+      <Stack.Screen name="profileScreen" options={{headerShown: false}}>
         {props => <ProfileScreen {...props} onLogout={onLogout} />}
       </Stack.Screen>
 
       <Stack.Screen
         name="liveScreen"
         component={LiveScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="myCourseScreen"
         component={MyCourses}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
         name="editScreen"
         component={EditScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
         name="courseDetail"
         component={CourseDetail}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="watchCourse"
+        component={WatchCourse}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
         name="supportScreen"
         component={SupportScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
 };
 
-const AuthStack = ({ setIsLoggedIn }: any) => {
+const AuthStack = ({setIsLoggedIn}: any) => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="loginScreen" options={{ headerShown: false }}>
+      <Stack.Screen name="loginScreen" options={{headerShown: false}}>
         {props => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
       </Stack.Screen>
       <Stack.Screen
         name="otpScreen"
         component={OtpVerificationScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="signupScreen"
         component={SignupScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
 
       <Stack.Screen
         name="forgotPassword"
         component={ForgotScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
-
     </Stack.Navigator>
   );
 };
@@ -133,20 +139,16 @@ function App(): React.JSX.Element {
   };
 
   const handleLog = () => {
-    Alert.alert(
-      'Logout Confirmation',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          onPress: () => {
-            dispatch(handleLogout());
-            setIsLoggedIn(false);
-          },
+    Alert.alert('Logout Confirmation', 'Are you sure you want to log out?', [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Logout',
+        onPress: () => {
+          dispatch(handleLogout());
+          setIsLoggedIn(false);
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (

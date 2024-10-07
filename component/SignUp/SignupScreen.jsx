@@ -10,6 +10,7 @@ import {
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
 import { Call, Key, Profile } from '../Icons/MyIcon';
+import Footer from '../Footer';
 
 const SignupScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -132,6 +133,7 @@ const SignupScreen = ({ navigation }) => {
           Copyright ©. All Rights Reserved
         </Text>
       </View>
+   
     </ScrollView>
   );
 };
