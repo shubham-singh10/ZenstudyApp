@@ -9,7 +9,7 @@ import {
 import WebView from 'react-native-webview';
 
 const WatchCourse = () => {
-  // Modules structure with descriptions for the About Video section
+  
   const modules = [
     {
       title: 'Module 1',
@@ -27,27 +27,43 @@ const WatchCourse = () => {
         { title: 'Video Name C', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name C' },
       ],
     },
+    {
+      title: 'Module 3',
+      videos: [
+        { title: 'Video Name A', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name A' },
+        { title: 'Video Name B', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name B' },
+        { title: 'Video Name C', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name C' },
+      ],
+    },
   ];
 
-  // Set the default video to the first video of the first module
   const [activeVideo, setActiveVideo] = useState(modules[0].videos[0].url);
-  const [activeVideoIndex, setActiveVideoIndex] = useState(0); // Track which video is active
-  const [expandedModuleIndex, setExpandedModuleIndex] = useState(0); // Track which module is expanded
+  const [activeModuleIndex, setActiveModuleIndex] = useState(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
+  const [moduleVideoIndexes, setModuleVideoIndexes] = useState(
+    Array(modules.length).fill(0) 
+  );
 
   const handleModuleSelect = (index) => {
-    // Reset to the first video of the newly opened module if it's expanded
     if (expandedModuleIndex === index) {
-      setExpandedModuleIndex(null); // Close the module if it's already open
+      setExpandedModuleIndex(null); 
     } else {
-      setExpandedModuleIndex(index); // Open the new module
-      setActiveVideo(modules[index].videos[0].url); // Set the first video of the newly opened module
-      setActiveVideoIndex(0); // Reset active video index to the first video
+      setExpandedModuleIndex(index); 
+      const lastSelectedVideoIndex = moduleVideoIndexes[index];
+      setActiveVideo(modules[index].videos[lastSelectedVideoIndex].url); 
+      setActiveVideoIndex(lastSelectedVideoIndex); 
     }
   };
 
-  const handleVideoSelect = (url, index) => {
+  const handleVideoSelect = (url, videoIndex, moduleIndex) => {
     setActiveVideo(url);
-    setActiveVideoIndex(index); // Set the active video index
+    setActiveVideoIndex(videoIndex);
+    setActiveModuleIndex(moduleIndex);
+  
+    const newModuleVideoIndexes = [...moduleVideoIndexes];
+    newModuleVideoIndexes[moduleIndex] = videoIndex;
+    setModuleVideoIndexes(newModuleVideoIndexes);
   };
 
   return (
@@ -68,44 +84,55 @@ const WatchCourse = () => {
 
         {/* About Video Section */}
         <Text style={courseStyle.subtitle}>About Video</Text>
-
         <Text style={courseStyle.description}>
-          {modules[expandedModuleIndex]?.videos[activeVideoIndex]?.description ||modules[0].videos[0].description }
+          {
+            modules[activeModuleIndex]?.videos[activeVideoIndex]?.description || ""
+          }
         </Text>
 
         {
         /* Module Section */
         }
-
-        {modules.map((module, index) => (
-          <View key={index} style={courseStyle.moduleContainer}>
+        {modules.map((module, moduleIndex) => (
+          <View key={moduleIndex} style={courseStyle.moduleContainer}>
             <TouchableOpacity
-              onPress={() => handleModuleSelect(index)}
+              onPress={() => handleModuleSelect(moduleIndex)}
               style={[
                 courseStyle.moduleHeader,
-                expandedModuleIndex === index && courseStyle.activeModuleHeader,
+                expandedModuleIndex === moduleIndex && courseStyle.activeModuleHeader,
               ]}
             >
               <Text
                 style={[
                   courseStyle.moduleTitle,
-                  expandedModuleIndex === index && courseStyle.activeModuleTitle,
+                  expandedModuleIndex === moduleIndex && courseStyle.activeModuleTitle,
                 ]}
               >
+                <View
+                  style={{
+                    height: 10,
+                    width: 10,
+                    borderRadius: 5,
+                    backgroundColor: '#054bb4',
+                  }}
+                ></View>{' '}
                 {module.title}
-              </Text>               
+              </Text>
             </TouchableOpacity>
-            {expandedModuleIndex === index && (
+            {expandedModuleIndex === moduleIndex && (
               <View style={courseStyle.videoList}>
                 {module.videos.map((video, videoIndex) => (
                   <TouchableOpacity
                     key={videoIndex}
-                    onPress={() => handleVideoSelect(video.url, videoIndex)} // Change active video based on title click
+                    onPress={() =>
+                      handleVideoSelect(video.url, videoIndex, moduleIndex)
+                    }
                   >
                     <Text
                       style={[
                         courseStyle.videoItem,
-                        activeVideoIndex === videoIndex && courseStyle.activeVideoItem, // Highlight active video title
+                        moduleVideoIndexes[moduleIndex] === videoIndex &&
+                          courseStyle.activeVideoItem, 
                       ]}
                     >
                       {video.title}
@@ -164,7 +191,7 @@ const courseStyle = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 10,
     padding: 10,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#e6f0fe',
   },
   moduleHeader: {
     flexDirection: 'row',
@@ -174,15 +201,16 @@ const courseStyle = StyleSheet.create({
   },
   activeModuleHeader: {
     paddingHorizontal: 10,
-    backgroundColor: '#e7f3ff', // Change background color of the active module
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   moduleTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000', // Default color
+    color: '#000',
   },
   activeModuleTitle: {
-    color: '#0d6efd', // Active title color
+    color: '#0d6efd',
   },
   videoList: {
     paddingLeft: 10,
@@ -190,14 +218,12 @@ const courseStyle = StyleSheet.create({
   },
   videoItem: {
     fontSize: 14,
-    borderTopColor:'#054bb4',
-    borderTopWidth:0.5,
     color: '#333',
-    lineHeight:25,
+    lineHeight: 25,
   },
   activeVideoItem: {
-    color: '#0d6efd', // Change color for active video title
-    fontWeight: 'bold', // Make active video title bold
+    color: '#0d6efd',
+    fontWeight: 'bold',
   },
 });
 
