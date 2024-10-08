@@ -14,17 +14,17 @@ const WatchCourse = () => {
     {
       title: 'Module 1',
       videos: [
-        { title: 'Video Name 1', url: 'https://www.youtube.com/embed/VIDEO_ID1', description: 'Description for Video Name 1' },
-        { title: 'Video Name 2', url: 'https://www.youtube.com/embed/VIDEO_ID2', description: 'Description for Video Name 2' },
-        { title: 'Video Name 3', url: 'https://www.youtube.com/embed/VIDEO_ID3', description: 'Description for Video Name 3' },
+        { title: 'Video Name 1', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name 1' },
+        { title: 'Video Name 2', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name 2' },
+        { title: 'Video Name 3', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name 3' },
       ],
     },
     {
       title: 'Module 2',
       videos: [
-        { title: 'Video Name A', url: 'https://www.youtube.com/embed/VIDEO_ID_A', description: 'Description for Video Name A' },
-        { title: 'Video Name B', url: 'https://www.youtube.com/embed/VIDEO_ID_B', description: 'Description for Video Name B' },
-        { title: 'Video Name C', url: 'https://www.youtube.com/embed/VIDEO_ID_C', description: 'Description for Video Name C' },
+        { title: 'Video Name A', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name A' },
+        { title: 'Video Name B', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name B' },
+        { title: 'Video Name C', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name C' },
       ],
     },
   ];
@@ -62,17 +62,21 @@ const WatchCourse = () => {
             javaScriptEnabled={true}
             domStorageEnabled={true}
             allowsFullscreenVideo={true}
-            mediaPlaybackRequiresUserAction={true}
+            mediaPlaybackRequiresUserAction={false}
           />
         </View>
 
         {/* About Video Section */}
         <Text style={courseStyle.subtitle}>About Video</Text>
+
         <Text style={courseStyle.description}>
-          {modules[expandedModuleIndex]?.videos[activeVideoIndex]?.description || ''}
+          {modules[expandedModuleIndex]?.videos[activeVideoIndex]?.description ||modules[0].videos[0].description }
         </Text>
 
-        {/* Module Section */}
+        {
+        /* Module Section */
+        }
+
         {modules.map((module, index) => (
           <View key={index} style={courseStyle.moduleContainer}>
             <TouchableOpacity
@@ -186,7 +190,10 @@ const courseStyle = StyleSheet.create({
   },
   videoItem: {
     fontSize: 14,
+    borderTopColor:'#054bb4',
+    borderTopWidth:0.5,
     color: '#333',
+    lineHeight:25,
   },
   activeVideoItem: {
     color: '#0d6efd', // Change color for active video title
