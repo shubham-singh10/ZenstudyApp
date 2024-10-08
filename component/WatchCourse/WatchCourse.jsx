@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import WebView from 'react-native-webview';
+import { DownArrow, UpArrow } from '../Icons/MyIcon';
 
 const WatchCourse = () => {
   
@@ -14,7 +15,7 @@ const WatchCourse = () => {
     {
       title: 'Module 1',
       videos: [
-        { title: 'Video Name 1', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name 1' },
+        { title: 'Video Name 1', url: 'https://youtu.be/C1SrlDh9X0w?si=HMNmYSSHRpSHnCCZ', description: 'Description for Video Name 1' },
         { title: 'Video Name 2', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name 2' },
         { title: 'Video Name 3', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name 3' },
       ],
@@ -118,6 +119,7 @@ const WatchCourse = () => {
                 ></View>{' '}
                 {module.title}
               </Text>
+              {expandedModuleIndex === moduleIndex ? <UpArrow fill="#054bb4"/>: <DownArrow fill="#054BB4"/>}
             </TouchableOpacity>
             {expandedModuleIndex === moduleIndex && (
               <View style={courseStyle.videoList}>
