@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,21 +16,22 @@ import { Call, Key } from '../Icons/MyIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginData } from './store';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../Context/AuthContext';
 
-const LoginScreen = ({ setIsLoggedIn }) => {
+const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
   const { userData, loading, error } = useSelector((state) => state.auth);
+  const { setIsLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     if (userData) {
       setIsLoggedIn(true);
-      navigation.navigate('HomeScreen');
     }
-  }, [userData, setIsLoggedIn, navigation]);
+  }, [userData, setIsLoggedIn]);
 
   useEffect(() => {
     if (error && hasAttemptedLogin) {
@@ -50,8 +51,8 @@ const LoginScreen = ({ setIsLoggedIn }) => {
 
   return (
     <ScrollView
-      style={{ backgroundColor: '#fff' }}
-      contentContainerStyle={{ flexGrow: 1 }}
+      style={formStyles.scrollView}
+      contentContainerStyle={formStyles.scrollContent}
     >
       <Header />
       <View style={formStyles.container}>

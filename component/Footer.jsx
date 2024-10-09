@@ -14,7 +14,7 @@ const FooterTab = ({ tabName, screenName, IconComponent, activeTab, handleTabPre
       onPress={() => handleTabPress(tabName, screenName)}
     >
       <Text style={[styles.ficons, isActive ? styles.activeIcon : null]}>
-        <IconComponent fill={isActive ? "gray" : "white"} /> 
+        <IconComponent fill={isActive ? 'gray' : 'white'} />
       </Text>
       <Text style={[styles.ficonText, isActive ? styles.activeText : null]}>
         {tabName}
@@ -37,7 +37,7 @@ function Footer() {
       <View style={styles.footer}>
         <FooterTab
           tabName="Home"
-          screenName="homeScreen"
+          screenName="HomeScreen"
           IconComponent={Home}
           activeTab={activeTab}
           handleTabPress={handleTabPress}

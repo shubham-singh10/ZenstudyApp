@@ -2,14 +2,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API } from '@env';
+import { REACT_APP_API2 } from '@env';
 // Thunk to fetch login data
 export const loginData = createAsyncThunk(
-    'authentication/login',    
+    'authentication/login',
     async ({ phone, password }, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API}zenstudy/api/auth/signin`,
+                `${REACT_APP_API2}zenstudy/api/auth/signin`,
                 { phone, password },
                 {
                     headers: {

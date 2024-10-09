@@ -1,10 +1,16 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import { StyleSheet} from 'react-native';
 
 const formStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 30,
+  },
+  scrollView: {
+    backgroundColor: '#fff',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   footer: {
     position: 'absolute',

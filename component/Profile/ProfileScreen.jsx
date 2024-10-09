@@ -9,9 +9,11 @@ import {
 import { Help, Logout } from '../Icons/MyIcon';
 import profileStyle from './profileStyle';
 import { useNavigation } from '@react-navigation/native';
+import { UserData } from '../userData/UserData';
 
 const ProfileScreen = ({ onLogout }) => {
   const navigation = useNavigation();
+  const { usersData } = UserData();
 
   return (
     <ScrollView contentContainerStyle={profileStyle.scrollContainer}>
@@ -25,7 +27,7 @@ const ProfileScreen = ({ onLogout }) => {
         <View style={profileStyle.profileText}>
           <View>
             <Text style={profileStyle.greeting}>
-              Hi, <Text style={profileStyle.userName}>User Name</Text>
+              Hi, <Text style={profileStyle.userName}>{usersData?.name}</Text>
             </Text>
             <Text style={profileStyle.welcomeText}>Welcome to ZenStudy</Text>
           </View>
