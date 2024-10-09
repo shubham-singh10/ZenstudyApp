@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -9,19 +9,26 @@ import {
 } from 'react-native';
 import { Course } from '../Icons/MyIcon';
 import homestyle from './homeStyle';
+import { useDispatch, useSelector } from 'react-redux';
+import { RecentCourseData } from './store';
+import SplashScreen from '../SplashScreen/SplashScreen';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
   const bannerScrollViewRef = useRef(null);
   const coursesScrollViewRef = useRef(null);
+  const dispatch = useDispatch();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
+  const { courseData, loading } = useSelector((state) => state.RecentCourseData);
+
+
   const images = [
-    {id: 1, image: {uri: 'https://zenstudy.in/assets/1.webp'}},
-    {id: 2, image: {uri: 'https://zenstudy.in/assets/2.webp'}},
-    {id: 3, image: {uri: 'https://zenstudy.in/assets/3.webp'}},
+    { id: 1, image: { uri: 'https://zenstudy.in/assets/1.webp' } },
+    { id: 2, image: { uri: 'https://zenstudy.in/assets/2.webp' } },
+    { id: 3, image: { uri: 'https://zenstudy.in/assets/3.webp' } },
   ];
 
   const courses = [
@@ -85,6 +92,22 @@ const HomeScreen = ({navigation}) => {
     return () => clearInterval(intervalId);
   }, [activeBannerIndex, images.length]); // Dependency array
 
+  useEffect(() => {
+    dispatch(RecentCourseData());
+  }, [dispatch]);
+
+  const getShortDescription = (text, wordLimit) => {
+    const words = text.split(' ');
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(' ') + '...';
+    }
+    return text;
+  };
+
+  if (loading) {
+    return <SplashScreen />;
+  }
+
   return (
     <View style={homestyle.container}>
       <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
@@ -124,78 +147,84 @@ const HomeScreen = ({navigation}) => {
         {/* Courses Section */}
         <View style={homestyle.coursesContainer}>
           <Text style={homestyle.coursesTitle}>Available Courses</Text>
-          <ScrollView
-            ref={coursesScrollViewRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleCourseScroll}
-            scrollEventThrottle={16}>
-            {courses.map(course => (
-              <View key={course.id} style={homestyle.courseCard}>
-                <Text style={homestyle.title}>{course.title}</Text>
-                <View style={homestyle.cImgContainer}>
-                  <Image source={course.image} style={homestyle.courseImage} />
+          {(courseData && courseData.length > 0 && (
+            <ScrollView
+              ref={coursesScrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleCourseScroll}
+              scrollEventThrottle={16}
+            >
+              {courseData.map(course => (
+                <View key={course._id} style={homestyle.courseCard}>
+                  <Text style={homestyle.title}>{course.title}</Text>
+                  <View style={homestyle.cImgContainer}>
+                    {/* <Image source={course.image} style={homestyle.courseImage} /> */}
+                    <Image source={{ uri: 'https://zenstudy.in/assets/1.webp' }} style={homestyle.courseImage} />
+                  </View>
+                  <Text style={homestyle.courseDescription}>
+                    {getShortDescription(course.description, 20)}
+                  </Text>
+                  <View style={homestyle.languageTag}>
+                    <Text style={homestyle.languageText}>{course.language}</Text>
+                  </View>
+                  <View style={homestyle.afterDesc}>
+                    <Text style={homestyle.createdAt}>{course?.createdAt.slice(0, 10)}</Text>
+                    <Text style={homestyle.price}>₹ {course.price}</Text>
+                  </View>
+                  <View style={homestyle.cardBtns}>
+                    <TouchableOpacity style={homestyle.exploreBtn} onPress={() => navigation.navigate('courseDetail')}><Text style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                    <TouchableOpacity style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
+                  </View>
                 </View>
-                <Text style={homestyle.courseDescription}>
-                  {course.description}
-                </Text>
-                <View style={homestyle.languageTag}>
-                <Text style={homestyle.languageText}>Hindi</Text>
-              </View>
-                <View style={homestyle.afterDesc}>
-                  <Text style={homestyle.createdAt}>22-10-2024</Text>
-                  <Text style={homestyle.price}>₹ 999</Text>
-                </View>
-                <View style={homestyle.cardBtns}>
-                  <TouchableOpacity style={homestyle.exploreBtn} onPress={()=>navigation.navigate('courseDetail')}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
-                  <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
+              ))}
+            </ScrollView>
+          ))}
         </View>
 
-         {/* Explore our */}
-          <View style={homestyle.exploreContainer}>
-            <Text style={homestyle.exploreText}>Explore Our</Text>
-            <View style={homestyle.exploreIcons}>
-              
-              <TouchableOpacity style={homestyle.exploreContent}>
-                <Course fill="#054bb4"/>
-                <Text style={homestyle.exploreContentText}>Free Resourses</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={homestyle.exploreContent}>
-              <Course fill="#054bb4"/>
+        {/* Explore our */}
+        <View style={homestyle.exploreContainer}>
+          <Text style={homestyle.exploreText}>Explore Our</Text>
+          <View style={homestyle.exploreIcons}>
+
+            <TouchableOpacity style={homestyle.exploreContent}>
+              <Course fill="#054bb4" />
+              <Text style={homestyle.exploreContentText}>Free Resourses</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={homestyle.exploreContent}>
+              <Course fill="#054bb4" />
               <Text style={homestyle.exploreContentText}>Demo Content</Text>
-              </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           </View>
-          
-          <View style={homestyle.exploreCourses}>
-          {courses.map(course => (
-            <View key={course.id} style={homestyle.courseCard}>
-              <Text style={homestyle.title}>{course.title}</Text>
-              <View style={homestyle.cImgContainer}>
-                <Image source={course.image} style={homestyle.courseImage} />
+        </View>
+
+        <View style={homestyle.exploreCourses}>
+          {(courseData && courseData.length > 0) && (
+            courseData.map(course => (
+              <View key={course._id} style={homestyle.courseCard}>
+                <Text style={homestyle.title}>{course.title}</Text>
+                <View style={homestyle.cImgContainer}>
+                  {/* <Image source={course.image} style={homestyle.courseImage} /> */}
+                  <Image source={{ uri: 'https://zenstudy.in/assets/1.webp' }} style={homestyle.courseImage} />
+                </View>
+                <Text style={homestyle.courseDescription}>
+                  {getShortDescription(course.description, 20)}
+                </Text>
+                <View style={homestyle.languageTag}>
+                  <Text style={homestyle.languageText}>Hindi</Text>
+                </View>
+                <View style={homestyle.afterDesc}>
+                  <Text style={homestyle.createdAt}>{course?.createdAt.slice(0, 10)}</Text>
+                  <Text style={homestyle.price}>₹ {course.price}</Text>
+                </View>
+                <View style={homestyle.cardBtns}>
+                  <TouchableOpacity style={homestyle.exploreBtn} onPress={() => navigation.navigate('courseDetail')}><Text style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                  <TouchableOpacity style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
+                </View>
               </View>
-              <Text style={homestyle.courseDescription}>
-                {course.description}
-              </Text>
-              <View style={homestyle.languageTag}>
-                <Text style={homestyle.languageText}>Hindi</Text>
-              </View>
-              <View style={homestyle.afterDesc}>
-                <Text style={homestyle.createdAt}>22-10-2024</Text>
-                <Text style={homestyle.price}>₹ 999</Text>
-              </View>
-              <View style={homestyle.cardBtns}>
-                <TouchableOpacity style={homestyle.exploreBtn} onPress={()=>navigation.navigate('courseDetail')}><Text  style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
-                <TouchableOpacity  style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
-              </View>
-            </View>
-          ))}
-          </View>
+            )))}
+        </View>
 
       </ScrollView>
     </View>
