@@ -1,4 +1,4 @@
-import { StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const formStyles = StyleSheet.create({
   container: {
@@ -86,6 +86,12 @@ const formStyles = StyleSheet.create({
     paddingHorizontal: 10,
     color: '#000',
   },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   inputlogo: {
     flex: 1,
     justifyContent: 'center',
@@ -104,10 +110,10 @@ const formStyles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20, // added bottom margin for spacing
   },
-  forgotText:{
-    color:'#054bb4',
-    fontSize:14,
-    fontWeight:'500',
+  forgotText: {
+    color: '#054bb4',
+    fontSize: 14,
+    fontWeight: '500',
   },
   buttonText: {
     textAlign: 'center',

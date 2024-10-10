@@ -3,12 +3,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { REACT_APP_API } from '@env';
 // Thunk to fetch login data
-export const RecentCourseData = createAsyncThunk(
-    'recentcourse',
-    async (thunkAPI) => {
+export const DetailsCourseData = createAsyncThunk(
+    'couredetails',
+    async (courseId, thunkAPI) => {
         try {
             const response = await axios.get(
-                `${REACT_APP_API}zenstudy/api/course/getCoursesP`,
+                `${REACT_APP_API}zenstudy/api/course/coursedetail/${courseId}`,
                 {
                     headers: {
                         Accept: 'application/json',
@@ -17,11 +17,8 @@ export const RecentCourseData = createAsyncThunk(
                 }
             );
             //  console.log('Response: ', response.data);
-            const imageData = response.data.map(course => ({
-                ...course,
-                imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${course.thumbnail}`
-            }));
-            return imageData;
+
+            return response.data.coursedetail;
         } catch (error) {
             let errorMessage;
 
@@ -45,8 +42,8 @@ export const RecentCourseData = createAsyncThunk(
 
 
 // Create slice for authentication
-const appRecentcourseSlice = createSlice({
-    name: 'recentcourse',
+const appDetailscourseSlice = createSlice({
+    name: 'couredetails',
     initialState: {
         courseData: null,
         error: null,
@@ -55,19 +52,19 @@ const appRecentcourseSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(RecentCourseData.pending, (state) => {
+            .addCase(DetailsCourseData.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(RecentCourseData.fulfilled, (state, action) => {
+            .addCase(DetailsCourseData.fulfilled, (state, action) => {
                 state.loading = false;
                 state.courseData = action.payload;
             })
-            .addCase(RecentCourseData.rejected, (state, action) => {
+            .addCase(DetailsCourseData.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
     },
 });
 
-export default appRecentcourseSlice.reducer;
+export default appDetailscourseSlice.reducer;

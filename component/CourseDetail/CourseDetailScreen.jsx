@@ -1,47 +1,76 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  Image,
   Text,
 } from 'react-native';
 import { Language } from '../Icons/MyIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailsCourseData } from './store';
+import WebView from 'react-native-webview';
+import Loader from '../Loader';
 
-const CourseDetail = ({navigation}) => {
+const CourseDetail = ({ navigation, route }) => {
+  const { courseId } = route.params;
+  const dispatch = useDispatch();
+
+  const { courseData, loading, error } = useSelector(state => state.CourseDetailData);
+  const firstModule = courseData?.modules?.[0];
+
+  // Fetch course data on mount
+  useEffect(() => {
+    dispatch(DetailsCourseData(courseId));
+  }, [dispatch, courseId]);
+
+  // Display loading indicator while fetching data
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <Text style={courseStyle.errorText}>Failed to load course details. Please try again.</Text>;
+  }
+
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
+      {/* Course Title and Description */}
       <View style={courseStyle.container}>
-        <Text style={courseStyle.title}>Title of the course</Text>
-
-        <Text style={courseStyle.text}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
-        </Text>
+        <Text style={courseStyle.title}>{courseData?.title}</Text>
+        <Text style={courseStyle.text}>{courseData?.description}</Text>
 
         <View style={courseStyle.aboutCourse}>
           <View style={courseStyle.language}>
-            <Language fill='#054bb4'/>
-            <Text style={courseStyle.languageText}>Hindi</Text>
+            <Language fill="#054bb4" />
+            <Text style={courseStyle.languageText}>{courseData?.language}</Text>
           </View>
-          <Text style={courseStyle.tutor}>Tutor Name</Text>
         </View>
       </View>
 
-      {/* Course Card */}
+      {/* Course Video Card */}
       <View style={courseStyle.card}>
-        <Image
-          source={{ uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726640310463-INDIAN%20SOCIETY.webp' }} // Replace with your image URL
-          style={courseStyle.courseImage}
-        />
+        {firstModule && firstModule.videos?.length > 0 ? (
+          <WebView
+            style={courseStyle.courseImage}
+            source={{ uri: 'https://player.vimeo.com/video/995693386?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479' }}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+          />
+        ) : (
+          <Text style={courseStyle.noVideoText}>No videos available</Text>
+        )}
 
+        {/* Course Date and Price */}
         <View style={courseStyle.datePriceRow}>
-          <Text style={courseStyle.courseDate}>02/05/2024</Text>
-          <Text style={courseStyle.coursePrice}>$999</Text>
+          <Text style={courseStyle.courseDate}>{courseData?.createdAt.slice(0, 10)}</Text>
+          <Text style={courseStyle.coursePrice}>₹{courseData?.price}</Text>
         </View>
 
-        <TouchableOpacity style={courseStyle.buyButton} onPress={()=>navigation.navigate('watchCourse')}>
+        {/* Buy Button */}
+        <TouchableOpacity style={courseStyle.buyButton} onPress={() => navigation.navigate('watchCourse')}>
           <Text style={courseStyle.buyButtonText}>Buy Now</Text>
         </TouchableOpacity>
       </View>
@@ -50,15 +79,19 @@ const CourseDetail = ({navigation}) => {
       <View style={courseStyle.aboutCourseSection}>
         <Text style={courseStyle.aboutCourseTitle}>About Course</Text>
 
-        <View style={courseStyle.bulletPoint}>
-          <View style={courseStyle.customBullet} />
-          <Text style={courseStyle.bulletText}>Lorem Ipsum has been the industry’s standard dummy text.</Text>
-        </View>
+        {courseData?.other1 && (
+          <View style={courseStyle.bulletPoint}>
+            <View style={courseStyle.customBullet} />
+            <Text style={courseStyle.bulletText}>{courseData.other1}</Text>
+          </View>
+        )}
 
-        <View style={courseStyle.bulletPoint}>
-          <View style={courseStyle.customBullet} />
-          <Text style={courseStyle.bulletText}>Lorem Ipsum has been the industry’s standard dummy text.</Text>
-        </View>
+        {courseData?.other2 && (
+          <View style={courseStyle.bulletPoint}>
+            <View style={courseStyle.customBullet} />
+            <Text style={courseStyle.bulletText}>{courseData.other2}</Text>
+          </View>
+        )}
 
         {/* Add more bullet points as necessary */}
       </View>

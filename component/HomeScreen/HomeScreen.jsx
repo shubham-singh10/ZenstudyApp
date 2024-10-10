@@ -24,7 +24,6 @@ const HomeScreen = ({ navigation }) => {
 
   const { courseData, loading } = useSelector((state) => state.RecentCourseData);
 
-
   const images = [
     { id: 1, image: { uri: 'https://zenstudy.in/assets/1.webp' } },
     { id: 2, image: { uri: 'https://zenstudy.in/assets/2.webp' } },
@@ -130,8 +129,7 @@ const HomeScreen = ({ navigation }) => {
                 <View key={course._id} style={homestyle.courseCard}>
                   <Text style={homestyle.title}>{course.title}</Text>
                   <View style={homestyle.cImgContainer}>
-                    {/* <Image source={course.image} style={homestyle.courseImage} /> */}
-                    <Image source={{ uri: 'https://zenstudy.in/assets/1.webp' }} style={homestyle.courseImage} />
+                    <Image source={{uri: course?.imageUrl}} style={homestyle.courseImage} />
                   </View>
                   <Text style={homestyle.courseDescription}>
                     {getShortDescription(course.description, 20)}
@@ -144,7 +142,7 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={homestyle.price}>₹ {course.price}</Text>
                   </View>
                   <View style={homestyle.cardBtns}>
-                    <TouchableOpacity style={homestyle.exploreBtn} onPress={() => navigation.navigate('courseDetail')}><Text style={homestyle.exploreBtnText}>Explore Course</Text></TouchableOpacity>
+                    <TouchableOpacity style={homestyle.exploreBtn} onPress={() => navigation.navigate('courseDetail', { courseId: course._id })}><Text style={homestyle.exploreBtnText}>View Course</Text></TouchableOpacity>
                     <TouchableOpacity style={homestyle.buyNow}><Text style={homestyle.buyNowText}>Buy Now</Text></TouchableOpacity>
                   </View>
                 </View>
@@ -175,8 +173,7 @@ const HomeScreen = ({ navigation }) => {
               <View key={course._id} style={homestyle.courseCard}>
                 <Text style={homestyle.title}>{course.title}</Text>
                 <View style={homestyle.cImgContainer}>
-                  {/* <Image source={course.image} style={homestyle.courseImage} /> */}
-                  <Image source={{ uri: 'https://zenstudy.in/assets/1.webp' }} style={homestyle.courseImage} />
+                  <Image source={{uri: course?.imageUrl}} style={homestyle.courseImage} />
                 </View>
                 <Text style={homestyle.courseDescription}>
                   {getShortDescription(course.description, 20)}

@@ -5,38 +5,105 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
 import { Call, Key, Profile } from '../Icons/MyIcon';
-import Footer from '../Footer';
 
 const SignupScreen = ({ navigation }) => {
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // State for error message
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    password: '',
+    cPassword: '',
+  });
+  const [loading, setloading] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // Function to handle the form submission and validation
-  const handleContinue = () => {
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match'); // Set error message
-      return;
+  const onInputChange = (value, field) => {
+    setFormData({ ...formData, [field]: value });
+
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' });
     }
-    setErrorMessage(''); // Clear the error if passwords match
-    navigation.navigate('otpScreen'); // Proceed to the next screen if valid
+    if (field === 'cPassword' || field === 'password') {
+      if (formData.password !== value && field === 'cPassword') {
+        setPasswordError('Passwords do not match');
+      } else if (formData.cPassword !== value && field === 'password') {
+        setPasswordError('Passwords do not match');
+      } else {
+        setPasswordError('');
+      }
+    }
+  };
+
+  const validateForm = () => {
+    let fieldErrors = {};
+    let valid = true;
+
+    // Check if fields are empty only
+
+    const stepFields = ['name', 'password', 'cPassword', 'phone'];
+
+    stepFields.forEach((key) => {
+      if (!formData[key].trim()) {
+        fieldErrors[key] = 'This field is required';
+        valid = false;
+      }
+    });
+
+    // Additional password matching validation
+    if (formData.password !== formData.cPassword) {
+      fieldErrors.cPassword = 'Passwords do not match';
+      valid = false;
+    }
+
+    // Check if user agreed to terms and conditions
+    if (!isChecked) {
+      Alert.alert('Please agree to terms and conditions.');
+      valid = false;
+    }
+
+    // Set errors for empty fields
+    setErrors(fieldErrors);
+
+    return valid;
+  };
+
+  // const handleContinue = () => {
+  //   if (password !== confirmPassword) {
+  //     setErrorMessage('Passwords do not match');
+  //     return;
+  //   }
+  //   setErrorMessage('');
+  //   navigation.navigate('otpScreen');
+  // };
+
+  const handleContinue = () => {
+    const isValid = validateForm();
+    setloading(true);
+    if (isValid) {
+      if (passwordError) {
+        console.log('Fix password errors first');
+      } else {
+        console.log('form submitted successfully', formData);
+        setloading(false);
+      }
+    }
   };
 
   return (
-    <ScrollView 
-      style={{ backgroundColor: '#fff' }} 
-      contentContainerStyle={{ flexGrow: 1 }}
+    <ScrollView
+      style={formStyles.scrollView}
+      contentContainerStyle={formStyles.scrollContent}
     >
       <Header />
 
-      <View style={[formStyles.container, { paddingHorizontal: 30 }]}>
+      <View style={formStyles.container}>
         {/* Sign Up Section */}
         <View style={formStyles.section2}>
           <Text style={formStyles.loginText}>Sign Up</Text>
@@ -45,31 +112,33 @@ const SignupScreen = ({ navigation }) => {
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
               <Text style={formStyles.inputlogoContent}>
-                <Call fill='#fff' />
+                <Call fill="#fff" />
               </Text>
             </View>
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Mobile Number"
               keyboardType="phone-pad"
-              value={mobileNumber}
-              onChangeText={setMobileNumber}
+              value={formData.phone}
+              onChangeText={(text) => onInputChange(text, 'phone')}
             />
+            {errors.phone && <Text style={formStyles.error}>{errors.phone}</Text>}
           </View>
 
           {/* Name Input */}
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
               <Text style={formStyles.inputlogoContent}>
-                <Profile fill='white' />
+                <Profile fill="white" />
               </Text>
             </View>
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Name"
-              value={name}
-              onChangeText={setName}
+              value={formData.name}
+              onChangeText={(text) => onInputChange(text, 'name')}
             />
+            {errors.name && <Text style={formStyles.error}>{errors.name}</Text>}
           </View>
 
           {/* Password Input */}
@@ -83,9 +152,10 @@ const SignupScreen = ({ navigation }) => {
               style={formStyles.input}
               placeholder="Enter Your Password"
               secureTextEntry={true}
-              value={password}
-              onChangeText={setPassword}
+              value={formData.password}
+              onChangeText={(text) => onInputChange(text, 'password')}
             />
+            {errors.password && <Text style={formStyles.error}>{errors.password}</Text>}
           </View>
 
           {/* Confirm Password Input */}
@@ -99,23 +169,28 @@ const SignupScreen = ({ navigation }) => {
               style={formStyles.input}
               placeholder="Confirm Your Password"
               secureTextEntry={true}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              value={formData.cPassword}
+              onChangeText={(text) => onInputChange(text, 'cPassword')}
             />
           </View>
 
           {/* Error Message for Password Mismatch */}
-          {errorMessage ? (
-            <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>
-          ) : null}
+          {errors.cPassword && <Text style={formStyles.error}>{errors.cPassword}</Text>}
+          {passwordError ? <Text style={formStyles.error}>{passwordError}</Text> : null}
 
           {/* Continue Button */}
-          <TouchableOpacity
-            style={formStyles.button}
-            onPress={handleContinue} // Call the validation function
-          >
-            <Text style={formStyles.buttonText}>Continue</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <TouchableOpacity style={[formStyles.continueButton, formStyles.loadingButton]} disabled={true}>
+              <ActivityIndicator size="small" color="#fff" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={formStyles.button}
+              onPress={handleContinue}
+            >
+              <Text style={formStyles.buttonText}>Continue</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Existing User Link */}
           <View style={formStyles.signupContainer}>
@@ -133,7 +208,7 @@ const SignupScreen = ({ navigation }) => {
           Copyright ©. All Rights Reserved
         </Text>
       </View>
-   
+
     </ScrollView>
   );
 };
