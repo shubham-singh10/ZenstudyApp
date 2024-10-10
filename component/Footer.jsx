@@ -14,7 +14,7 @@ const FooterTab = ({ tabName, screenName, IconComponent, activeTab, handleTabPre
       onPress={() => handleTabPress(tabName, screenName)}
     >
       <Text style={[styles.ficons, isActive ? styles.activeIcon : null]}>
-        <IconComponent fill={isActive ? 'gray' : 'white'} />
+        <IconComponent fill={isActive ? '#03f0fc' : 'white'} />
       </Text>
       <Text style={[styles.ficonText, isActive ? styles.activeText : null]}>
         {tabName}

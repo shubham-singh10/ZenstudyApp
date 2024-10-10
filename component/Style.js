@@ -104,7 +104,7 @@ mainHeader: {
     color: 'gray', 
   },
   activeText: {
-    color: 'gray', 
+    color: '#03f0fc', 
   },
 
 });

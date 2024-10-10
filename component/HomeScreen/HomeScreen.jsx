@@ -11,7 +11,7 @@ import { Course } from '../Icons/MyIcon';
 import homestyle from './homeStyle';
 import { useDispatch, useSelector } from 'react-redux';
 import { RecentCourseData } from './store';
-import SplashScreen from '../SplashScreen/SplashScreen';
+import Loader from '../Loader';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -29,36 +29,6 @@ const HomeScreen = ({ navigation }) => {
     { id: 1, image: { uri: 'https://zenstudy.in/assets/1.webp' } },
     { id: 2, image: { uri: 'https://zenstudy.in/assets/2.webp' } },
     { id: 3, image: { uri: 'https://zenstudy.in/assets/3.webp' } },
-  ];
-
-  const courses = [
-    {
-      id: 1,
-      title: 'Course 1',
-      description:
-        'Lorem Ipsum has been the standard dummy text ever since the 1500s, when an unknown printer took a galley',
-      image: {
-        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726640310463-INDIAN%20SOCIETY.webp',
-      },
-    },
-    {
-      id: 2,
-      title: 'Course 2',
-      description:
-        'Lorem Ipsum has been the standard dummy text ever since the 1500s, when an unknown printer took a galley',
-      image: {
-        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1727009055230-INDIAN%20SOCIETY%20(1).webp',
-      },
-    },
-    {
-      id: 3,
-      title: 'Course 3',
-      description:
-        'Lorem Ipsum has been the standard dummy text ever since the 1500s, when an unknown printer took a galley',
-      image: {
-        uri: 'https://api.zenstudy.in/zenstudy/api/image/getimage/1726573585694-IR%20THUMBNAIL%20WEBP.webp',
-      },
-    },
   ];
 
   const handleBannerScroll = event => {
@@ -105,7 +75,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   if (loading) {
-    return <SplashScreen />;
+    return <Loader/>;
   }
 
   return (
