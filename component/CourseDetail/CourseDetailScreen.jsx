@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -6,17 +6,19 @@ import {
   View,
   Text,
 } from 'react-native';
-import { Language } from '../Icons/MyIcon';
-import { useDispatch, useSelector } from 'react-redux';
-import { DetailsCourseData } from './store';
+import {Language} from '../Icons/MyIcon';
+import {useDispatch, useSelector} from 'react-redux';
+import {DetailsCourseData} from './store';
 import WebView from 'react-native-webview';
 import Loader from '../Loader';
 
-const CourseDetail = ({ navigation, route }) => {
-  const { courseId } = route.params;
+const CourseDetail = ({navigation, route}) => {
+  const {courseId} = route.params;
   const dispatch = useDispatch();
 
-  const { courseData, loading, error } = useSelector(state => state.CourseDetailData);
+  const {courseData, loading, error} = useSelector(
+    state => state.CourseDetailData,
+  );
   const firstModule = courseData?.modules?.[0];
 
   // Fetch course data on mount
@@ -30,12 +32,15 @@ const CourseDetail = ({ navigation, route }) => {
   }
 
   if (error) {
-    return <Text style={courseStyle.errorText}>Failed to load course details. Please try again.</Text>;
+    return (
+      <Text style={courseStyle.errorText}>
+        Failed to load course details. Please try again.
+      </Text>
+    );
   }
 
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
-      {/* Course Title and Description */}
       <View style={courseStyle.container}>
         <Text style={courseStyle.title}>{courseData?.title}</Text>
         <Text style={courseStyle.text}>{courseData?.description}</Text>
@@ -48,12 +53,13 @@ const CourseDetail = ({ navigation, route }) => {
         </View>
       </View>
 
-      {/* Course Video Card */}
       <View style={courseStyle.card}>
         {firstModule && firstModule.videos?.length > 0 ? (
           <WebView
             style={courseStyle.courseImage}
-            source={{ uri: 'https://player.vimeo.com/video/995693386?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479' }}
+            source={{
+              uri: 'https://player.vimeo.com/video/995693386?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479',
+            }}
             javaScriptEnabled={true}
             domStorageEnabled={true}
             allowsFullscreenVideo={true}
@@ -63,19 +69,20 @@ const CourseDetail = ({ navigation, route }) => {
           <Text style={courseStyle.noVideoText}>No videos available</Text>
         )}
 
-        {/* Course Date and Price */}
         <View style={courseStyle.datePriceRow}>
-          <Text style={courseStyle.courseDate}>{courseData?.createdAt.slice(0, 10)}</Text>
+          <Text style={courseStyle.courseDate}>
+            {courseData?.createdAt.slice(0, 10)}
+          </Text>
           <Text style={courseStyle.coursePrice}>₹{courseData?.price}</Text>
         </View>
 
-        {/* Buy Button */}
-        <TouchableOpacity style={courseStyle.buyButton} onPress={() => navigation.navigate('watchCourse')}>
+        <TouchableOpacity
+          style={courseStyle.buyButton}
+          onPress={() => navigation.navigate('watchCourse')}>
           <Text style={courseStyle.buyButtonText}>Buy Now</Text>
         </TouchableOpacity>
       </View>
 
-      {/* About Course Section */}
       <View style={courseStyle.aboutCourseSection}>
         <Text style={courseStyle.aboutCourseTitle}>About Course</Text>
 
@@ -93,11 +100,55 @@ const CourseDetail = ({ navigation, route }) => {
           </View>
         )}
 
-        {/* Add more bullet points as necessary */}
+        <View style={courseStyle.moduleList}>
+  {courseData?.modules?.map((module, index) => (
+    <Module
+      key={index}
+      title={module.moduleTitle || `Module ${index + 1}`}
+      index={index + 1}
+      videoTitle={
+        module.videos.length > 0 ? (
+          module.videos.map(({ num, videoTitle }) => (
+            <Text key={num} style={courseStyle.videoTitleText}> 
+              {videoTitle || 'No video title available'}
+            </Text>
+          ))
+        ) : (
+          <Text>No videos available</Text>
+        )
+      }
+    />
+  ))}
+</View>
+
       </View>
     </ScrollView>
   );
 };
+
+const Module = ({ title, index, videoTitle }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  return (
+    <View style={courseStyle.moduleContainer}>
+      <TouchableOpacity
+        style={courseStyle.moduleHeader}
+        onPress={() => setIsExpanded(!isExpanded)}>
+        <View style={courseStyle.moduleTitleRow}>
+          <View style={courseStyle.customBullet} />
+          <Text style={courseStyle.moduleTitle}>{title}</Text>
+        </View>
+        <Text style={courseStyle.toggleIcon}>{isExpanded ? '▲' : '▼'}</Text>
+      </TouchableOpacity>
+      {isExpanded && (
+        <View style={courseStyle.moduleContent}>
+          {videoTitle}
+        </View>
+      )}
+    </View>
+  );
+};
+
 
 const courseStyle = StyleSheet.create({
   scrollContainer: {
@@ -138,25 +189,16 @@ const courseStyle = StyleSheet.create({
     fontSize: 14,
     color: '#000000',
   },
-  tutor: {
-    color: '#054bb4',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-
-  // New Card Styles
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 15,
     marginHorizontal: 20,
     marginTop: -30,
-    // Shadow for iOS
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    // Shadow for Android
     elevation: 5,
   },
   courseImage: {
@@ -192,7 +234,6 @@ const courseStyle = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // About Course Section
   aboutCourseSection: {
     paddingHorizontal: 20,
     paddingTop: 30,
@@ -205,20 +246,59 @@ const courseStyle = StyleSheet.create({
   },
   bulletPoint: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
+    alignItems: 'flex-start',
+    marginTop: 15,
   },
   bulletText: {
     fontSize: 16,
     color: '#494949',
-    marginLeft: 10, // Space between bullet and text
+    paddingHorizontal: 10,
+    textAlign: 'justify',
+    marginTop: -8, 
   },
   customBullet: {
     width: 8,
     height: 8,
-    backgroundColor: '#054bb4',  // Blue bullet
-    borderRadius: 4,  // Circular bullet
-    marginRight: 10,  // Space between bullet and text
+    backgroundColor: '#054bb4', 
+    borderRadius: 2, 
+    marginRight: 10,
+  },
+
+  moduleContainer: {
+    backgroundColor: '#e6f0fe',
+    borderRadius: 8,
+    marginVertical: 8,
+    padding: 10,
+    paddingHorizontal: 15,
+  },
+  moduleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  moduleTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  moduleTitle: {
+    fontSize: 16,
+    color: '#054bb4',
+    fontWeight: '500',
+  },
+  toggleIcon: {
+    fontSize: 16,
+    color: '#054bb4',
+  },
+  moduleContent: {
+    marginTop: 10,
+    paddingLeft: 15,
+  },
+  moduleText: {
+    fontSize: 14,
+    color: '#494949',
+  },
+  moduleList: {
+    marginTop: 20,
   },
 });
 
