@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, {ClipPath, Defs, G, Path, Rect} from 'react-native-svg';
+import Svg, {ClipPath, Defs, G, Path, Rect, Circle, Text} from 'react-native-svg';
 
 export const Home = ({fill}) => (
   <Svg
@@ -404,7 +404,7 @@ export const UpArrow = ({fill}) => {
   );
 };
 
-export const DownArrow = ({ fill }) => {
+export const DownArrow = ({fill}) => {
   return (
     <Svg
       width="24"
@@ -422,3 +422,21 @@ export const DownArrow = ({ fill }) => {
   );
 };
 
+ export const NotFound = () => {
+  return (
+    <Svg height="50" width="50" viewBox="0 0 64 64">
+      <Circle cx="32" cy="32" r="30" stroke="#054bb4" strokeWidth="5" fill="none" />
+      <Path d="M20 20 L44 44" stroke="#054bb4" strokeWidth="5" />
+      <Path d="M44 20 L20 44" stroke="#054bb4" strokeWidth="5" />
+      <Text
+        x="32"
+        y="36"
+        fill="black"
+        fontSize="10"
+        textAnchor="middle"
+        alignmentBaseline="middle"
+      >
+      </Text>
+    </Svg>
+  );
+};

@@ -7,8 +7,17 @@ const myCourseStyle = StyleSheet.create({
       paddingVertical: 10,
       backgroundColor: '#ffff', // light background color
     },
+    errorBox:{
+      backgroundColor:'#fff',
+      flex:1,
+      flexDirection:'column',
+      justifyContent:'center',
+      alignItems:'center',
+    },
     errorText:{
-
+      fontSize:22,
+      color:'#054bb4',
+      fontWeight:'500',
     },
     card: {
       backgroundColor: '#fff',
