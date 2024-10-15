@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406542645075",
+    "project_id": "zenstudy-d4c4c",
+    "storage_bucket": "zenstudy-d4c4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406542645075:android:dc5fc0ba0d7ff0ab3713a6",
+        "android_client_info": {
+          "package_name": "com.zenstudy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC04mdz72rkVW9YkG7P9Xa5oDtO2jPKcrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

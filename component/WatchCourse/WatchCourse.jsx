@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -8,52 +8,34 @@ import {
 } from 'react-native';
 import WebView from 'react-native-webview';
 import { DownArrow, UpArrow } from '../Icons/MyIcon';
+import { PurchaseWatchCourseData } from './store';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../Loader';
 
-const WatchCourse = () => {
-  
-  const modules = [
-    {
-      title: 'Module 1',
-      videos: [
-        { title: 'Video Name 1', url: 'https://youtu.be/C1SrlDh9X0w?si=HMNmYSSHRpSHnCCZ', description: 'Description for Video Name 1' },
-        { title: 'Video Name 2', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name 2' },
-        { title: 'Video Name 3', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name 3' },
-      ],
-    },
-    {
-      title: 'Module 2',
-      videos: [
-        { title: 'Video Name A', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name A' },
-        { title: 'Video Name B', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name B' },
-        { title: 'Video Name C', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name C' },
-      ],
-    },
-    {
-      title: 'Module 3',
-      videos: [
-        { title: 'Video Name A', url: 'https://youtube.com/shorts/dKbtm0ZAUiY?si=Rqz7M-DhYr9P3vBu', description: 'Description for Video Name A' },
-        { title: 'Video Name B', url: 'https://youtube.com/shorts/VYlne0-cteU?si=quR6-xMx22z42vSX', description: 'Description for Video Name B' },
-        { title: 'Video Name C', url: 'https://youtube.com/shorts/gOHJ1McBzSk?si=T9Rc39dUrQjGSw7j', description: 'Description for Video Name C' },
-      ],
-    },
-  ];
+const WatchCourse = ({ route }) => {
+  const { courseId } = route.params;
+  const dispatch = useDispatch();
 
-  const [activeVideo, setActiveVideo] = useState(modules[0].videos[0].url);
+  const { courseData, loading, error } = useSelector(
+    state => state.PurchaseWatchCourseData,
+  );
+
+  const [activeVideo, setActiveVideo] = useState(courseData[0].videos[0].videoUrl);
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
   const [moduleVideoIndexes, setModuleVideoIndexes] = useState(
-    Array(modules.length).fill(0) 
+    Array(courseData.length).fill(0)
   );
 
   const handleModuleSelect = (index) => {
     if (expandedModuleIndex === index) {
-      setExpandedModuleIndex(null); 
+      setExpandedModuleIndex(null);
     } else {
-      setExpandedModuleIndex(index); 
+      setExpandedModuleIndex(index);
       const lastSelectedVideoIndex = moduleVideoIndexes[index];
-      setActiveVideo(modules[index].videos[lastSelectedVideoIndex].url); 
-      setActiveVideoIndex(lastSelectedVideoIndex); 
+      setActiveVideo(courseData[index].videos[lastSelectedVideoIndex].url);
+      setActiveVideoIndex(lastSelectedVideoIndex);
     }
   };
 
@@ -61,12 +43,27 @@ const WatchCourse = () => {
     setActiveVideo(url);
     setActiveVideoIndex(videoIndex);
     setActiveModuleIndex(moduleIndex);
-  
+
     const newModuleVideoIndexes = [...moduleVideoIndexes];
     newModuleVideoIndexes[moduleIndex] = videoIndex;
     setModuleVideoIndexes(newModuleVideoIndexes);
   };
 
+  useEffect(() => {
+    dispatch(PurchaseWatchCourseData(courseId));
+  }, [dispatch, courseId]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return (
+      <Text style={courseStyle.errorText}>
+        Failed to load watch details. Please try again.
+      </Text>
+    );
+  }
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
       <View style={courseStyle.container}>
@@ -87,14 +84,14 @@ const WatchCourse = () => {
         <Text style={courseStyle.subtitle}>About Video</Text>
         <Text style={courseStyle.description}>
           {
-            modules[activeModuleIndex]?.videos[activeVideoIndex]?.description || ""
+            courseData[activeModuleIndex]?.videos[activeVideoIndex]?.videoDescription || ''
           }
         </Text>
 
         {
-        /* Module Section */
+          /* Module Section */
         }
-        {modules.map((module, moduleIndex) => (
+        {(courseData && courseData.length > 0) && (courseData.map((module, moduleIndex) => (
           <View key={moduleIndex} style={courseStyle.moduleContainer}>
             <TouchableOpacity
               onPress={() => handleModuleSelect(moduleIndex)}
@@ -110,16 +107,15 @@ const WatchCourse = () => {
                 ]}
               >
                 <View
-                  style={{
-                    height: 10,
-                    width: 10,
-                    borderRadius: 5,
-                    backgroundColor: '#054bb4',
-                  }}
-                ></View>{' '}
-                {module.title}
+                  style={courseStyle.bulletPoint}
+                />{' '}
+                {module.moduleTitle}
               </Text>
-              {expandedModuleIndex === moduleIndex ? <UpArrow fill="#054bb4"/>: <DownArrow fill="#054BB4"/>}
+              {expandedModuleIndex === moduleIndex ? (
+                <UpArrow fill="#054bb4" />
+              ) : (
+                <DownArrow fill="#054BB4" />
+              )}
             </TouchableOpacity>
             {expandedModuleIndex === moduleIndex && (
               <View style={courseStyle.videoList}>
@@ -127,24 +123,24 @@ const WatchCourse = () => {
                   <TouchableOpacity
                     key={videoIndex}
                     onPress={() =>
-                      handleVideoSelect(video.url, videoIndex, moduleIndex)
+                      handleVideoSelect(video.videoUrl, videoIndex, moduleIndex)
                     }
                   >
                     <Text
                       style={[
                         courseStyle.videoItem,
                         moduleVideoIndexes[moduleIndex] === videoIndex &&
-                          courseStyle.activeVideoItem, 
+                        courseStyle.activeVideoItem,
                       ]}
                     >
-                      {video.title}
+                      {video.videoTitle}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
           </View>
-        ))}
+        )))}
       </View>
     </ScrollView>
   );
@@ -205,6 +201,12 @@ const courseStyle = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
+  },
+  bulletPoint: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#054bb4',
   },
   moduleTitle: {
     fontSize: 16,

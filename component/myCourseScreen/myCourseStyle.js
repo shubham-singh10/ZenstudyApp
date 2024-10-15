@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const myCourseStyle = StyleSheet.create({
     scrollContainer: {
@@ -6,6 +6,9 @@ const myCourseStyle = StyleSheet.create({
       paddingHorizontal: 20,
       paddingVertical: 10,
       backgroundColor: '#ffff', // light background color
+    },
+    errorText:{
+
     },
     card: {
       backgroundColor: '#fff',

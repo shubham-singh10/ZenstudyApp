@@ -92,6 +92,15 @@ const formStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  continueButton: {
+    backgroundColor: '#00239C', // Dark blue color
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  loadingButton: {
+    opacity: 0.7,
+  },
   inputlogo: {
     flex: 1,
     justifyContent: 'center',
@@ -134,6 +143,15 @@ const formStyles = StyleSheet.create({
     fontSize: 14,
     color: '#007BFF',
     fontWeight: 'bold',
+  },
+  CheckBoxText: {
+    color: '#333',
+  },
+  CheckBox: {
+    flexDirection: 'row',
+    gap: 2,
+    alignItems: 'center',
+    marginBottom: 15,
   },
 });
 
