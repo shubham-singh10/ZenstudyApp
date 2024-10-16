@@ -20,12 +20,15 @@ const WatchCourse = ({ route }) => {
     state => state.PurchaseWatchCourseData,
   );
 
-  const [activeVideo, setActiveVideo] = useState(courseData[0].videos[0].videoUrl);
+  // Handle cases where courseData or its nested properties may not exist
+  const [activeVideo, setActiveVideo] = useState(
+    courseData?.[0]?.videos?.[0]?.videoUrl || ''
+  );
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
-  const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
+  const [expandedModuleIndex, setExpandedModuleIndex] = useState(null);
   const [moduleVideoIndexes, setModuleVideoIndexes] = useState(
-    Array(courseData.length).fill(0)
+    Array(courseData?.length || 0).fill(0)
   );
 
   const handleModuleSelect = (index) => {
@@ -34,8 +37,10 @@ const WatchCourse = ({ route }) => {
     } else {
       setExpandedModuleIndex(index);
       const lastSelectedVideoIndex = moduleVideoIndexes[index];
-      setActiveVideo(courseData[index].videos[lastSelectedVideoIndex].url);
-      setActiveVideoIndex(lastSelectedVideoIndex);
+      if (courseData?.[index]?.videos?.[lastSelectedVideoIndex]) {
+        setActiveVideo(courseData[index].videos[lastSelectedVideoIndex].url);
+        setActiveVideoIndex(lastSelectedVideoIndex);
+      }
     }
   };
 
@@ -64,6 +69,15 @@ const WatchCourse = ({ route }) => {
       </Text>
     );
   }
+
+  if (!courseData || courseData.length === 0) {
+    return (
+      <Text style={courseStyle.errorText}>
+        No course data available.
+      </Text>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
       <View style={courseStyle.container}>
@@ -84,14 +98,13 @@ const WatchCourse = ({ route }) => {
         <Text style={courseStyle.subtitle}>About Video</Text>
         <Text style={courseStyle.description}>
           {
-            courseData[activeModuleIndex]?.videos[activeVideoIndex]?.videoDescription || ''
+            courseData?.[activeModuleIndex]?.videos?.[activeVideoIndex]?.videoDescription || ''
           }
         </Text>
 
-        {
-          /* Module Section */
+        {/* Module Section */
         }
-        {(courseData && courseData.length > 0) && (courseData.map((module, moduleIndex) => (
+        {courseData.map((module, moduleIndex) => (
           <View key={moduleIndex} style={courseStyle.moduleContainer}>
             <TouchableOpacity
               onPress={() => handleModuleSelect(moduleIndex)}
@@ -106,9 +119,7 @@ const WatchCourse = ({ route }) => {
                   expandedModuleIndex === moduleIndex && courseStyle.activeModuleTitle,
                 ]}
               >
-                <View
-                  style={courseStyle.bulletPoint}
-                />{' '}
+                <View style={courseStyle.bulletPoint} />{' '}
                 {module.moduleTitle}
               </Text>
               {expandedModuleIndex === moduleIndex ? (
@@ -140,7 +151,7 @@ const WatchCourse = ({ route }) => {
               </View>
             )}
           </View>
-        )))}
+        ))}
       </View>
     </ScrollView>
   );

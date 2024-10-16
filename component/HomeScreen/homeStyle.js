@@ -70,7 +70,7 @@ const homestyle = StyleSheet.create({
     cImgContainer: {
       width: '100%',
       height: 170,
-      paddingHorizontal: 25,
+      paddingHorizontal: 10,
       paddingVertical: 10,
     },
     courseImage: {
