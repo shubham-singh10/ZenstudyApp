@@ -6,6 +6,19 @@ const formStyles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 30,
   },
+  containerBack: {
+    backgroundColor: '#fff',
+  },
+  containerFlex:{
+    flexGrow: 1,
+  },
+  padding:{
+    paddingHorizontal: 30,
+  },
+  errorText:{
+    color: 'red', 
+    marginBottom: 10,
+  },
   scrollView: {
     backgroundColor: '#fff',
   },

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,31 +7,107 @@ import {
   ScrollView,
 } from 'react-native';
 import formStyles from '../Login/formStyles';
-import {BackArrow, Image, Key, Location, Profile} from '../Icons/MyIcon';
+import { BackArrow, Location, Profile } from '../Icons/MyIcon';
+import axios from 'axios';
+import { UserData } from '../userData/UserData';
+import Loader from '../Loader';
 
-const EditScreen = ({navigation}) => {
+const EditScreen = ({ navigation }) => {
   // State variables for form inputs
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [image, setImage] = useState('');
-  const [location, setLocation] = useState('');
+  const [formData, setformData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    Address: '',
+    City: '',
+    State: '',
+    Country: '',
+    Pincode: '',
+    avatar: '',
+  });
+  const [Dloading, setDLoading] = useState(true);
+
+  const onInputChange = (value, field) => {
+    setformData({ ...formData, [field]: value });
+
+    // if (errors[field]) {
+    //   setErrors({ ...errors, [field]: '' });
+    // }
+
+    // if (field === 'cPassword' || field === 'password') {
+    //   if (formData.password !== value && field === 'cPassword') {
+    //     setPasswordError('Passwords do not match');
+    //   } else if (formData.cPassword !== value && field === 'password') {
+    //     setPasswordError('Passwords do not match');
+    //   } else {
+    //     setPasswordError('');
+    //   }
+    // }
+  };
   const [errorMessage, setErrorMessage] = useState('');
+
+  const { usersData } = UserData();
 
   // Function to handle form submission
   const handleContinue = () => {
     setErrorMessage('');
-    console.log('Form submitted with:', {name, password, image, location});
+    console.log('Form submitted with:', formData);
   };
+
+  //Get User Data API
+  const getUserData = async (userId) => {
+    setDLoading(true); // Start loading
+    try {
+      // Make API call using axios
+      const response = await axios.get(
+        `${process.env.REACT_APP_API}zenstudy/api/user/userdetail/${userId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Extract data directly, no need for response.json()
+      const resData = response.data;
+
+      // Construct the image URL
+      const imageUrl = `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${resData.userdetail.avatar}`;
+
+      const updatedUserDetail = {
+        ...resData.userdetail,
+        imageUrl,
+      };
+
+      // Update state with the fetched user data
+      setformData(updatedUserDetail || {});
+
+    } catch (error) {
+      // Catching and displaying any error that occurred during the API call
+      // Alert.alert(`Error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      // Always stop loading regardless of success or error
+      setDLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUserData(usersData?._id);
+  }, [usersData?._id]);
+
+  if (Dloading) {
+    return <Loader />;
+  }
 
   return (
     <ScrollView
-      style={{backgroundColor: '#fff'}}
-      contentContainerStyle={{flexGrow: 1}}>
-      <View style={[formStyles.container, {paddingHorizontal: 30}]}>
+      style={formStyles.containerBack}
+      contentContainerStyle={formStyles.containerFlex}>
+      <View style={[formStyles.container, formStyles.padding]}>
         {/* Sign Up Section */}
         <View style={formStyles.section2}>
           <View style={formStyles.TopHead}>
-            <TouchableOpacity onPress={()=>navigation.navigate('profileScreen')}>
+            <TouchableOpacity onPress={() => navigation.navigate('profileScreen')}>
               <Text style={formStyles.backbtn}>
                 {' '}
                 <BackArrow fill="white" />
@@ -49,60 +125,127 @@ const EditScreen = ({navigation}) => {
             <TextInput
               style={formStyles.input}
               placeholder="Update Your Name"
-              value={name}
-              onChangeText={setName}
+              value={formData.name}
+              onChangeText={(text) => onInputChange(text, 'name')}
             />
           </View>
 
-          {/* Password Input */}
+          {/* E-mail field */}
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
               <Text style={formStyles.inputlogoContent}>
-                <Key fill="white" />
+                <Profile fill="#fff" />
               </Text>
             </View>
             <TextInput
               style={formStyles.input}
-              placeholder="Update Your Password"
-              secureTextEntry={true}
-              value={password}
-              onChangeText={setPassword}
+              placeholder="Update Your Email"
+              value={formData.email}
+              onChangeText={(text) => onInputChange(text, 'email')}
             />
           </View>
 
-          {/* Profile Image Input */}
+          {/* Phone No */}
+
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
               <Text style={formStyles.inputlogoContent}>
-                <Image fill="white" />
+                <Profile fill="#fff" />
               </Text>
             </View>
             <TextInput
               style={formStyles.input}
-              placeholder="Update Your Profile Image URL"
-              value={image}
-              onChangeText={setImage}
+              placeholder="Update Your Phone no"
+              value={formData.phone}
+              readOnly
+              onChangeText={(text) => onInputChange(text, 'phone')}
             />
           </View>
 
-          {/* Location Input */}
+          {/* Address */}
+
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
               <Text style={formStyles.inputlogoContent}>
-                <Location fill="white" />
+                <Location fill="#fff" />
               </Text>
             </View>
             <TextInput
               style={formStyles.input}
-              placeholder="Update Your Location"
-              value={location}
-              onChangeText={setLocation}
+              placeholder="Update Your Address"
+              value={formData.Address}
+              onChangeText={(text) => onInputChange(text, 'Address')}
             />
           </View>
+
+          {/* State */}
+
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
+                <Location fill="#fff" />
+              </Text>
+            </View>
+            <TextInput
+              style={formStyles.input}
+              placeholder="Update Your State"
+              value={formData.State}
+              onChangeText={(text) => onInputChange(text, 'State')}
+            />
+          </View>
+
+          {/* City */}
+
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
+                <Location fill="#fff" />
+              </Text>
+            </View>
+            <TextInput
+              style={formStyles.input}
+              placeholder="Update Your City"
+              value={formData.City}
+              onChangeText={(text) => onInputChange(text, 'City')}
+            />
+          </View>
+
+          {/* Country */}
+
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
+                <Location fill="#fff" />
+              </Text>
+            </View>
+            <TextInput
+              style={formStyles.input}
+              placeholder="Update Your Country"
+              value={formData.Country}
+              onChangeText={(text) => onInputChange(text, 'Country')}
+            />
+          </View>
+
+          {/* Pincode */}
+
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
+                <Profile fill="#fff" />
+              </Text>
+            </View>
+            <TextInput
+              style={formStyles.input}
+              placeholder="Update Your Pincode"
+              value={formData.Pincode}
+              onChangeText={(text) => onInputChange(text, 'Pincode')}
+            />
+          </View>
+
 
           {/* Error Message for Password Mismatch */}
           {errorMessage ? (
-            <Text style={{color: 'red', marginBottom: 10}}>{errorMessage}</Text>
+            <Text style={formStyles.errorText}>{errorMessage}</Text>
           ) : null}
 
           {/* Continue Button */}
