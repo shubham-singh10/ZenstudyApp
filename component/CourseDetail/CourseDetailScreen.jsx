@@ -1,30 +1,108 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
   Text,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Language } from '../Icons/MyIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { DetailsCourseData } from './store';
 import WebView from 'react-native-webview';
 import Loader from '../Loader';
+import RazorpayCheckout from 'react-native-razorpay';
+import { UserData } from '../userData/UserData';
+import { initiatePayment, verifyPayment } from './store/payment';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 
 const CourseDetail = ({ navigation, route }) => {
   const { courseId } = route.params;
+  const { usersData } = UserData();
   const dispatch = useDispatch();
+  const [payLoading, setPayLoading] = useState(false);
 
   const { courseData, loading, error } = useSelector(
     state => state.CourseDetailData,
   );
+
   const firstModule = courseData?.modules?.[0];
 
   // Fetch course data on mount
   useEffect(() => {
     dispatch(DetailsCourseData(courseId));
   }, [dispatch, courseId]);
+
+  const handlePayment = async (amount) => {
+    setPayLoading(true);
+    try {
+      const userId = usersData?._id;
+      const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
+      //  console.log('OrderData: ', orderData)
+      // Handle payment verification after successful initiation
+      if (orderData) {
+        handlePaymentVerify(orderData, courseId);
+      }
+    } catch (err) {
+      console.error('Error initiating payment:', err);
+    } finally {
+      setPayLoading(false); // End loading
+    }
+  };
+
+  const handlePaymentVerify = async (data, courseIdd) => {
+    const options = {
+      key: REACT_APP_RAZORPAY_KEY_ID,
+      amount: data.data.amount,
+      currency: data.data.currency,
+      name: 'ZenStudy',
+      description: 'Making Education Imaginative',
+      order_id: data.data.id,
+      theme: {
+        color: '#5f63b8',
+      },
+    };
+
+    // Trigger Razorpay payment UI
+    RazorpayCheckout.open(options)
+      .then(async (response) => {
+        // Verifying the payment after successful payment
+        try {
+          const verifyData = await dispatch(
+            verifyPayment({
+              razorpayData: response,
+              userId: usersData._id,
+              courseId: courseIdd,
+            })
+          ).unwrap();
+
+          // Check if the verification was successful
+          // console.log('VerifyData: ', verifyData);
+          if (verifyData.message === 'Payment Successful') {
+            Alert.alert(
+              'Payment Successful',
+              `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
+              [{ text: 'OK' }]
+            );
+            navigation.navigate('myCourseScreen');
+          }
+        } catch (err) {
+          console.error('Error verifying payment:', err);
+        }
+      })
+      .catch((errors) => {
+        // Handle failure
+        // console.log('Error: ', error);
+        Alert.alert(
+          'Payment Failed',
+          'Your payment could not be completed. Please try again or contact support if the issue persists.',
+          [{ text: 'OK' }]
+        );
+      });
+  };
+
 
   // Display loading indicator while fetching data
   if (loading) {
@@ -76,11 +154,18 @@ const CourseDetail = ({ navigation, route }) => {
           <Text style={courseStyle.coursePrice}>₹{courseData?.price}</Text>
         </View>
 
-        <TouchableOpacity
-          style={courseStyle.buyButton}
-          onPress={() => navigation.navigate('watchCourse')}>
-          <Text style={courseStyle.buyButtonText}>Buy Now</Text>
-        </TouchableOpacity>
+        {payLoading ? (
+          <TouchableOpacity disabled={true}>
+            <ActivityIndicator size="small" color="#000" />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={courseStyle.buyButton}
+            onPress={() => handlePayment(courseData?.price)}
+          >
+            <Text style={courseStyle.buyButtonText}>Buy Now</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={courseStyle.aboutCourseSection}>

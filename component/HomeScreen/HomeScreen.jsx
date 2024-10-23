@@ -6,12 +6,19 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Course } from '../Icons/MyIcon';
 import homestyle from './homeStyle';
 import { useDispatch, useSelector } from 'react-redux';
 import { RecentCourseData } from './store';
 import Loader from '../Loader';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
+import RazorpayCheckout from 'react-native-razorpay';
+import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
+import { UserData } from '../userData/UserData';
+
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -19,8 +26,10 @@ const HomeScreen = ({ navigation }) => {
   const bannerScrollViewRef = useRef(null);
   const coursesScrollViewRef = useRef(null);
   const dispatch = useDispatch();
+  const { usersData } = UserData();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   const [activeCourseIndex, setActiveCourseIndex] = useState(0);
+  const [payLoading, setPayLoading] = useState(false);
 
   const { courseData, loading } = useSelector((state) => state.RecentCourseData);
 
@@ -67,6 +76,74 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     dispatch(RecentCourseData());
   }, [dispatch]);
+
+  const handlePayment = async (amount, courseId) => {
+    setPayLoading(true);
+    try {
+      const userId = usersData?._id;
+      const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
+      //  console.log('OrderData: ', orderData)
+      // Handle payment verification after successful initiation
+      if (orderData) {
+        handlePaymentVerify(orderData, courseId);
+      }
+    } catch (err) {
+      console.error('Error initiating payment:', err);
+    } finally {
+      setPayLoading(false); // End loading
+    }
+  };
+
+  const handlePaymentVerify = async (data, courseIdd) => {
+    const options = {
+      key: REACT_APP_RAZORPAY_KEY_ID,
+      amount: data.data.amount,
+      currency: data.data.currency,
+      name: 'ZenStudy',
+      description: 'Making Education Imaginative',
+      order_id: data.data.id,
+      theme: {
+        color: '#5f63b8',
+      },
+    };
+
+    // Trigger Razorpay payment UI
+    RazorpayCheckout.open(options)
+      .then(async (response) => {
+        // Verifying the payment after successful payment
+        try {
+          const verifyData = await dispatch(
+            verifyPayment({
+              razorpayData: response,
+              userId: usersData._id,
+              courseId: courseIdd,
+            })
+          ).unwrap();
+
+          // Check if the verification was successful
+          // console.log('VerifyData: ', verifyData);
+          if (verifyData.message === 'Payment Successful') {
+            Alert.alert(
+              'Payment Successful',
+              `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
+              [{ text: 'OK' }]
+            );
+            navigation.navigate('myCourseScreen');
+          }
+        } catch (err) {
+          console.error('Error verifying payment:', err);
+        }
+      })
+      .catch((errors) => {
+        // Handle failure
+        // console.log('Error: ', error);
+        Alert.alert(
+          'Payment Failed',
+          'Your payment could not be completed. Please try again or contact support if the issue persists.',
+          [{ text: 'OK' }]
+        );
+      });
+  };
 
   const getShortDescription = (text, wordLimit) => {
     const words = text.split(' ');
@@ -163,9 +240,18 @@ const HomeScreen = ({ navigation }) => {
                     >
                       <Text style={homestyle.exploreBtnText}>View Course</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={homestyle.buyNow}>
-                      <Text style={homestyle.buyNowText}>Buy Now</Text>
-                    </TouchableOpacity>
+                    {payLoading ? (
+                      <TouchableOpacity disabled={true}>
+                        <ActivityIndicator size="small" color="#000" />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={homestyle.buyNow}
+                        onPress={() => handlePayment(course.price, course._id)}
+                      >
+                        <Text style={homestyle.buyNowText}>Buy Now</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               ))}
@@ -174,7 +260,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         {
-        /* Explore our */
+          /* Explore our */
         }
         <View style={homestyle.exploreContainer}>
           <Text style={homestyle.exploreText}>Explore Our</Text>
@@ -216,7 +302,11 @@ const HomeScreen = ({ navigation }) => {
                 <View style={homestyle.cardBtns}>
                   <TouchableOpacity
                     style={homestyle.exploreBtn}
-                    onPress={() => navigation.navigate('courseDetail')}
+                    onPress={() =>
+                      navigation.navigate('courseDetail', {
+                        courseId: course._id,
+                      })
+                    }
                   >
                     <Text style={homestyle.exploreBtnText}>Explore Course</Text>
                   </TouchableOpacity>
