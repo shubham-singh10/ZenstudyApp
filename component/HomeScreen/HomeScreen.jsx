@@ -138,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
         // Handle failure
         // console.log('Error: ', error);
         Alert.alert(
-          'Payment Failed',
+          'Payment Failed ',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
           [{ text: 'OK' }]
         );
