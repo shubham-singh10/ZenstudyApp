@@ -13,7 +13,6 @@ const MyCourses = ({navigation}) => {
   const {courseData, loading, error} = useSelector(
     state => state.PurchaseCourseDetails,
   );
-  // console.log('Purchase_Data: ', courseData);
 
   useEffect(() => {
     dispatch(PurchaseCourseData(usersData?._id));

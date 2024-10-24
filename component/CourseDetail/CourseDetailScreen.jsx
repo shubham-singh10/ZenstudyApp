@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -8,23 +8,23 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Language } from '../Icons/MyIcon';
-import { useDispatch, useSelector } from 'react-redux';
-import { DetailsCourseData } from './store';
+import {Language} from '../Icons/MyIcon';
+import {useDispatch, useSelector} from 'react-redux';
+import {DetailsCourseData} from './store';
 import WebView from 'react-native-webview';
 import Loader from '../Loader';
 import RazorpayCheckout from 'react-native-razorpay';
-import { UserData } from '../userData/UserData';
-import { initiatePayment, verifyPayment } from './store/payment';
-import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
+import {UserData} from '../userData/UserData';
+import {initiatePayment, verifyPayment} from './store/payment';
+import {REACT_APP_RAZORPAY_KEY_ID} from '@env';
 
-const CourseDetail = ({ navigation, route }) => {
-  const { courseId } = route.params;
-  const { usersData } = UserData();
+const CourseDetail = ({navigation, route}) => {
+  const {courseId} = route.params;
+  const {usersData} = UserData();
   const dispatch = useDispatch();
   const [payLoading, setPayLoading] = useState(false);
 
-  const { courseData, loading, error } = useSelector(
+  const {courseData, loading, error} = useSelector(
     state => state.CourseDetailData,
   );
 
@@ -35,11 +35,13 @@ const CourseDetail = ({ navigation, route }) => {
     dispatch(DetailsCourseData(courseId));
   }, [dispatch, courseId]);
 
-  const handlePayment = async (amount) => {
+  const handlePayment = async amount => {
     setPayLoading(true);
     try {
       const userId = usersData?._id;
-      const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
+      const orderData = await dispatch(
+        initiatePayment({amount, userId, courseId}),
+      ).unwrap();
       //  console.log('OrderData: ', orderData)
       // Handle payment verification after successful initiation
       if (orderData) {
@@ -67,7 +69,7 @@ const CourseDetail = ({ navigation, route }) => {
 
     // Trigger Razorpay payment UI
     RazorpayCheckout.open(options)
-      .then(async (response) => {
+      .then(async response => {
         // Verifying the payment after successful payment
         try {
           const verifyData = await dispatch(
@@ -75,7 +77,7 @@ const CourseDetail = ({ navigation, route }) => {
               razorpayData: response,
               userId: usersData._id,
               courseId: courseIdd,
-            })
+            }),
           ).unwrap();
 
           // Check if the verification was successful
@@ -84,7 +86,7 @@ const CourseDetail = ({ navigation, route }) => {
             Alert.alert(
               'Payment Successful',
               `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{ text: 'OK' }]
+              [{text: 'OK'}],
             );
             navigation.navigate('myCourseScreen');
           }
@@ -92,17 +94,16 @@ const CourseDetail = ({ navigation, route }) => {
           console.error('Error verifying payment:', err);
         }
       })
-      .catch((errors) => {
+      .catch(errors => {
         // Handle failure
         // console.log('Error: ', error);
         Alert.alert(
           'Payment Failed',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{ text: 'OK' }]
+          [{text: 'OK'}],
         );
       });
   };
-
 
   // Display loading indicator while fetching data
   if (loading) {
@@ -155,14 +156,14 @@ const CourseDetail = ({ navigation, route }) => {
         </View>
 
         {payLoading ? (
-          <TouchableOpacity disabled={true}>
-            <ActivityIndicator size="small" color="#000" />
+          <TouchableOpacity disabled={true} style={courseStyle.buyNowLoading}>
+            <ActivityIndicator size="small" color="#fff" />
+            <Text style={courseStyle.buyButtonText}>please wait..</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={courseStyle.buyButton}
-            onPress={() => handlePayment(courseData?.price)}
-          >
+            onPress={() => handlePayment(courseData?.price)}>
             <Text style={courseStyle.buyButtonText}>Buy Now</Text>
           </TouchableOpacity>
         )}
@@ -193,7 +194,7 @@ const CourseDetail = ({ navigation, route }) => {
               index={index + 1}
               videoTitle={
                 module.videos.length > 0 ? (
-                  module.videos.map(({ num, videoTitle }) => (
+                  module.videos.map(({num, videoTitle}) => (
                     <Text key={num} style={courseStyle.videoTitleText}>
                       {videoTitle || 'No video title available'}
                     </Text>
@@ -205,13 +206,12 @@ const CourseDetail = ({ navigation, route }) => {
             />
           ))}
         </View>
-
       </View>
     </ScrollView>
   );
 };
 
-const Module = ({ title, index, videoTitle }) => {
+const Module = ({title, index, videoTitle}) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -233,7 +233,6 @@ const Module = ({ title, index, videoTitle }) => {
     </View>
   );
 };
-
 
 const courseStyle = StyleSheet.create({
   scrollContainer: {
@@ -281,7 +280,7 @@ const courseStyle = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: -30,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -318,7 +317,16 @@ const courseStyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-
+  buyNowLoading: {
+  backgroundColor: '#054bb4',
+    paddingVertical: 10,
+    borderRadius: 30,
+    alignItems: 'center',
+    flexDirection:'row',
+    gap:4,
+    justifyContent:'center',
+    opacity:0.9,
+  },
   aboutCourseSection: {
     paddingHorizontal: 20,
     paddingTop: 30,

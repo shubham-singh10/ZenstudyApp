@@ -138,6 +138,17 @@ const homestyle = StyleSheet.create({
       alignItems: 'center',
       width:'45%',
     },
+    buyNowLoading:{
+      backgroundColor: '#054bb2',  
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      alignItems: 'center',
+      width:'45%',
+      flexDirection:'row',
+      gap:2,
+      opacity:0.9,
+    },
     buyNowText:{
       color: '#fff',
       fontSize: 14,
@@ -172,6 +183,10 @@ const homestyle = StyleSheet.create({
       color:'#054bb4',
       fontWeight:'bold',
       fontSize:12,
+    },
+    notfoundText:{
+      alignSelf:'center',
+      padding:20,
     }
    
   });

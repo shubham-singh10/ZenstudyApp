@@ -18,6 +18,8 @@ import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
 import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
 import { UserData } from '../userData/UserData';
+import { PurchaseCourseData } from '../myCourseScreen/store';
+import myCourseStyle from '../myCourseScreen/myCourseStyle';
 
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -73,9 +75,21 @@ const HomeScreen = ({ navigation }) => {
     return () => clearInterval(intervalId);
   }, [activeBannerIndex, images.length]);
 
+  const watchCourse = useSelector(
+    state => state.PurchaseCourseDetails,
+  );
+
+  
+  const watchData = watchCourse.courseData;
+  
+  //  console.log(watchData);
+
   useEffect(() => {
     dispatch(RecentCourseData());
-  }, [dispatch]);
+    if (usersData?._id) { 
+      dispatch(PurchaseCourseData(usersData._id));
+    }
+  }, [ usersData, dispatch]);
 
   const handlePayment = async (amount, courseId) => {
     setPayLoading(true);
@@ -152,6 +166,8 @@ const HomeScreen = ({ navigation }) => {
     }
     return text;
   };
+
+
 
   if (loading) {
     return <Loader />;
@@ -241,8 +257,9 @@ const HomeScreen = ({ navigation }) => {
                       <Text style={homestyle.exploreBtnText}>View Course</Text>
                     </TouchableOpacity>
                     {payLoading ? (
-                      <TouchableOpacity disabled={true}>
-                        <ActivityIndicator size="small" color="#000" />
+                      <TouchableOpacity disabled={true} style={homestyle.buyNowLoading}>
+                        <ActivityIndicator size="small" color="#fff" />
+                        <Text style={homestyle.buyNowText}>please wait..</Text>
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity
@@ -263,7 +280,7 @@ const HomeScreen = ({ navigation }) => {
           /* Explore our */
         }
         <View style={homestyle.exploreContainer}>
-          <Text style={homestyle.exploreText}>Explore Our</Text>
+          <Text style={homestyle.exploreText}>My Courses</Text>
           <View style={homestyle.exploreIcons}>
             <TouchableOpacity style={homestyle.exploreContent}>
               <Course fill="#054bb4" />
@@ -277,44 +294,48 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={homestyle.exploreCourses}>
-          {courseData && courseData.length > 0 &&
-            courseData.map((course) => (
-              <View key={course._id} style={homestyle.courseCard}>
-                <Text style={homestyle.title}>{course.title}</Text>
-                <View style={homestyle.cImgContainer}>
-                  <Image
-                    source={{ uri: course?.imageUrl }}
-                    style={homestyle.courseImage}
-                  />
-                </View>
-                <Text style={homestyle.courseDescription}>
-                  {getShortDescription(course.description, 20)}
-                </Text>
-                <View style={homestyle.languageTag}>
-                  <Text style={homestyle.languageText}>Hindi</Text>
-                </View>
-                <View style={homestyle.afterDesc}>
-                  <Text style={homestyle.createdAt}>
-                    {course?.createdAt.slice(0, 10)}
-                  </Text>
-                  <Text style={homestyle.price}>₹ {course.price}</Text>
-                </View>
-                <View style={homestyle.cardBtns}>
-                  <TouchableOpacity
-                    style={homestyle.exploreBtn}
-                    onPress={() =>
-                      navigation.navigate('courseDetail', {
-                        courseId: course._id,
-                      })
-                    }
-                  >
-                    <Text style={homestyle.exploreBtnText}>Explore Course</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={homestyle.buyNow}>
-                    <Text style={homestyle.buyNowText}>Buy Now</Text>
-                  </TouchableOpacity>
+          {watchData && watchData.length > 0 &&
+            watchData.map((course) => (
+              <View style={myCourseStyle.card} key={course._id}>
+            {/* Title */}
+            <Text style={myCourseStyle.title}>{course?.course_id?.title}</Text>
+
+            {/* Image with play button */}
+            <View style={myCourseStyle.imageContainer}>
+              <Image
+                style={myCourseStyle.courseImage}
+                source={{uri: course?.imageurl}}
+              />
+              <View style={myCourseStyle.playButtonContainer}>
+                <View style={myCourseStyle.playButton}>
+                  <Text style={myCourseStyle.playButtonText}>▶</Text>
                 </View>
               </View>
+            </View>
+
+            {/* Language tag */}
+            <View style={myCourseStyle.languageTag}>
+              <Text style={myCourseStyle.languageText}>
+                {course?.course_id?.language}
+              </Text>
+            </View>
+
+            {/* Description */}
+            <Text style={myCourseStyle.description}>
+              {getShortDescription(course?.course_id?.description, 25)}
+            </Text>
+
+            {/* Continue Learning Button */}
+            <TouchableOpacity
+              style={myCourseStyle.continueButton}
+              onPress={() =>
+                navigation.navigate('watchCourse', {courseId: course?._id})
+              }>
+              <Text style={myCourseStyle.continueButtonText}>
+                Continue Learning
+              </Text>
+            </TouchableOpacity>
+          </View>
             ))}
         </View>
       </ScrollView>
