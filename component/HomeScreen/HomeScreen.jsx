@@ -8,8 +8,9 @@ import {
   Text,
   Alert,
   ActivityIndicator,
+  TextInput,
+  Modal,
 } from 'react-native';
-import { Course } from '../Icons/MyIcon';
 import homestyle from './homeStyle';
 import { useDispatch, useSelector } from 'react-redux';
 import { RecentCourseData } from './store';
@@ -19,19 +20,19 @@ import RazorpayCheckout from 'react-native-razorpay';
 import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
 import { UserData } from '../userData/UserData';
 import { PurchaseCourseData } from '../myCourseScreen/store';
-import myCourseStyle from '../myCourseScreen/myCourseStyle';
-
+import { Course } from '../Icons/MyIcon';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
   const bannerScrollViewRef = useRef(null);
-  const coursesScrollViewRef = useRef(null);
   const dispatch = useDispatch();
   const { usersData } = UserData();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
-  const [activeCourseIndex, setActiveCourseIndex] = useState(0);
   const [payLoading, setPayLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   const { courseData, loading } = useSelector((state) => state.RecentCourseData);
 
@@ -47,17 +48,11 @@ const HomeScreen = ({ navigation }) => {
     setActiveBannerIndex(index);
   };
 
-  const handleCourseScroll = (event) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / screenWidth);
-    setActiveCourseIndex(index);
-  };
-
   const scrollToBannerIndex = (index) => {
     if (bannerScrollViewRef.current) {
       bannerScrollViewRef.current.scrollTo({
         x: screenWidth * index,
-        animated: true, // Added animation for smooth scrolling
+        animated: true,
       });
       setActiveBannerIndex(index);
     }
@@ -66,49 +61,43 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (bannerScrollViewRef.current) {
-        const nextIndex = (activeBannerIndex + 1) % images.length; // Loop back to the first image
+        const nextIndex = (activeBannerIndex + 1) % images.length;
         scrollToBannerIndex(nextIndex);
       }
-    }, 2000); // Scroll every 2 seconds
-
-    // Clear interval on unmount
+    }, 2000);
     return () => clearInterval(intervalId);
   }, [activeBannerIndex, images.length]);
-
-  const watchCourse = useSelector(
-    state => state.PurchaseCourseDetails,
-  );
-
-  
-  const watchData = watchCourse.courseData;
-  
-  //  console.log(watchData);
 
   useEffect(() => {
     dispatch(RecentCourseData());
     if (usersData?._id) { 
       dispatch(PurchaseCourseData(usersData._id));
     }
-  }, [ usersData, dispatch]);
+  }, [usersData, dispatch]);
 
+
+  const watchCourse = useSelector(
+    state => state.PurchaseCourseDetails,
+  );
+
+  const watchData = watchCourse.courseData;
+  
   const handlePayment = async (amount, courseId) => {
     setPayLoading(true);
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
-      //  console.log('OrderData: ', orderData)
-      // Handle payment verification after successful initiation
       if (orderData) {
         handlePaymentVerify(orderData, courseId);
       }
     } catch (err) {
       console.error('Error initiating payment:', err);
     } finally {
-      setPayLoading(false); // End loading
+      setPayLoading(false);
     }
   };
 
-  const handlePaymentVerify = async (data, courseIdd) => {
+  const handlePaymentVerify = async (data, courseId) => {
     const options = {
       key: REACT_APP_RAZORPAY_KEY_ID,
       amount: data.data.amount,
@@ -121,21 +110,16 @@ const HomeScreen = ({ navigation }) => {
       },
     };
 
-    // Trigger Razorpay payment UI
     RazorpayCheckout.open(options)
       .then(async (response) => {
-        // Verifying the payment after successful payment
         try {
           const verifyData = await dispatch(
             verifyPayment({
               razorpayData: response,
               userId: usersData._id,
-              courseId: courseIdd,
+              courseId,
             })
           ).unwrap();
-
-          // Check if the verification was successful
-          // console.log('VerifyData: ', verifyData);
           if (verifyData.message === 'Payment Successful') {
             Alert.alert(
               'Payment Successful',
@@ -148,26 +132,24 @@ const HomeScreen = ({ navigation }) => {
           console.error('Error verifying payment:', err);
         }
       })
-      .catch((errors) => {
-        // Handle failure
-        // console.log('Error: ', error);
+      .catch(() => {
         Alert.alert(
-          'Payment Failed ',
+          'Payment Failed',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
           [{ text: 'OK' }]
         );
       });
   };
 
-  const getShortDescription = (text, wordLimit) => {
-    const words = text.split(' ');
-    if (words.length > wordLimit) {
-      return words.slice(0, wordLimit).join(' ') + '...';
-    }
-    return text;
+  const handleOpenModal = (courseId) => {
+    setSelectedCourseId(courseId);
+    setShowModal(true);
   };
 
-
+  const handleProceedWithPayment = () => {
+    setShowModal(false);
+    handlePayment(courseData.find(course => course._id === selectedCourseId).price, selectedCourseId);
+  };
 
   if (loading) {
     return <Loader />;
@@ -192,17 +174,13 @@ const HomeScreen = ({ navigation }) => {
               </View>
             ))}
           </ScrollView>
-
-          {/* Pagination Indicators for Banner */}
           <View style={homestyle.pagination}>
             {images.map((_, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
                   homestyle.paginationDot,
-                  activeBannerIndex === index
-                    ? homestyle.activeDot
-                    : homestyle.inactiveDot,
+                  activeBannerIndex === index ? homestyle.activeDot : homestyle.inactiveDot,
                 ]}
                 onPress={() => scrollToBannerIndex(index)}
               />
@@ -210,61 +188,40 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Courses Section */}
+        {
+          /* Courses Section */
+        }
+
         <View style={homestyle.coursesContainer}>
           <Text style={homestyle.coursesTitle}>Available Courses</Text>
           {courseData && courseData.length > 0 && (
-            <ScrollView
-              ref={coursesScrollViewRef}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onScroll={handleCourseScroll}
-              scrollEventThrottle={16}
-            >
+            <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
               {courseData.map((course) => (
                 <View key={course._id} style={homestyle.courseCard}>
                   <Text style={homestyle.title}>{course.title}</Text>
                   <View style={homestyle.cImgContainer}>
-                    <Image
-                      source={{ uri: course?.imageUrl }}
-                      style={homestyle.courseImage}
-                    />
+                    <Image source={{ uri: course?.imageUrl }} style={homestyle.courseImage} />
                   </View>
                   <Text style={homestyle.courseDescription}>
-                    {getShortDescription(course.description, 20)}
+                    {course.description.slice(0, 20)}...
                   </Text>
-                  <View style={homestyle.languageTag}>
-                    <Text style={homestyle.languageText}>
-                      {course.language}
-                    </Text>
-                  </View>
                   <View style={homestyle.afterDesc}>
-                    <Text style={homestyle.createdAt}>
-                      {course?.createdAt.slice(0, 10)}
-                    </Text>
+                    <Text style={homestyle.createdAt}>{course?.createdAt.slice(0, 10)}</Text>
                     <Text style={homestyle.price}>₹ {course.price}</Text>
                   </View>
                   <View style={homestyle.cardBtns}>
                     <TouchableOpacity
                       style={homestyle.exploreBtn}
-                      onPress={() =>
-                        navigation.navigate('courseDetail', {
-                          courseId: course._id,
-                        })
-                      }
+                      onPress={() => navigation.navigate('courseDetail', { courseId: course._id })}
                     >
                       <Text style={homestyle.exploreBtnText}>View Course</Text>
                     </TouchableOpacity>
                     {payLoading ? (
-                      <TouchableOpacity disabled={true} style={homestyle.buyNowLoading}>
-                        <ActivityIndicator size="small" color="#fff" />
-                        <Text style={homestyle.buyNowText}>please wait..</Text>
-                      </TouchableOpacity>
+                      <ActivityIndicator size="small" color="#fff" />
                     ) : (
                       <TouchableOpacity
                         style={homestyle.buyNow}
-                        onPress={() => handlePayment(course.price, course._id)}
+                        onPress={() => handleOpenModal(course._id)}
                       >
                         <Text style={homestyle.buyNowText}>Buy Now</Text>
                       </TouchableOpacity>
@@ -275,6 +232,31 @@ const HomeScreen = ({ navigation }) => {
             </ScrollView>
           )}
         </View>
+
+        {
+          /* Coupon Modal */
+        }
+
+        <Modal visible={showModal} transparent animationType="slide">
+          <View style={homestyle.modalBackground}>
+            <View style={homestyle.modalContainer}>
+              
+            <View style={homestyle.modalTop}>
+              <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
+              <TouchableOpacity onPress={()=>setShowModal(false)} style={homestyle.modalCross}><Text  style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
+            </View>
+              <TextInput
+                style={homestyle.modalInput}
+                placeholder="Enter your coupon code"
+                value={couponCode}
+                onChangeText={setCouponCode}
+              />
+              <TouchableOpacity style={homestyle.modalButton} onPress={handleProceedWithPayment}>
+                <Text style={homestyle.modalButtonText}>OK Proceed</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         {
           /* Explore our */
@@ -338,9 +320,14 @@ const HomeScreen = ({ navigation }) => {
           </View>
             ))}
         </View>
+        
       </ScrollView>
     </View>
   );
 };
 
 export default HomeScreen;
+
+        
+
+ 
