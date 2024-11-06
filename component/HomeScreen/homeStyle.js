@@ -138,6 +138,17 @@ const homestyle = StyleSheet.create({
       alignItems: 'center',
       width:'45%',
     },
+    buyNowLoading:{
+      backgroundColor: '#054bb2',  
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      alignItems: 'center',
+      width:'45%',
+      flexDirection:'row',
+      gap:2,
+      opacity:0.9,
+    },
     buyNowText:{
       color: '#fff',
       fontSize: 14,
@@ -172,8 +183,61 @@ const homestyle = StyleSheet.create({
       color:'#054bb4',
       fontWeight:'bold',
       fontSize:12,
-    }
-   
+    },
+    notfoundText:{
+      alignSelf:'center',
+      padding:20,
+    },
+    modalBackground: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    },
+    modalContainer: {
+      width: '80%', // Modal width relative to the screen
+      padding: 20, // Padding inside the modal
+      backgroundColor: 'white', // Modal background color
+      borderRadius: 10, // Rounded corners
+    },
+    modalTop:{
+      flexDirection:'row',
+      justifyContent:'space-between',
+      alignItems:'center',
+      marginBottom:5
+    },
+    modalCross:{
+      backgroundColor:'#054bb4',
+      paddingVertical:2,
+      paddingHorizontal:6,
+      borderRadius:5
+    },
+    modalCrossText:{
+      color:'#fff'
+    },
+    modalTitle: {
+      fontSize: 18, // Title font size
+      fontWeight: 'bold', // Title font weight
+      marginBottom: 10, // Space below the title
+    },
+    modalInput: {
+      width: '100%', // Full width input
+      padding: 10, // Padding inside the input
+      borderWidth: 1, // Border width for the input
+      borderColor: '#ccc', // Light grey border color
+      borderRadius: 5, // Rounded corners for the input
+      marginBottom: 20, // Space below the input
+    },
+    modalButton: {
+      backgroundColor: '#054bb4', // Button background color
+      padding: 10, // Padding inside the button
+      borderRadius: 5, // Rounded corners for the button
+    },
+    modalButtonText: {
+      color: 'white', // Button text color
+      fontWeight: 'bold', // Button text weight
+      alignSelf:'center',
+    },
   });
 
   export default homestyle;
