@@ -21,6 +21,7 @@ import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
 import { UserData } from '../userData/UserData';
 import { PurchaseCourseData } from '../myCourseScreen/store';
 import { Course } from '../Icons/MyIcon';
+import myCourseStyle from '../myCourseScreen/myCourseStyle';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -70,7 +71,7 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     dispatch(RecentCourseData());
-    if (usersData?._id) { 
+    if (usersData?._id) {
       dispatch(PurchaseCourseData(usersData._id));
     }
   }, [usersData, dispatch]);
@@ -81,7 +82,7 @@ const HomeScreen = ({ navigation }) => {
   );
 
   const watchData = watchCourse.courseData;
-  
+
   const handlePayment = async (amount, courseId) => {
     setPayLoading(true);
     try {
@@ -154,6 +155,13 @@ const HomeScreen = ({ navigation }) => {
   if (loading) {
     return <Loader />;
   }
+  const getShortDescription = (text, wordLimit) => {
+    const words = text.split(' ');
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(' ') + '...';
+    }
+    return text;
+  };
 
   return (
     <View style={homestyle.container}>
@@ -240,11 +248,11 @@ const HomeScreen = ({ navigation }) => {
         <Modal visible={showModal} transparent animationType="slide">
           <View style={homestyle.modalBackground}>
             <View style={homestyle.modalContainer}>
-              
-            <View style={homestyle.modalTop}>
-              <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
-              <TouchableOpacity onPress={()=>setShowModal(false)} style={homestyle.modalCross}><Text  style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
-            </View>
+
+              <View style={homestyle.modalTop}>
+                <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
+                <TouchableOpacity onPress={() => setShowModal(false)} style={homestyle.modalCross}><Text style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
+              </View>
               <TextInput
                 style={homestyle.modalInput}
                 placeholder="Enter your coupon code"
@@ -279,48 +287,48 @@ const HomeScreen = ({ navigation }) => {
           {watchData && watchData.length > 0 &&
             watchData.map((course) => (
               <View style={myCourseStyle.card} key={course._id}>
-            {/* Title */}
-            <Text style={myCourseStyle.title}>{course?.course_id?.title}</Text>
+                {/* Title */}
+                <Text style={myCourseStyle.title}>{course?.course_id?.title}</Text>
 
-            {/* Image with play button */}
-            <View style={myCourseStyle.imageContainer}>
-              <Image
-                style={myCourseStyle.courseImage}
-                source={{uri: course?.imageurl}}
-              />
-              <View style={myCourseStyle.playButtonContainer}>
-                <View style={myCourseStyle.playButton}>
-                  <Text style={myCourseStyle.playButtonText}>▶</Text>
+                {/* Image with play button */}
+                <View style={myCourseStyle.imageContainer}>
+                  <Image
+                    style={myCourseStyle.courseImage}
+                    source={{ uri: course?.imageurl }}
+                  />
+                  <View style={myCourseStyle.playButtonContainer}>
+                    <View style={myCourseStyle.playButton}>
+                      <Text style={myCourseStyle.playButtonText}>▶</Text>
+                    </View>
+                  </View>
                 </View>
+
+                {/* Language tag */}
+                <View style={myCourseStyle.languageTag}>
+                  <Text style={myCourseStyle.languageText}>
+                    {course?.course_id?.language}
+                  </Text>
+                </View>
+
+                {/* Description */}
+                <Text style={myCourseStyle.description}>
+                  {getShortDescription(course?.course_id?.description, 25)}
+                </Text>
+
+                {/* Continue Learning Button */}
+                <TouchableOpacity
+                  style={myCourseStyle.continueButton}
+                  onPress={() =>
+                    navigation.navigate('watchCourse', { courseId: course?._id })
+                  }>
+                  <Text style={myCourseStyle.continueButtonText}>
+                    Continue Learning
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </View>
-
-            {/* Language tag */}
-            <View style={myCourseStyle.languageTag}>
-              <Text style={myCourseStyle.languageText}>
-                {course?.course_id?.language}
-              </Text>
-            </View>
-
-            {/* Description */}
-            <Text style={myCourseStyle.description}>
-              {getShortDescription(course?.course_id?.description, 25)}
-            </Text>
-
-            {/* Continue Learning Button */}
-            <TouchableOpacity
-              style={myCourseStyle.continueButton}
-              onPress={() =>
-                navigation.navigate('watchCourse', {courseId: course?._id})
-              }>
-              <Text style={myCourseStyle.continueButtonText}>
-                Continue Learning
-              </Text>
-            </TouchableOpacity>
-          </View>
             ))}
         </View>
-        
+
       </ScrollView>
     </View>
   );
@@ -328,6 +336,5 @@ const HomeScreen = ({ navigation }) => {
 
 export default HomeScreen;
 
-        
 
- 
+
