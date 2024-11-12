@@ -18,7 +18,7 @@ export const Home = ({fill}) => (
 export const Course = ({fill}) => (
   <Svg
     width="64"
-    height="42"
+    height="40"
     viewBox="0 0 64 42"
     fill="none"
     xmlns="http://www.w3.org/2000/svg">
@@ -27,6 +27,22 @@ export const Course = ({fill}) => (
       fill={fill}
     />
   </Svg>
+);
+
+
+export const YouTubeIcon = ({ fill }) => (
+  <Svg
+  width="38" // Matching the size and proportions of the Course icon
+  height="40"
+  viewBox="0 0 38 42"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <Path
+    d="M39.2 10.8c-.4-1.4-1.5-2.4-2.8-2.8C32.5 7 20 7 20 7S7.5 7 3.6 8c-1.3.4-2.4 1.5-2.8 2.8C0 13.5 0 17.5 0 17.5s0 4 .8 6.7c.4 1.4 1.5 2.4 2.8 2.8C7.5 28 20 28 20 28s12.5 0 16.4-1c1.3-.4 2.4-1.5 2.8-2.8C40 21.5 40 17.5 40 17.5s0-4-.8-6.7zM16 20.5V12.5l8.5 4-8.5 4z"
+    fill={fill}
+  />
+</Svg>
 );
 
 export const Live = ({fill}) => (

@@ -20,7 +20,6 @@ function MainHeader() {
 
       <View style={styles.rightContent}>
         <Text style={styles.searchIcon}><Search fill="white" /></Text>
-        <Text style={styles.bellIcon}><Bell fill="white" /></Text>
       </View>
 
     </View>

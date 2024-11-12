@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   TextInput,
   Modal,
+  Linking,
 } from 'react-native';
 import homestyle from './homeStyle';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +21,7 @@ import RazorpayCheckout from 'react-native-razorpay';
 import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
 import { UserData } from '../userData/UserData';
 import { PurchaseCourseData } from '../myCourseScreen/store';
-import { Course } from '../Icons/MyIcon';
+import { Course, YouTubeIcon } from '../Icons/MyIcon';
 import myCourseStyle from '../myCourseScreen/myCourseStyle';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -30,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { usersData } = UserData();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
-  const [payLoading, setPayLoading] = useState(false);
+  const [payLoading, setPayLoading] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [selectedCourseId, setSelectedCourseId] = useState(null);
@@ -70,8 +71,8 @@ const HomeScreen = ({ navigation }) => {
   }, [activeBannerIndex, images.length]);
 
   useEffect(() => {
-    dispatch(RecentCourseData());
     if (usersData?._id) {
+      dispatch(RecentCourseData(usersData._id));
       dispatch(PurchaseCourseData(usersData._id));
     }
   }, [usersData, dispatch]);
@@ -84,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
   const watchData = watchCourse.courseData;
 
   const handlePayment = async (amount, courseId) => {
-    setPayLoading(true);
+    setPayLoading(courseId); 
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
@@ -94,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
     } catch (err) {
       console.error('Error initiating payment:', err);
     } finally {
-      setPayLoading(false);
+      setPayLoading(null); 
     }
   };
 
@@ -201,7 +202,7 @@ const HomeScreen = ({ navigation }) => {
         }
 
         <View style={homestyle.coursesContainer}>
-          <Text style={homestyle.coursesTitle}>Available Courses</Text>
+          <Text style={homestyle.coursesTitle}>Recenlyt Added Courses</Text>
           {courseData && courseData.length > 0 && (
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
               {courseData.map((course) => (
@@ -211,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
                     <Image source={{ uri: course?.imageUrl }} style={homestyle.courseImage} />
                   </View>
                   <Text style={homestyle.courseDescription}>
-                    {course.description.slice(0, 20)}...
+                    {course.description.slice(0, 150)}...
                   </Text>
                   <View style={homestyle.afterDesc}>
                     <Text style={homestyle.createdAt}>{course?.createdAt.slice(0, 10)}</Text>
@@ -224,16 +225,19 @@ const HomeScreen = ({ navigation }) => {
                     >
                       <Text style={homestyle.exploreBtnText}>View Course</Text>
                     </TouchableOpacity>
-                    {payLoading ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <TouchableOpacity
-                        style={homestyle.buyNow}
-                        onPress={() => handleOpenModal(course._id)}
-                      >
+                    <TouchableOpacity
+                      style={[
+                        homestyle.buyNow,
+                        payLoading === course._id && {opacity: 0.8},  
+                      ]}
+                      onPress={() => handleOpenModal(course._id)}
+                      disabled={!!payLoading}>  
+                      {payLoading === course._id ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
                         <Text style={homestyle.buyNowText}>Buy Now</Text>
-                      </TouchableOpacity>
-                    )}
+                      )}
+                    </TouchableOpacity>
                   </View>
                 </View>
               ))}
@@ -253,12 +257,15 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
                 <TouchableOpacity onPress={() => setShowModal(false)} style={homestyle.modalCross}><Text style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
               </View>
+              <View style={homestyle.inputBtn}>
               <TextInput
                 style={homestyle.modalInput}
                 placeholder="Enter your coupon code"
                 value={couponCode}
                 onChangeText={setCouponCode}
               />
+              <TouchableOpacity  style={homestyle.applyButton}><Text style={homestyle.applyButtonText}>Apply</Text></TouchableOpacity>
+              </View>
               <TouchableOpacity style={homestyle.modalButton} onPress={handleProceedWithPayment}>
                 <Text style={homestyle.modalButtonText}>OK Proceed</Text>
               </TouchableOpacity>
@@ -270,20 +277,21 @@ const HomeScreen = ({ navigation }) => {
           /* Explore our */
         }
         <View style={homestyle.exploreContainer}>
-          <Text style={homestyle.exploreText}>My Courses</Text>
+          
           <View style={homestyle.exploreIcons}>
-            <TouchableOpacity style={homestyle.exploreContent}>
+            <TouchableOpacity style={homestyle.exploreContent} onPress={()=>navigation.navigate('allCoursesScreen')}>
               <Course fill="#054bb4" />
-              <Text style={homestyle.exploreContentText}>Free Resources</Text>
+              <Text style={homestyle.exploreContentText}>All courses</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={homestyle.exploreContent}>
-              <Course fill="#054bb4" />
-              <Text style={homestyle.exploreContentText}>Demo Content</Text>
+            <TouchableOpacity style={homestyle.exploreContent} onPress={()=>Linking.openURL('https://www.youtube.com/@Zenstudyz')}>
+            <YouTubeIcon fill="#054bb4"  />
+              <Text style={homestyle.exploreContentText}>Youtube</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={homestyle.exploreCourses}>
+        <Text style={homestyle.coursesTitle}>My Courses</Text>
           {watchData && watchData.length > 0 &&
             watchData.map((course) => (
               <View style={myCourseStyle.card} key={course._id}>

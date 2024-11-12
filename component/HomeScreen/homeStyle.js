@@ -216,17 +216,37 @@ const homestyle = StyleSheet.create({
       color:'#fff'
     },
     modalTitle: {
-      fontSize: 18, // Title font size
+      fontSize: 12, // Title font size
       fontWeight: 'bold', // Title font weight
       marginBottom: 10, // Space below the title
     },
+    inputBtn:{
+      flexDirection:'row',
+      alignItems:'center',
+      marginBottom:20,
+      marginTop:10,
+    },
     modalInput: {
-      width: '100%', // Full width input
-      padding: 10, // Padding inside the input
+      width: '80%', // Full width input
+      padding: 5, // Padding inside the input
       borderWidth: 1, // Border width for the input
       borderColor: '#ccc', // Light grey border color
-      borderRadius: 5, // Rounded corners for the input
-      marginBottom: 20, // Space below the input
+      borderBottomLeftRadius:0,
+      borderTopLeftRadius:10,
+      borderBottomRightRadius:0,
+      borderTopRightRadius:10,
+    },
+    applyButton:{
+      backgroundColor:'#054bb4',
+      paddingVertical:10,
+      width:'20%',
+      borderBottomRightRadius:10,
+      borderTopRightRadius:10,
+    },
+    applyButtonText:{
+      color:'#fff',
+      alignSelf:'center',
+      fontWeight:'bold',
     },
     modalButton: {
       backgroundColor: '#054bb4', // Button background color

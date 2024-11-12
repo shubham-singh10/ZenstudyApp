@@ -32,6 +32,7 @@
     "react-native-screens": "^3.34.0",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "^15.7.1",
+    "react-native-video": "^6.7.0",
     "react-native-webview": "^13.12.3",
     "react-redux": "^9.1.2"
   },

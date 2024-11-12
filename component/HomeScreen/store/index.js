@@ -5,10 +5,10 @@ import { REACT_APP_API } from '@env';
 // Thunk to fetch login data
 export const RecentCourseData = createAsyncThunk(
     'recentcourse',
-    async (thunkAPI) => {
+    async (userId,thunkAPI) => {
         try {
             const response = await axios.get(
-                `${REACT_APP_API}zenstudy/api/course/getCoursesP`,
+                `${REACT_APP_API}zenstudy/api/course/getCoursesPurc/${userId}`,
                 {
                     headers: {
                         Accept: 'application/json',
