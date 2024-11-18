@@ -5,16 +5,20 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import formStyles from '../Login/formStyles';
 import { BackArrow, Location, Profile } from '../Icons/MyIcon';
-import axios from 'axios';
 import { UserData } from '../userData/UserData';
 import Loader from '../Loader';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfileDetails, updateProfileDetails } from './store';
 
 const EditScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   // State variables for form inputs
-  const [formData, setformData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
@@ -22,80 +26,55 @@ const EditScreen = ({ navigation }) => {
     City: '',
     State: '',
     Country: '',
-    Pincode: '',
+    Pincode: '',  // Make sure it's a string
     avatar: '',
   });
-  const [Dloading, setDLoading] = useState(true);
-
-  const onInputChange = (value, field) => {
-    setformData({ ...formData, [field]: value });
-
-    // if (errors[field]) {
-    //   setErrors({ ...errors, [field]: '' });
-    // }
-
-    // if (field === 'cPassword' || field === 'password') {
-    //   if (formData.password !== value && field === 'cPassword') {
-    //     setPasswordError('Passwords do not match');
-    //   } else if (formData.cPassword !== value && field === 'password') {
-    //     setPasswordError('Passwords do not match');
-    //   } else {
-    //     setPasswordError('');
-    //   }
-    // }
-  };
   const [errorMessage, setErrorMessage] = useState('');
 
   const { usersData } = UserData();
+  const { profileData, loading, error } = useSelector(state => state.ProfileData);
+
+  // Log fetched profile data to check if Pincode exists
+  useEffect(() => {
+    if (profileData) {
+      setFormData(profileData);
+    }
+  }, [profileData]);
+
+  // Fetch profile details when component mounts
+  useEffect(() => {
+    if (usersData?._id) {
+      dispatch(fetchProfileDetails(usersData._id));
+    }
+  }, [dispatch, usersData?._id]);
+
+  // Function to handle input changes
+  const onInputChange = (value, field) => {
+    if (field === 'Pincode') {
+      value = value.replace(/\D/g, '');
+    }
+    setFormData({ ...formData, [field]: value });
+  };
 
   // Function to handle form submission
   const handleContinue = () => {
     setErrorMessage('');
-    console.log('Form submitted with:', formData);
+    const userUpdate = {
+      ...formData,
+      avatar: profileData.avatar,
+    };
+    dispatch(updateProfileDetails({ userId: profileData._id, userUpdate: userUpdate }))
+      .unwrap()
+      .then(() => {
+        Alert.alert('Success', 'Profile updated successfully!');
+      })
+      .catch((err) => {
+        Alert.alert('Error', err || 'An error occurred while updating the profile.');
+      });
   };
 
-  //Get User Data API
-  const getUserData = async (userId) => {
-    setDLoading(true); // Start loading
-    try {
-      // Make API call using axios
-      const response = await axios.get(
-        `${process.env.REACT_APP_API}zenstudy/api/user/userdetail/${userId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      // Extract data directly, no need for response.json()
-      const resData = response.data;
-
-      // Construct the image URL
-      const imageUrl = `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${resData.userdetail.avatar}`;
-
-      const updatedUserDetail = {
-        ...resData.userdetail,
-        imageUrl,
-      };
-
-      // Update state with the fetched user data
-      setformData(updatedUserDetail || {});
-
-    } catch (error) {
-      // Catching and displaying any error that occurred during the API call
-      // Alert.alert(`Error: ${error.response?.data?.message || error.message}`);
-    } finally {
-      // Always stop loading regardless of success or error
-      setDLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getUserData(usersData?._id);
-  }, [usersData?._id]);
-
-  if (Dloading) {
+  // If loading, show loader
+  if (loading) {
     return <Loader />;
   }
 
@@ -104,152 +83,47 @@ const EditScreen = ({ navigation }) => {
       style={formStyles.containerBack}
       contentContainerStyle={formStyles.containerFlex}>
       <View style={[formStyles.container, formStyles.padding]}>
-        {/* Sign Up Section */}
+        {/* Header Section */}
         <View style={formStyles.section2}>
           <View style={formStyles.TopHead}>
             <TouchableOpacity onPress={() => navigation.navigate('profileScreen')}>
               <Text style={formStyles.backbtn}>
-                {' '}
                 <BackArrow fill="white" />
               </Text>
             </TouchableOpacity>
-            <Text style={formStyles.loginText}> Edit Profile</Text>
+            <Text style={formStyles.loginText}>Edit Profile</Text>
           </View>
-          {/* Name Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="#fff" />
-              </Text>
+
+          {/* Form Fields */}
+          {['name', 'email', 'phone', 'Address', 'State', 'City', 'Country', 'Pincode'].map((field, index) => (
+            <View key={index} style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  {field === 'Address' || field === 'State' || field === 'City' || field === 'Country'
+                    ? <Location fill="#fff" />
+                    : <Profile fill="#fff" />}
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder={`Update Your ${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                value={formData[field] !== undefined ? formData[field].toString() : ''}
+                onChangeText={(text) => onInputChange(text, field)}
+                editable={field !== 'phone'} // Phone field is read-only
+              />
             </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Name"
-              value={formData.name}
-              onChangeText={(text) => onInputChange(text, 'name')}
-            />
-          </View>
+          ))}
 
-          {/* E-mail field */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Email"
-              value={formData.email}
-              onChangeText={(text) => onInputChange(text, 'email')}
-            />
-          </View>
-
-          {/* Phone No */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Phone no"
-              value={formData.phone}
-              readOnly
-              onChangeText={(text) => onInputChange(text, 'phone')}
-            />
-          </View>
-
-          {/* Address */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Location fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Address"
-              value={formData.Address}
-              onChangeText={(text) => onInputChange(text, 'Address')}
-            />
-          </View>
-
-          {/* State */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Location fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your State"
-              value={formData.State}
-              onChangeText={(text) => onInputChange(text, 'State')}
-            />
-          </View>
-
-          {/* City */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Location fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your City"
-              value={formData.City}
-              onChangeText={(text) => onInputChange(text, 'City')}
-            />
-          </View>
-
-          {/* Country */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Location fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Country"
-              value={formData.Country}
-              onChangeText={(text) => onInputChange(text, 'Country')}
-            />
-          </View>
-
-          {/* Pincode */}
-
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Update Your Pincode"
-              value={formData.Pincode}
-              onChangeText={(text) => onInputChange(text, 'Pincode')}
-            />
-          </View>
-
-
-          {/* Error Message for Password Mismatch */}
-          {errorMessage ? (
-            <Text style={formStyles.errorText}>{errorMessage}</Text>
-          ) : null}
+          {/* Error Message for Form Submission */}
+          {errorMessage ? <Text style={formStyles.errorText}>{errorMessage}</Text> : null}
+          {error ? <Text style={formStyles.errorText}>{error}</Text> : null}
 
           {/* Continue Button */}
-          <TouchableOpacity style={formStyles.button} onPress={handleContinue}>
+          <TouchableOpacity
+            style={[formStyles.button, loading && formStyles.opacityView]}
+            onPress={handleContinue}
+            disabled={loading}
+          >
             <Text style={formStyles.buttonText}>Continue</Text>
           </TouchableOpacity>
         </View>

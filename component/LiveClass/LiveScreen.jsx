@@ -1,47 +1,80 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  Image, // Correct import from 'react-native'
-  Text  // Correct import from 'react-native'
+  Image,
+  Text,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMeetingDetails } from './store';
+import Loader from '../Loader';
 
 const LiveScreen = () => {
+  const dispatch = useDispatch();
+  const { meetingData, loading, error } = useSelector(state => state.Meeting);
+  // console.log('Meeting: ', meetingData);
+  useEffect(() => {
+    dispatch(fetchMeetingDetails());
+  }, [dispatch]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <Text style={liveStyle.errorText}>Failed to load meeting details. Please try again later.</Text>;
+  }
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const hours = date.getHours() % 12 || 12;
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  const formatDay = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'long' });
+  };
+
   return (
     <ScrollView contentContainerStyle={liveStyle.scrollContainer}>
-      <View style={liveStyle.container}>
-        
-        <View style={liveStyle.contentSection}>
-          <Text style={liveStyle.text}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry
-          </Text>
-          <Image
-            source={{
-              uri: 'https://img.freepik.com/premium-photo/happy-man-ai-generated-portrait-user-profile_1119669-1.jpg',
-            }}
-            style={liveStyle.courseImage}
-          />
-        </View>
+      {Array.isArray(meetingData) && meetingData.length ? (
+        meetingData.map((meeting) => (
+          <View style={liveStyle.container} key={meeting._id}>
+            <View style={liveStyle.contentSection}>
+              <Text style={liveStyle.text}>
+                {meeting?.courseId?.title || 'Untitled Course'}
+              </Text>
+              <Image
+                source={{
+                  uri: meeting?.courseId?.image || 'https://img.freepik.com/premium-photo/happy-man-ai-generated-portrait-user-profile_1119669-1.jpg',
+                }}
+                style={liveStyle.courseImage}
+              />
+            </View>
 
-        
-        <View style={liveStyle.timingSection}>
-          <Text style={liveStyle.timingText}>Sat-Sun</Text>
-          <Text style={liveStyle.timingText}>5-6 PM</Text>
-        </View>
-        
-        
-        <View style={liveStyle.contentSection}>
-          <View style={liveStyle.liveBox}>
-          <Text style={liveStyle.liveDot}></Text>
-          <Text style={liveStyle.liveText}>Live Now</Text>
+            <View style={liveStyle.timingSection}>
+              <Text style={liveStyle.timingText}>{formatDay(meeting?.startTime || meeting?.createdAt)}</Text>
+              <Text style={liveStyle.timingText}>{formatTime(meeting?.startTime)} - {meeting.endTime ? formatTime(meeting.endTime) : 'N/A'}</Text>
+            </View>
+
+            <View style={liveStyle.contentSection}>
+              <View style={liveStyle.liveBox}>
+                <Text style={liveStyle.liveDot}>•</Text>
+                <Text style={liveStyle.liveText}>Live Now</Text>
+              </View>
+              <TouchableOpacity style={liveStyle.joinBtn}>
+                <Text style={liveStyle.joinText}>Join Now</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <TouchableOpacity style={liveStyle.joinBtn}>
-            <Text style={liveStyle.joinText}>Join Now</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        ))
+      ) : (
+        <Text style={liveStyle.noClassText}>No Live Classes Schedule</Text>
+      )}
     </ScrollView>
   );
 };
@@ -61,48 +94,48 @@ const liveStyle = StyleSheet.create({
     alignItems: 'center',
   },
   contentSection: {
-    width: '100%', 
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
   timingSection: {
-    width: '100%', 
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
   },
   courseImage: {
     width: 180,
     height: 100,
     borderRadius: 5,
-    elevation:4,
+    elevation: 4,
   },
   text: {
-    flex: 1, 
+    flex: 1,
     marginRight: 10,
     fontSize: 14,
     color: '#054bb4',
-    fontWeight:'500',
+    fontWeight: '500',
   },
   timingText: {
     fontSize: 14,
     color: '#555',
-    fontWeight:'bold',
-    marginHorizontal:10
+    fontWeight: 'bold',
+    marginHorizontal: 10,
   },
-  liveBox:{
-    flexDirection:'row',
-    gap:5,
-    alignItems:'center',
+  liveBox: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
   },
-  liveDot:{
-    width:10,
-    height:10,
-    borderRadius:5,
-    backgroundColor: "#2DD93B",
+  liveDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#2DD93B',
   },
   liveText: {
     fontSize: 16,
@@ -114,13 +147,24 @@ const liveStyle = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 30,
-    width:'70%'
+    width: '70%',
   },
   joinText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
-    alignSelf:'center'
+    alignSelf: 'center',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  noClassText: {
+    textAlign: 'center',
+    color: 'red',
+    fontWeight: 'bold',
+    marginTop: 20,
   },
 });
 

@@ -5,6 +5,8 @@ import CourseDetailData  from './component/CourseDetail/store';
 import PurchaseCourseDetails  from './component/myCourseScreen/store';
 import PurchaseWatchCourseData  from './component/WatchCourse/store';
 import Payment  from './component/CourseDetail/store/payment';
+import ProfileData  from './component/EditScreen/store';
+import Meeting  from './component/LiveClass/store';
 
 // Combine your reducers into a single root reducer
 const rootReducer = combineReducers({
@@ -14,6 +16,8 @@ const rootReducer = combineReducers({
   PurchaseCourseDetails,
   PurchaseWatchCourseData,
   Payment,
+  ProfileData,
+  Meeting,
 });
 
 export default rootReducer;

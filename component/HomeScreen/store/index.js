@@ -19,7 +19,7 @@ export const RecentCourseData = createAsyncThunk(
             //  console.log('Response: ', response.data);
             const imageData = response.data.map(course => ({
                 ...course,
-                imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${course.thumbnail}`
+                imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${course.thumbnail}`,
             }));
             return imageData;
         } catch (error) {
