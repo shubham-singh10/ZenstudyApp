@@ -85,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
   const watchData = watchCourse.courseData;
 
   const handlePayment = async (amount, courseId) => {
-    setPayLoading(courseId); 
+    setPayLoading(courseId);
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
@@ -95,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
     } catch (err) {
       console.error('Error initiating payment:', err);
     } finally {
-      setPayLoading(null); 
+      setPayLoading(null);
     }
   };
 
@@ -228,10 +228,10 @@ const HomeScreen = ({ navigation }) => {
                     <TouchableOpacity
                       style={[
                         homestyle.buyNow,
-                        payLoading === course._id && {opacity: 0.8},  
+                        payLoading === course._id && { opacity: 0.8 },
                       ]}
                       onPress={() => handleOpenModal(course._id)}
-                      disabled={!!payLoading}>  
+                      disabled={!!payLoading}>
                       {payLoading === course._id ? (
                         <ActivityIndicator size="small" color="#fff" />
                       ) : (
@@ -258,13 +258,13 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={() => setShowModal(false)} style={homestyle.modalCross}><Text style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
               </View>
               <View style={homestyle.inputBtn}>
-              <TextInput
-                style={homestyle.modalInput}
-                placeholder="Enter your coupon code"
-                value={couponCode}
-                onChangeText={setCouponCode}
-              />
-              <TouchableOpacity  style={homestyle.applyButton}><Text style={homestyle.applyButtonText}>Apply</Text></TouchableOpacity>
+                <TextInput
+                  style={homestyle.modalInput}
+                  placeholder="Enter your coupon code"
+                  value={couponCode}
+                  onChangeText={setCouponCode}
+                />
+                <TouchableOpacity style={homestyle.applyButton}><Text style={homestyle.applyButtonText}>Apply</Text></TouchableOpacity>
               </View>
               <TouchableOpacity style={homestyle.modalButton} onPress={handleProceedWithPayment}>
                 <Text style={homestyle.modalButtonText}>OK Proceed</Text>
@@ -277,21 +277,21 @@ const HomeScreen = ({ navigation }) => {
           /* Explore our */
         }
         <View style={homestyle.exploreContainer}>
-          
+
           <View style={homestyle.exploreIcons}>
-            <TouchableOpacity style={homestyle.exploreContent} onPress={()=>navigation.navigate('allCoursesScreen')}>
+            <TouchableOpacity style={homestyle.exploreContent} onPress={() => navigation.navigate('allCoursesScreen')}>
               <Course fill="#054bb4" />
               <Text style={homestyle.exploreContentText}>All courses</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={homestyle.exploreContent} onPress={()=>Linking.openURL('https://www.youtube.com/@Zenstudyz')}>
-            <YouTubeIcon fill="#054bb4"  />
+            <TouchableOpacity style={homestyle.exploreContent} onPress={() => Linking.openURL('https://www.youtube.com/@Zenstudyz')}>
+              <YouTubeIcon fill="#054bb4" />
               <Text style={homestyle.exploreContentText}>Youtube</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={homestyle.exploreCourses}>
-        <Text style={homestyle.coursesTitle}>My Courses</Text>
+          <Text style={homestyle.coursesTitle}>My Courses</Text>
           {watchData && watchData.length > 0 &&
             watchData.map((course) => (
               <View style={myCourseStyle.card} key={course._id}>
