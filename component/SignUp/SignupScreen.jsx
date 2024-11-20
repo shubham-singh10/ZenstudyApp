@@ -116,6 +116,7 @@ const SignupScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Mobile Number"
+              placeholderTextColor="#888"
               keyboardType="phone-pad"
               value={formData.phone}
               onChangeText={(text) => onInputChange(text, 'phone')}
@@ -133,6 +134,7 @@ const SignupScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Name"
+              placeholderTextColor="#888"
               value={formData.name}
               onChangeText={(text) => onInputChange(text, 'name')}
             />
@@ -149,6 +151,7 @@ const SignupScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Password"
+              placeholderTextColor="#888"
               secureTextEntry={true}
               value={formData.password}
               onChangeText={(text) => onInputChange(text, 'password')}
@@ -166,6 +169,7 @@ const SignupScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Confirm Your Password"
+              placeholderTextColor="#888"
               secureTextEntry={true}
               value={formData.cPassword}
               onChangeText={(text) => onInputChange(text, 'cPassword')}

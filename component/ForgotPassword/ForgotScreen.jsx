@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import formStyles from '../Login/formStyles';
-import { BackArrow, Call, Email, Key, MessageIcon, Profile } from '../Icons/MyIcon';
+import { BackArrow, Call, Key } from '../Icons/MyIcon';
 import Header from '../Header';
 
 const ForgotScreen = ({ navigation }) => {
@@ -34,7 +34,7 @@ const ForgotScreen = ({ navigation }) => {
     <ScrollView
       style={{ backgroundColor: '#fff' }}
       contentContainerStyle={{ flexGrow: 1 }}>
-      <Header/>
+      <Header />
       <View style={[formStyles.container, { paddingHorizontal: 30 }]}>
         {/* Header Section */}
         <View style={formStyles.section2}>
@@ -55,6 +55,7 @@ const ForgotScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Phone Number"
+              placeholderTextColor="#888"
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"  // Ensure proper keyboard type for phone number
@@ -69,6 +70,7 @@ const ForgotScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter New Password"
+              placeholderTextColor="#888"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={true}  // Hide password input
@@ -83,6 +85,7 @@ const ForgotScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}  // Adjust height for textarea effect
               placeholder="Confirm Your Password"
+              placeholderTextColor="#888"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry={true}  // Hide confirm password input

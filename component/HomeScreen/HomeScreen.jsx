@@ -18,7 +18,7 @@ import { RecentCourseData } from './store';
 import Loader from '../Loader';
 import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
-import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
+import { applyCoupon, initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
 import { UserData } from '../userData/UserData';
 import { PurchaseCourseData } from '../myCourseScreen/store';
 import { Course, YouTubeIcon } from '../Icons/MyIcon';
@@ -34,7 +34,10 @@ const HomeScreen = ({ navigation }) => {
   const [payLoading, setPayLoading] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [selectedCoursePrice, setSelectedCoursePrice] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [applyCouponLoading, setapplyCouponLoading] = useState(false);
+  const [discountPrice, setdiscountPrice] = useState(null);
 
   const { courseData, loading } = useSelector((state) => state.RecentCourseData);
 
@@ -143,14 +146,40 @@ const HomeScreen = ({ navigation }) => {
       });
   };
 
-  const handleOpenModal = (courseId) => {
+  const handleOpenModal = (courseId, price) => {
     setSelectedCourseId(courseId);
+    setSelectedCoursePrice(price);
     setShowModal(true);
   };
 
-  const handleProceedWithPayment = () => {
+  const applyCourse = async () => {
+    setapplyCouponLoading(true);
+    try {
+      const applyCouponData = await dispatch(applyCoupon({ code: couponCode, price: selectedCoursePrice, courseId: selectedCourseId })).unwrap();
+      // console.log('ApplyCoupon', applyCouponData);
+      if (applyCouponData?.discount !== undefined) {
+        setdiscountPrice(applyCouponData.discount);
+      } else {
+        setdiscountPrice(null);
+      }
+    } catch (err) {
+      // console.error('Error apply coupon:', err);
+      Alert.alert(`${err}`);
+    } finally {
+      setapplyCouponLoading(false);
+    }
+  };
+  // console.log('Pi', discountPrice);
+  const handleProceedWithPayment = (price) => {
     setShowModal(false);
-    handlePayment(courseData.find(course => course._id === selectedCourseId).price, selectedCourseId);
+    setdiscountPrice(null);
+    setCouponCode('');
+    handlePayment(price, selectedCourseId);
+  };
+  const discard = () => {
+    setShowModal(false);
+    setdiscountPrice(null);
+    setCouponCode('');
   };
 
   if (loading) {
@@ -202,7 +231,7 @@ const HomeScreen = ({ navigation }) => {
         }
 
         <View style={homestyle.coursesContainer}>
-          <Text style={homestyle.coursesTitle}>Recenlyt Added Courses</Text>
+          <Text style={homestyle.coursesTitle}>Recently Added Courses</Text>
           {courseData && courseData.length > 0 && (
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
               {courseData.map((course) => (
@@ -228,9 +257,9 @@ const HomeScreen = ({ navigation }) => {
                     <TouchableOpacity
                       style={[
                         homestyle.buyNow,
-                        payLoading === course._id && { opacity: 0.8 },
+                        payLoading === course._id && homestyle.opacity,
                       ]}
-                      onPress={() => handleOpenModal(course._id)}
+                      onPress={() => handleOpenModal(course._id, course.price)}
                       disabled={!!payLoading}>
                       {payLoading === course._id ? (
                         <ActivityIndicator size="small" color="#fff" />
@@ -255,18 +284,47 @@ const HomeScreen = ({ navigation }) => {
 
               <View style={homestyle.modalTop}>
                 <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
-                <TouchableOpacity onPress={() => setShowModal(false)} style={homestyle.modalCross}><Text style={homestyle.modalCrossText}>X</Text></TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => discard()}
+                  style={homestyle.modalCross}
+                >
+                  <Text style={homestyle.modalCrossText}>X</Text>
+                </TouchableOpacity>
               </View>
               <View style={homestyle.inputBtn}>
                 <TextInput
                   style={homestyle.modalInput}
                   placeholder="Enter your coupon code"
+                  placeholderTextColor="#888"
                   value={couponCode}
                   onChangeText={setCouponCode}
                 />
-                <TouchableOpacity style={homestyle.applyButton}><Text style={homestyle.applyButtonText}>Apply</Text></TouchableOpacity>
+                <TouchableOpacity
+                  style={homestyle.applyButton}
+                  onPress={applyCourse}
+                  disabled={applyCouponLoading}
+                >
+                  {applyCouponLoading ? (
+                    <Text style={homestyle.disableButtonText}>Please wait...</Text>
+                  ) : (
+                    <Text style={homestyle.applyButtonText}>Apply</Text>
+                  )}
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={homestyle.modalButton} onPress={handleProceedWithPayment}>
+              {discountPrice !== null && discountPrice !== undefined && (
+                <Text style={homestyle.finalPriceText}>Final Course Price: ₹ {Math.round(discountPrice)}</Text>
+              )}
+              <TouchableOpacity
+                style={homestyle.modalButton}
+                onPress={() => {
+                  const finalPrice = discountPrice !== null && Number(discountPrice) === 0
+                    ? 1
+                    : discountPrice
+                      ? Math.round(discountPrice)
+                      : selectedCoursePrice;
+                  handleProceedWithPayment(finalPrice);
+                }}
+              >
                 <Text style={homestyle.modalButtonText}>OK Proceed</Text>
               </TouchableOpacity>
             </View>

@@ -31,9 +31,9 @@ const SupportScreen = ({ navigation }) => {
 
   return (
     <ScrollView
-      style={{ backgroundColor: '#fff' }}
-      contentContainerStyle={{ flexGrow: 1 }}>
-      <View style={[formStyles.container, { paddingHorizontal: 30 }]}>
+      style={formStyles.background}
+      contentContainerStyle={formStyles.flex}>
+      <View style={[formStyles.container, formStyles.paddingHorizontal]}>
         {/* Header Section */}
         <View style={formStyles.section2}>
           <View style={formStyles.TopHead}>
@@ -55,6 +55,7 @@ const SupportScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Name"
+              placeholderTextColor="#888"
               value={name}
               onChangeText={setName}
             />
@@ -70,6 +71,7 @@ const SupportScreen = ({ navigation }) => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Email"
+              placeholderTextColor="#888"
               value={email}
               onChangeText={setEmail}
             />
@@ -77,14 +79,15 @@ const SupportScreen = ({ navigation }) => {
 
           {/* Message TextArea (multiline input) */}
           <View style={formStyles.inputContainer}>
-            <View style={[formStyles.inputlogo, { height: 120}]}>
+            <View style={[formStyles.inputlogo, formStyles.height]}>
               <Text style={formStyles.inputlogoContent}>
                 <MessageIcon fill="white" />
               </Text>
             </View>
             <TextInput
-              style={[formStyles.input, { height: 120, textAlignVertical: 'top' }]}  // Adjust height for textarea effect
+              style={[formStyles.input, formStyles.textInput]}  // Adjust height for textarea effect
               placeholder="Enter Your Message"
+              placeholderTextColor="#888"
               value={message}
               onChangeText={setMessage}
               multiline={true}
@@ -94,7 +97,7 @@ const SupportScreen = ({ navigation }) => {
 
           {/* Error Message */}
           {errorMessage ? (
-            <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text>
+            <Text style={formStyles.errormessText}>{errorMessage}</Text>
           ) : null}
 
           {/* Continue Button */}

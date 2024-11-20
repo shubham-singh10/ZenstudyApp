@@ -98,7 +98,7 @@ const EditScreen = ({ navigation }) => {
           {['name', 'email', 'phone', 'Address', 'State', 'City', 'Country', 'Pincode'].map((field, index) => (
             <View key={index} style={formStyles.inputContainer}>
               <View style={formStyles.inputlogo}>
-                <Text style={formStyles.inputlogoContent}>
+                <Text style={formStyles.inputlogoContent}  placeholderTextColor="#888">
                   {field === 'Address' || field === 'State' || field === 'City' || field === 'Country'
                     ? <Location fill="#fff" />
                     : <Profile fill="#fff" />}
@@ -107,6 +107,7 @@ const EditScreen = ({ navigation }) => {
               <TextInput
                 style={formStyles.input}
                 placeholder={`Update Your ${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                placeholderTextColor="#888"
                 value={formData[field] !== undefined ? formData[field].toString() : ''}
                 onChangeText={(text) => onInputChange(text, field)}
                 editable={field !== 'phone'} // Phone field is read-only

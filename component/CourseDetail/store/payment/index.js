@@ -47,6 +47,26 @@ export const verifyPayment = createAsyncThunk(
         }
     }
 );
+// Async thunk for initiating the payment order
+export const applyCoupon = createAsyncThunk(
+    'payment/applyCoupon',
+    async ({ code, price, courseId }, thunkAPI) => {
+        console.log('Code: ', code, price, courseId);
+        try {
+            const response = await axios.post(`${REACT_APP_API}zenstudy/api/coupon/applyCoupon`, {
+                code,
+                coursePrice: price,
+                courseId,
+            });
+            // console.log('Res: ', response.data);
+            return response.data;
+        } catch (error) {
+            //console.log('Error: ', error.response?.data?.message);
+            const errorMessage = error.response?.data?.message || 'Failed to apply coupon';
+            return thunkAPI.rejectWithValue(errorMessage);
+        }
+    }
+);
 
 const paymentSlice = createSlice({
     name: 'payment',
@@ -55,6 +75,7 @@ const paymentSlice = createSlice({
         error: null,
         orderData: null,
         verifyData: null,
+        discountPrice: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -68,6 +89,20 @@ const paymentSlice = createSlice({
             state.orderData = action.payload;
         });
         builder.addCase(initiatePayment.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
+
+        // Handle initiate apply coupon
+        builder.addCase(applyCoupon.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(applyCoupon.fulfilled, (state, action) => {
+            state.loading = false;
+            state.discountPrice = action.payload;
+        });
+        builder.addCase(applyCoupon.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
         });

@@ -6,8 +6,28 @@ const formStyles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 30,
   },
+  background: {
+    backgroundColor: '#fff',
+  },
+  flex: {
+    flexGrow: 1,
+  },
+  paddingHorizontal: {
+    paddingHorizontal: 30,
+  },
   opacityView: {
     opacity: 0.6,
+  },
+  textInput: {
+    height: 120,
+    textAlignVertical: 'top',
+  },
+  height: {
+    height: 120,
+  },
+  errormessText: {
+    color: 'red',
+    marginBottom: 10,
   },
   containerBack: {
     backgroundColor: '#fff',
