@@ -312,7 +312,7 @@ const HomeScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
               {discountPrice !== null && discountPrice !== undefined && (
-                <Text style={homestyle.finalPriceText}>Final Course Price: ₹ {Math.round(discountPrice)}</Text>
+                <Text style={homestyle.finalPriceText}>Final Course Price: ₹ {Math.round(discountPrice) === 0 ? 1 : Math.round(discountPrice)}</Text>
               )}
               <TouchableOpacity
                 style={homestyle.modalButton}
