@@ -5,23 +5,27 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
   ActivityIndicator,
 } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
 import { Call, Key, Profile } from '../Icons/MyIcon';
+import auth from '@react-native-firebase/auth';
 
 const SignupScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: '',
     password: '',
     cPassword: '',
   });
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
   const [errors, setErrors] = useState({});
+  const [confirmation, setConfirmation] = useState(null);
 
   const onInputChange = (value, field) => {
     setFormData({ ...formData, [field]: value });
@@ -44,45 +48,48 @@ const SignupScreen = ({ navigation }) => {
     let fieldErrors = {};
     let valid = true;
 
-    const requiredFields = {
-      name: 'Name',
-      phone: 'Phone number',
-      email: 'Email',
-      password: 'Password',
-      cPassword: 'Confirm password',
-    };
+    const stepFields = ['name', 'password', 'cPassword', 'phone'];
 
-    // Check for empty fields
-    Object.keys(requiredFields).forEach((key) => {
+    stepFields.forEach((key) => {
       if (!formData[key].trim()) {
-        fieldErrors[key] = `${requiredFields[key]} is required`;
+        fieldErrors[key] = 'This field is required';
         valid = false;
       }
     });
 
-    // Validate phone number length
-    if (formData.phone && formData.phone.trim().length < 10) {
-      fieldErrors.phone = 'Phone number is not valid';
-      valid = false;
-    }
-
-    // Check password mismatch
     if (formData.password !== formData.cPassword) {
       fieldErrors.cPassword = 'Passwords do not match';
       valid = false;
     }
 
+    if (!isChecked) {
+      Alert.alert('Please agree to terms and conditions.');
+      valid = false;
+    }
+
     setErrors(fieldErrors);
+
     return valid;
   };
 
+  const signInWithPhoneNumber = async () => {
+    // console.log('called: ', phone);
+    const confirmations = await auth().signInWithPhoneNumber('+918130325002');
+    Alert.alert('Otp send success +918130325002');
+    console.log('Confirmations: ', confirmations);
+    setConfirmation(confirmations);
+  };
 
   const handleContinue = () => {
     const isValid = validateForm();
     setLoading(true);
     if (isValid) {
-      console.log('Form submitted successfully', formData);
-
+      if (passwordError) {
+        console.log('Fix password errors first');
+      } else {
+        console.log('Form submitted successfully', formData);
+        signInWithPhoneNumber(formData.phone);
+      }
     }
     setLoading(false);
   };
@@ -110,7 +117,6 @@ const SignupScreen = ({ navigation }) => {
               style={formStyles.input}
               placeholder="Enter Your Mobile Number"
               placeholderTextColor="#888"
-              maxLength={10}
               keyboardType="phone-pad"
               value={formData.phone}
               onChangeText={(text) => onInputChange(text, 'phone')}
@@ -134,23 +140,6 @@ const SignupScreen = ({ navigation }) => {
             />
           </View>
           {errors.name && <Text style={formStyles.error}>{errors.name}</Text>}
-
-          {/* email Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="white" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Enter Your Email"
-              placeholderTextColor="#888"
-              value={formData.email}
-              onChangeText={(text) => onInputChange(text, 'email')}
-            />
-          </View>
-          {errors.email && <Text style={formStyles.error}>{errors.email}</Text>}
 
           {/* Password Input */}
           <View style={formStyles.inputContainer}>
@@ -190,19 +179,23 @@ const SignupScreen = ({ navigation }) => {
           {/* Error Message for Password Mismatch */}
           {errors.cPassword && <Text style={formStyles.error}>{errors.cPassword}</Text>}
           {passwordError ? <Text style={formStyles.error}>{passwordError}</Text> : null}
-
+          <View style={formStyles.CheckBox}>
+            <CheckBox
+              value={isChecked}
+              onValueChange={setIsChecked}
+              tintColors={{ true: '#4CAF50', false: 'gray' }}
+            />
+            <Text style={formStyles.CheckBoxText}>Agree to terms and conditions | Privacy Policy</Text>
+          </View>
           {/* Continue Button */}
           {loading ? (
-            <TouchableOpacity
-              style={[formStyles.continueButton, formStyles.loadingButton]}
-              disabled={true}
-            >
+            <TouchableOpacity style={[formStyles.continueButton, formStyles.loadingButton]} disabled={true}>
               <ActivityIndicator size="small" color="#fff" />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               style={formStyles.button}
-              onPress={handleContinue}
+              onPress={signInWithPhoneNumber}
             >
               <Text style={formStyles.buttonText}>Continue</Text>
             </TouchableOpacity>
