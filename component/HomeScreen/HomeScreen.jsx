@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {
   View,
   ScrollView,
@@ -13,23 +13,27 @@ import {
   Linking,
 } from 'react-native';
 import homestyle from './homeStyle';
-import { useDispatch, useSelector } from 'react-redux';
-import { RecentCourseData } from './store';
+import {useDispatch, useSelector} from 'react-redux';
+import {RecentCourseData} from './store';
 import Loader from '../Loader';
-import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
+import {REACT_APP_RAZORPAY_KEY_ID} from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
-import { applyCoupon, initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
-import { UserData } from '../userData/UserData';
-import { PurchaseCourseData } from '../myCourseScreen/store';
-import { Course, YouTubeIcon } from '../Icons/MyIcon';
+import {
+  applyCoupon,
+  initiatePayment,
+  verifyPayment,
+} from '../CourseDetail/store/payment';
+import {UserData} from '../userData/UserData';
+import {PurchaseCourseData} from '../myCourseScreen/store';
+import {Course, YouTubeIcon} from '../Icons/MyIcon';
 import myCourseStyle from '../myCourseScreen/myCourseStyle';
 
-const { width: screenWidth } = Dimensions.get('window');
+const {width: screenWidth} = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({navigation}) => {
   const bannerScrollViewRef = useRef(null);
   const dispatch = useDispatch();
-  const { usersData } = UserData();
+  const {usersData} = UserData();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   const [payLoading, setPayLoading] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -38,22 +42,22 @@ const HomeScreen = ({ navigation }) => {
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [applyCouponLoading, setapplyCouponLoading] = useState(false);
   const [discountPrice, setdiscountPrice] = useState(null);
-
-  const { courseData, loading } = useSelector((state) => state.RecentCourseData);
+  const {courseData, loading} = useSelector(state => state.RecentCourseData);
+  // console.log("user",usersData._id);
 
   const images = [
-    { id: 1, image: { uri: 'https://zenstudy.in/assets/1.webp' } },
-    { id: 2, image: { uri: 'https://zenstudy.in/assets/2.webp' } },
-    { id: 3, image: { uri: 'https://zenstudy.in/assets/3.webp' } },
+    {id: 1, image: {uri: 'https://zenstudy.in/assets/1.webp'}},
+    {id: 2, image: {uri: 'https://zenstudy.in/assets/2.webp'}},
+    {id: 3, image: {uri: 'https://zenstudy.in/assets/3.webp'}},
   ];
 
-  const handleBannerScroll = (event) => {
+  const handleBannerScroll = event => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollPosition / screenWidth);
     setActiveBannerIndex(index);
   };
 
-  const scrollToBannerIndex = (index) => {
+  const scrollToBannerIndex = index => {
     if (bannerScrollViewRef.current) {
       bannerScrollViewRef.current.scrollTo({
         x: screenWidth * index,
@@ -80,10 +84,7 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [usersData, dispatch]);
 
-
-  const watchCourse = useSelector(
-    state => state.PurchaseCourseDetails,
-  );
+  const watchCourse = useSelector(state => state.PurchaseCourseDetails);
 
   const watchData = watchCourse.courseData;
 
@@ -91,7 +92,9 @@ const HomeScreen = ({ navigation }) => {
     setPayLoading(courseId);
     try {
       const userId = usersData?._id;
-      const orderData = await dispatch(initiatePayment({ amount, userId, courseId })).unwrap();
+      const orderData = await dispatch(
+        initiatePayment({amount, userId, courseId}),
+      ).unwrap();
       if (orderData) {
         handlePaymentVerify(orderData, courseId);
       }
@@ -116,20 +119,20 @@ const HomeScreen = ({ navigation }) => {
     };
 
     RazorpayCheckout.open(options)
-      .then(async (response) => {
+      .then(async response => {
         try {
           const verifyData = await dispatch(
             verifyPayment({
               razorpayData: response,
               userId: usersData._id,
               courseId,
-            })
+            }),
           ).unwrap();
           if (verifyData.message === 'Payment Successful') {
             Alert.alert(
               'Payment Successful',
               `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{ text: 'OK' }]
+              [{text: 'OK'}],
             );
             navigation.navigate('myCourseScreen');
           }
@@ -141,7 +144,7 @@ const HomeScreen = ({ navigation }) => {
         Alert.alert(
           'Payment Failed',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{ text: 'OK' }]
+          [{text: 'OK'}],
         );
       });
   };
@@ -155,7 +158,13 @@ const HomeScreen = ({ navigation }) => {
   const applyCourse = async () => {
     setapplyCouponLoading(true);
     try {
-      const applyCouponData = await dispatch(applyCoupon({ code: couponCode, price: selectedCoursePrice, courseId: selectedCourseId })).unwrap();
+      const applyCouponData = await dispatch(
+        applyCoupon({
+          code: couponCode,
+          price: selectedCoursePrice,
+          courseId: selectedCourseId,
+        }),
+      ).unwrap();
       // console.log('ApplyCoupon', applyCouponData);
       if (applyCouponData?.discount !== undefined) {
         setdiscountPrice(applyCouponData.discount);
@@ -170,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
     }
   };
   // console.log('Pi', discountPrice);
-  const handleProceedWithPayment = (price) => {
+  const handleProceedWithPayment = price => {
     setShowModal(false);
     setdiscountPrice(null);
     setCouponCode('');
@@ -204,9 +213,8 @@ const HomeScreen = ({ navigation }) => {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onScroll={handleBannerScroll}
-            scrollEventThrottle={16}
-          >
-            {images.map((item) => (
+            scrollEventThrottle={16}>
+            {images.map(item => (
               <View key={item.id} style={homestyle.imageContainer}>
                 <Image source={item.image} style={homestyle.image} />
               </View>
@@ -218,7 +226,9 @@ const HomeScreen = ({ navigation }) => {
                 key={index}
                 style={[
                   homestyle.paginationDot,
-                  activeBannerIndex === index ? homestyle.activeDot : homestyle.inactiveDot,
+                  activeBannerIndex === index
+                    ? homestyle.activeDot
+                    : homestyle.inactiveDot,
                 ]}
                 onPress={() => scrollToBannerIndex(index)}
               />
@@ -226,32 +236,41 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {
-          /* Courses Section */
-        }
+        {/* Courses Section */}
 
         <View style={homestyle.coursesContainer}>
           <Text style={homestyle.coursesTitle}>Recently Added Courses</Text>
           {courseData && courseData.length > 0 && (
-            <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
-              {courseData.map((course) => (
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}>
+              {courseData.map(course => (
                 <View key={course._id} style={homestyle.courseCard}>
                   <Text style={homestyle.title}>{course.title}</Text>
                   <View style={homestyle.cImgContainer}>
-                    <Image source={{ uri: course?.imageUrl }} style={homestyle.courseImage} />
+                    <Image
+                      source={{uri: course?.imageUrl}}
+                      style={homestyle.courseImage}
+                    />
                   </View>
                   <Text style={homestyle.courseDescription}>
                     {course.description.slice(0, 150)}...
                   </Text>
                   <View style={homestyle.afterDesc}>
-                    <Text style={homestyle.createdAt}>{course?.createdAt.slice(0, 10)}</Text>
+                    <Text style={homestyle.createdAt}>
+                      {course?.createdAt.slice(0, 10)}
+                    </Text>
                     <Text style={homestyle.price}>₹ {course.price}</Text>
                   </View>
                   <View style={homestyle.cardBtns}>
                     <TouchableOpacity
                       style={homestyle.exploreBtn}
-                      onPress={() => navigation.navigate('courseDetail', { courseId: course._id })}
-                    >
+                      onPress={() =>
+                        navigation.navigate('courseDetail', {
+                          courseId: course._id,
+                        })
+                      }>
                       <Text style={homestyle.exploreBtnText}>View Course</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -274,20 +293,18 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
 
-        {
-          /* Coupon Modal */
-        }
+        {/* Coupon Modal */}
 
         <Modal visible={showModal} transparent animationType="slide">
           <View style={homestyle.modalBackground}>
             <View style={homestyle.modalContainer}>
-
               <View style={homestyle.modalTop}>
-                <Text style={homestyle.modalTitle}>Enter coupon if you have ?</Text>
+                <Text style={homestyle.modalTitle}>
+                  Enter coupon if you have ?
+                </Text>
                 <TouchableOpacity
                   onPress={() => discard()}
-                  style={homestyle.modalCross}
-                >
+                  style={homestyle.modalCross}>
                   <Text style={homestyle.modalCrossText}>X</Text>
                 </TouchableOpacity>
               </View>
@@ -302,65 +319,77 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={homestyle.applyButton}
                   onPress={applyCourse}
-                  disabled={applyCouponLoading}
-                >
+                  disabled={applyCouponLoading}>
                   {applyCouponLoading ? (
-                    <Text style={homestyle.disableButtonText}>Please wait...</Text>
+                    <Text style={homestyle.disableButtonText}>
+                      Please wait...
+                    </Text>
                   ) : (
                     <Text style={homestyle.applyButtonText}>Apply</Text>
                   )}
                 </TouchableOpacity>
               </View>
               {discountPrice !== null && discountPrice !== undefined && (
-                <Text style={homestyle.finalPriceText}>Final Course Price: ₹ {Math.round(discountPrice) === 0 ? 1 : Math.round(discountPrice)}</Text>
+                <Text style={homestyle.finalPriceText}>
+                  Final Course Price: ₹{' '}
+                  {Math.round(discountPrice) === 0
+                    ? 1
+                    : Math.round(discountPrice)}
+                </Text>
               )}
               <TouchableOpacity
                 style={homestyle.modalButton}
                 onPress={() => {
-                  const finalPrice = discountPrice !== null && Number(discountPrice) === 0
-                    ? 1
-                    : discountPrice
+                  const finalPrice =
+                    discountPrice !== null && Number(discountPrice) === 0
+                      ? 1
+                      : discountPrice
                       ? Math.round(discountPrice)
                       : selectedCoursePrice;
                   handleProceedWithPayment(finalPrice);
-                }}
-              >
+                }}>
                 <Text style={homestyle.modalButtonText}>OK Proceed</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
 
-        {
-          /* Explore our */
-        }
+        {/* Explore our */}
         <View style={homestyle.exploreContainer}>
-
           <View style={homestyle.exploreIcons}>
-            <TouchableOpacity style={homestyle.exploreContent} onPress={() => navigation.navigate('allCoursesScreen')}>
+            <TouchableOpacity
+              style={homestyle.exploreContent}
+              onPress={() => navigation.navigate('allCoursesScreen')}>
               <Course fill="#054bb4" />
               <Text style={homestyle.exploreContentText}>All courses</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={homestyle.exploreContent} onPress={() => Linking.openURL('https://www.youtube.com/@Zenstudyz')}>
+            <TouchableOpacity
+              style={homestyle.exploreContent}
+              onPress={() =>
+                Linking.openURL('https://www.youtube.com/@Zenstudyz')
+              }>
               <YouTubeIcon fill="#054bb4" />
               <Text style={homestyle.exploreContentText}>Youtube</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={homestyle.exploreCourses}>
-          <Text style={homestyle.coursesTitle}>My Courses</Text>
-          {watchData && watchData.length > 0 &&
-            watchData.map((course) => (
+        {watchData && watchData.length > 0 && (
+          <View style={homestyle.exploreCourses}>
+            <Text style={homestyle.coursesTitle}>My Courses</Text>
+
+            {watchData.map(course => (
               <View style={myCourseStyle.card} key={course._id}>
                 {/* Title */}
-                <Text style={myCourseStyle.title}>{course?.course_id?.title}</Text>
+                <Text style={myCourseStyle.title}>
+                  {course?.course_id?.title}
+                </Text>
 
                 {/* Image with play button */}
                 <View style={myCourseStyle.imageContainer}>
                   <Image
                     style={myCourseStyle.courseImage}
-                    source={{ uri: course?.imageurl }}
+                    source={{uri: course?.imageurl}}
                   />
                   <View style={myCourseStyle.playButtonContainer}>
                     <View style={myCourseStyle.playButton}>
@@ -385,7 +414,7 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={myCourseStyle.continueButton}
                   onPress={() =>
-                    navigation.navigate('watchCourse', { courseId: course?._id })
+                    navigation.navigate('watchCourse', {courseId: course?._id})
                   }>
                   <Text style={myCourseStyle.continueButtonText}>
                     Continue Learning
@@ -393,14 +422,11 @@ const HomeScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
             ))}
-        </View>
-
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 };
 
 export default HomeScreen;
-
-
-

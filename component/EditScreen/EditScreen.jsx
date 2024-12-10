@@ -108,7 +108,8 @@ const EditScreen = ({ navigation }) => {
                 style={formStyles.input}
                 placeholder={`Update Your ${field.charAt(0).toUpperCase() + field.slice(1)}`}
                 placeholderTextColor="#888"
-                value={formData[field] !== undefined ? formData[field].toString() : ''}
+                value={formData[field] != null ? formData[field].toString() : ''}
+
                 onChangeText={(text) => onInputChange(text, field)}
                 editable={field !== 'phone'} // Phone field is read-only
               />

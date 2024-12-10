@@ -6,11 +6,11 @@ import { REACT_APP_API2 } from '@env';
 // Thunk to register/signup user
 export const signupUser = createAsyncThunk(
     'authentication/signupUser',
-    async ({ phone,name, password }, thunkAPI) => {
+    async ({ phone, name, email, userType, phoneStatus, password }, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/auth/readerSignup`,
-                { phone, password },
+                `${REACT_APP_API2}zenstudy/api/auth/signUp`,
+                { phone, password, name, email, userType, phoneStatus },
                 {
                     headers: {
                         Accept: 'application/json',
@@ -18,8 +18,8 @@ export const signupUser = createAsyncThunk(
                     },
                 }
             );
-            console.log('response: ', response);
-            return response.data;
+            console.log('response: ', response.data);
+            return response.data.user;
         } catch (error) {
             let errorMessage;
 

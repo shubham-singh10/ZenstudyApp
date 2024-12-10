@@ -69,12 +69,12 @@ const formStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
-    textAlign: 'left',
+    textAlign: 'center',
   },
   loremSubText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#7E7E7E',
-    textAlign: 'left',
+    textAlign: 'center',
   },
   welcomeText: {
     fontSize: 27,

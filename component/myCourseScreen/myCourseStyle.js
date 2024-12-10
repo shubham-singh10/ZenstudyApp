@@ -112,6 +112,16 @@ const myCourseStyle = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
     },
+    nullmsg:{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#f8f8f8',
+    },
+    nulltext: 
+    {
+      fontSize: 16,
+    color: '#ff0000',}
   });
 
 export default myCourseStyle;

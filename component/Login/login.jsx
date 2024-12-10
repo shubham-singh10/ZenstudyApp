@@ -86,10 +86,9 @@ const LoginScreen = () => {
       <View style={formStyles.container}>
         <View style={formStyles.section1}>
           <View style={formStyles.titleContainer}>
-            <Text style={formStyles.loremText}>Lorem Ipsum has been</Text>
+            <Text style={formStyles.loremText}>Transforming Education</Text>
             <Text style={formStyles.loremSubText}>
-              Lorem Ipsum has been the industry's standard dummy text ever since
-              the 1500s
+              Making Education Imaginative
             </Text>
 
             <SafeAreaView style={formStyles.imageContainer}>

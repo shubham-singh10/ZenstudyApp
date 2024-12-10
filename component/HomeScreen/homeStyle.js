@@ -165,6 +165,7 @@ const homestyle = StyleSheet.create({
     backgroundColor: '#E6F0FE',
     padding: 20,
     borderRadius: 20,
+    marginBottom:20
   },
   exploreText: {
     color: '#054bb4',

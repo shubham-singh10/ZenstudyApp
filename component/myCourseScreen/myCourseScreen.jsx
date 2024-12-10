@@ -13,6 +13,7 @@ const MyCourses = ({navigation}) => {
   const {courseData, loading, error} = useSelector(
     state => state.PurchaseCourseDetails,
   );
+console.log("cd",courseData);
 
   useEffect(() => {
     dispatch(PurchaseCourseData(usersData?._id));
@@ -30,6 +31,14 @@ const MyCourses = ({navigation}) => {
       </View>
     );
   }
+  if (!courseData || courseData.length === 0) {
+    return (
+      <View style={myCourseStyle.nullmsg}>
+        <Text style={myCourseStyle.nulltext}>You have not purchased any courses yet.</Text>
+      </View>
+    );
+  }
+  
   const getShortDescription = (text, wordLimit) => {
     const words = text.split(' ');
     if (words.length > wordLimit) {

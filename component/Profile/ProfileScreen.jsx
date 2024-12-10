@@ -20,6 +20,8 @@ const ProfileScreen = ({ onLogout }) => {
   const dispatch = useDispatch();
 
   const { profileData, loading } = useSelector(state => state.ProfileData);
+  console.log(profileData);
+  
   useEffect(() => {
     if (usersData?._id) {
       dispatch(fetchProfileDetails(usersData._id));

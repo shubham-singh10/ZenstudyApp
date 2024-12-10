@@ -27,6 +27,7 @@ export const PurchaseCourseData = createAsyncThunk(
             );
 
             const data = await response.data;
+            // console.log('Data: ', data)
             if (data.message === 'Done') {
 
                 // Filter and map courses with valid course_id
