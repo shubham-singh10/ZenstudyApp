@@ -24,17 +24,15 @@ export const loginData = createAsyncThunk(
 
             // Check if the error has a response from the server
             if (error.response) {
-                // Server responded with a status other than 2xx
-                errorMessage = error.response.data.message || 'An error occurred. Please try again.'; // Adjust this based on your API's response structure
+                // Use server's error message if available
+                errorMessage = error.response.data.message || 'Invalid credentials. Please try again.';
             } else if (error.request) {
-                // Request was made but no response was received
-                errorMessage = 'No response from server. Please check your internet connection.';
+                errorMessage = 'Server is not responding. Please check your internet connection.';
             } else {
-                // Something happened in setting up the request that triggered an error
-                errorMessage = error.message;
+                errorMessage = 'An unexpected error occurred. Please try again.';
             }
 
-            console.log('Error: ', errorMessage);
+            console.log('Login Error: ', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage); // Return the specific error message
         }
     }

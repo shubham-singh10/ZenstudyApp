@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginData } from './store';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../Context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -40,12 +41,39 @@ const LoginScreen = () => {
     }
   }, [error, hasAttemptedLogin]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (mobileNumber && password) {
-      dispatch(loginData({ phone: mobileNumber, password }));
+      dispatch(loginData({ phone: mobileNumber, password }))
+        .unwrap()
+        .then((response) => {
+          // Success message
+          Toast.show({
+            type: 'success',
+            text1: 'Welcome Back!',
+            text2: `Hello ${response.name}, you are successfully logged in!`,
+            visibilityTime: 5000, // 5 seconds
+            position: 'top',
+          });
+        })
+        .catch((errors) => {
+          // Error message
+          Toast.show({
+            type: 'error',
+            text1: 'Login Failed',
+            text2: errors || 'Something went wrong. Please try again.',
+            visibilityTime: 5000, // 5 seconds
+            position: 'top',
+          });
+        });
     } else {
-      // Handle case where fields are empty
-      Alert.alert('Missing Information', 'Please enter both your mobile number and password to proceed.', [{ text: 'OK' }]);
+      // Missing input fields
+      Toast.show({
+        type: 'error',
+        text1: 'Missing Information',
+        text2: 'Please enter both your mobile number and password to proceed.',
+        visibilityTime: 5000, // 5 seconds
+        position: 'top',
+      });
     }
   };
 
@@ -104,7 +132,7 @@ const LoginScreen = () => {
             <TextInput
               style={formStyles.input}
               placeholder="Enter Your Password"
-               placeholderTextColor="#888"
+              placeholderTextColor="#888"
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
