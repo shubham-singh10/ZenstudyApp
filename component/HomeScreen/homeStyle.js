@@ -8,6 +8,9 @@ const homestyle = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
+  opacity: {
+    opacity: 0.8,
+  },
   scrollViewContent: {
     flexGrow: 1,
     backgroundColor: '#fff',
@@ -15,6 +18,10 @@ const homestyle = StyleSheet.create({
   carouselContainer: {
     height: 200,
   },
+  imageLoader: {
+    position: 'absolute',
+  },
+
   imageContainer: {
     width: screenWidth,
     justifyContent: 'center',
@@ -25,7 +32,7 @@ const homestyle = StyleSheet.create({
     height: 140,
     resizeMode: 'cover',
   },
-  finalPriceText:{
+  finalPriceText: {
     color: '#000',
   },
   pagination: {
@@ -134,7 +141,7 @@ const homestyle = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  opacity: {
+  opacitty: {
     opacity: '0.8',
   },
   buyNow: {
@@ -165,7 +172,7 @@ const homestyle = StyleSheet.create({
     backgroundColor: '#E6F0FE',
     padding: 20,
     borderRadius: 20,
-    marginBottom:20
+    marginBottom: 20,
   },
   exploreText: {
     color: '#054bb4',
@@ -237,7 +244,7 @@ const homestyle = StyleSheet.create({
   },
   modalInput: {
     width: '80%',
-    color:'#000',
+    color: '#000',
     padding: 5,
     borderWidth: 1,
     borderColor: '#ccc',

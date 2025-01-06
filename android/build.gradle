@@ -21,3 +21,11 @@ buildscript {
 
 apply plugin: "com.facebook.react.rootproject"
 apply plugin: 'com.google.gms.google-services'
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://github.com/VdoCipher/maven-repo/raw/master/repo"}
+    }
+}

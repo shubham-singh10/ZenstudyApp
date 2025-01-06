@@ -5,14 +5,14 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import formStyles from '../Login/formStyles';
-import { BackArrow, Location, Profile } from '../Icons/MyIcon';
+import { BackArrow, Location, Profile, Email } from '../Icons/MyIcon';
 import { UserData } from '../userData/UserData';
 import Loader from '../Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfileDetails, updateProfileDetails } from './store';
+import Toast from 'react-native-toast-message';
 
 const EditScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -66,10 +66,22 @@ const EditScreen = ({ navigation }) => {
     dispatch(updateProfileDetails({ userId: profileData._id, userUpdate: userUpdate }))
       .unwrap()
       .then(() => {
-        Alert.alert('Success', 'Profile updated successfully!');
+        Toast.show({
+          type: 'success',
+          text1: 'Profile Updated!',
+          text2: 'Your profile has been updated successfully. Changes are now reflected!',
+          visibilityTime: 5000,
+          position: 'top',
+        });
       })
       .catch((err) => {
-        Alert.alert('Error', err || 'An error occurred while updating the profile.');
+        Toast.show({
+          type: 'error',
+          text1: 'Update Failed',
+          text2: err || 'Something went wrong while updating your profile. Please try again later.',
+          visibilityTime: 5000,
+          position: 'top',
+        });
       });
   };
 
@@ -98,10 +110,14 @@ const EditScreen = ({ navigation }) => {
           {['name', 'email', 'phone', 'Address', 'State', 'City', 'Country', 'Pincode'].map((field, index) => (
             <View key={index} style={formStyles.inputContainer}>
               <View style={formStyles.inputlogo}>
-                <Text style={formStyles.inputlogoContent}  placeholderTextColor="#888">
-                  {field === 'Address' || field === 'State' || field === 'City' || field === 'Country'
-                    ? <Location fill="#fff" />
-                    : <Profile fill="#fff" />}
+                <Text style={formStyles.inputlogoContent} placeholderTextColor="#888">
+                  {field === 'Address' || field === 'State' || field === 'City' || field === 'Country' ? (
+                    <Location fill="#fff" />
+                  ) : field === 'email' ? (
+                    <Email fill="#fff" />
+                  ) : (
+                    <Profile fill="#fff" />
+                  )}
                 </Text>
               </View>
               <TextInput

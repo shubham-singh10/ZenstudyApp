@@ -1,25 +1,32 @@
-import React, {useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity, ScrollView} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import myCourseStyle from './myCourseStyle';
-import {useDispatch, useSelector} from 'react-redux';
-import {PurchaseCourseData} from './store';
-import {UserData} from '../userData/UserData';
+import { useDispatch, useSelector } from 'react-redux';
+import { PurchaseCourseData } from './store';
+import { UserData } from '../userData/UserData';
 import Loader from '../Loader';
-import {NotFound} from '../Icons/MyIcon';
+import { NotFound } from '../Icons/MyIcon';
 
-const MyCourses = ({navigation}) => {
+const MyCourses = ({ navigation }) => {
   const dispatch = useDispatch();
-  const {usersData} = UserData();
-  const {courseData, loading, error} = useSelector(
+  const { usersData } = UserData();
+  const { courseData, loading, error } = useSelector(
     state => state.PurchaseCourseDetails,
   );
-console.log("cd",courseData);
+
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
-    dispatch(PurchaseCourseData(usersData?._id));
+    const fetchData = async () => {
+      if (usersData?._id) {
+        await dispatch(PurchaseCourseData(usersData?._id));
+        setDataFetched(true); // Mark data as fetched once the API call completes
+      }
+    };
+    fetchData();
   }, [dispatch, usersData]);
 
-  if (loading) {
+  if (loading && !dataFetched) {
     return <Loader />;
   }
 
@@ -31,14 +38,17 @@ console.log("cd",courseData);
       </View>
     );
   }
-  if (!courseData || courseData.length === 0) {
+
+  if (dataFetched && (!courseData || courseData.length === 0)) {
     return (
       <View style={myCourseStyle.nullmsg}>
-        <Text style={myCourseStyle.nulltext}>You have not purchased any courses yet.</Text>
+        <Text style={myCourseStyle.nulltext}>
+          You have not purchased any courses yet.
+        </Text>
       </View>
     );
   }
-  
+
   const getShortDescription = (text, wordLimit) => {
     const words = text.split(' ');
     if (words.length > wordLimit) {
@@ -50,7 +60,6 @@ console.log("cd",courseData);
   return (
     <ScrollView contentContainerStyle={myCourseStyle.scrollContainer}>
       {courseData &&
-        courseData.length > 0 &&
         courseData.map(course => (
           <View style={myCourseStyle.card} key={course._id}>
             {/* Title */}
@@ -60,7 +69,7 @@ console.log("cd",courseData);
             <View style={myCourseStyle.imageContainer}>
               <Image
                 style={myCourseStyle.courseImage}
-                source={{uri: course?.imageurl}}
+                source={{ uri: course?.imageurl }}
               />
               <View style={myCourseStyle.playButtonContainer}>
                 <View style={myCourseStyle.playButton}>
@@ -72,7 +81,7 @@ console.log("cd",courseData);
             {/* Language tag */}
             <View style={myCourseStyle.languageTag}>
               <Text style={myCourseStyle.languageText}>
-                {course?.course_id?.language}
+                {course?.course_id?.language?.name}
               </Text>
             </View>
 
@@ -85,7 +94,7 @@ console.log("cd",courseData);
             <TouchableOpacity
               style={myCourseStyle.continueButton}
               onPress={() =>
-                navigation.navigate('watchCourse', {courseId: course?._id})
+                navigation.navigate('watchCourse', { courseId: course?._id })
               }>
               <Text style={myCourseStyle.continueButtonText}>
                 Continue Learning

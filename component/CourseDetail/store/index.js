@@ -16,9 +16,12 @@ export const DetailsCourseData = createAsyncThunk(
                     },
                 }
             );
-            //  console.log('Response: ', response.data);
 
-            return response.data.coursedetail;
+            const courseDetail = {
+                ...response.data.coursedetail,
+                imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${response.data.coursedetail.thumbnail}`,
+            };
+            return courseDetail;
         } catch (error) {
             let errorMessage;
 

@@ -53,7 +53,7 @@ export const PurchaseCourseData = createAsyncThunk(
                 errorMessage = error.message;
             }
 
-            console.error('Error fetching course data: ', errorMessage);
+            // console.error('Error fetching course data: ', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage);
         }
     }

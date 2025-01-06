@@ -1,25 +1,25 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
- header: {
-  backgroundColor: 'white',
-  width: '100%',
-  paddingHorizontal: 15,
-  paddingVertical: 15,
-  top: 0,
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  
-  // Shadow for iOS
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
+  header: {
+    backgroundColor: 'white',
+    width: '100%',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    top: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
 
-  // Shadow for Android
-  elevation: 5,
-},
+    // Shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    // Shadow for Android
+    elevation: 5,
+  },
   logoh1: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -34,15 +34,15 @@ const styles = StyleSheet.create({
     color: '#007BFF',
   },
 
-mainHeader: {
+  mainHeader: {
     backgroundColor: '#054bb4',
     height: 55,
     width: '100%',
     zIndex: 1000,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center', 
-    paddingHorizontal: 20, 
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
 
   leftContent: {
@@ -69,8 +69,8 @@ mainHeader: {
   bellIcon: {
     color: '#fff',
   },
-  footcontainer:{
-    backgroundColor:'#fff',
+  footcontainer: {
+    backgroundColor: '#fff',
   },
   footer: {
     backgroundColor: '#054bb4',
@@ -79,7 +79,7 @@ mainHeader: {
     height: 70,
     width: '100%',
     paddingTop: 25,
-    paddingBottom:10,
+    paddingBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -88,23 +88,23 @@ mainHeader: {
   fnavbox: {
     flexDirection: 'column',
     alignItems: 'center',
-    paddingBottom:5
+    paddingBottom: 5,
   },
   ficons: {
-    color: '#fff', 
+    color: '#fff',
   },
   ficonText: {
-    color: '#fff', 
+    color: '#fff',
   },
   activeTab: {
     borderBottomColor: '#fff',
-    borderBottomWidth: 3, 
+    borderBottomWidth: 3,
   },
   activeIcon: {
-    color: 'gray', 
+    color: 'gray',
   },
   activeText: {
-    color: '#03f0fc', 
+    color: '#03f0fc',
   },
 
 });

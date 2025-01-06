@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import homestyle from '../HomeScreen/homeStyle';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   ScrollView,
   View,
@@ -16,14 +16,14 @@ import { UserData } from '../userData/UserData';
 import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
 import { initiatePayment, verifyPayment } from '../CourseDetail/store/payment';
-import Loader from '../Loader';
 import { RecentCourseData } from '../HomeScreen/store';
+import { HomeScreenSakelton } from '../HomeScreen/HomeScreenSakelton';
 
-const AllCourses = ({navigation}) => {
-  const {usersData} = UserData();
-  const {courseData, loading} = useSelector(state => state.RecentCourseData);
+const AllCourses = ({ navigation }) => {
+  const { usersData } = UserData();
+  const { courseData, loading } = useSelector(state => state.RecentCourseData);
   const dispatch = useDispatch();
-  const [payLoading, setPayLoading] = useState(null);  
+  const [payLoading, setPayLoading] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [couponCode, setCouponCode] = useState('');
@@ -36,11 +36,11 @@ const AllCourses = ({navigation}) => {
   }, [usersData, dispatch]);
 
   const handlePayment = async (amount, courseId) => {
-    setPayLoading(courseId); 
+    setPayLoading(courseId);
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(
-        initiatePayment({amount, userId, courseId}),
+        initiatePayment({ amount, userId, courseId }),
       ).unwrap();
       if (orderData) {
         handlePaymentVerify(orderData, courseId);
@@ -79,7 +79,7 @@ const AllCourses = ({navigation}) => {
             Alert.alert(
               'Payment Successful',
               `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{text: 'OK'}],
+              [{ text: 'OK' }],
             );
             navigation.navigate('myCourseScreen');
           }
@@ -91,7 +91,7 @@ const AllCourses = ({navigation}) => {
         Alert.alert(
           'Payment Failed',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{text: 'OK'}],
+          [{ text: 'OK' }],
         );
       });
   };
@@ -109,10 +109,6 @@ const AllCourses = ({navigation}) => {
     );
   };
 
-  if (loading) {
-    return <Loader />;
-  }
-
   const getShortDescription = (text, wordLimit) => {
     const words = text.split(' ');
     if (words.length > wordLimit) {
@@ -124,57 +120,62 @@ const AllCourses = ({navigation}) => {
   return (
     <View style={homestyle.container}>
       <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
-        <View style={homestyle.coursesContainer}>
-          <Text style={homestyle.coursesTitle}>Available Courses</Text>
-          {courseData && courseData.length > 0 && (
-            <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
-              {courseData.map(course => (
-                <View key={course._id} style={homestyle.courseCard}>
-                  <Text style={homestyle.title}>{course.title}</Text>
-                  <View style={homestyle.cImgContainer}>
-                    <Image
-                      source={{uri: course?.imageUrl}}
-                      style={homestyle.courseImage}
-                    />
-                  </View>
-                  <Text style={homestyle.courseDescription}>
-                    {getShortDescription(course.description, 20)}
-                  </Text>
-                  <View style={homestyle.afterDesc}>
-                    <Text style={homestyle.createdAt}>
-                      {course?.createdAt.slice(0, 10)}
-                    </Text>
-                    <Text style={homestyle.price}>₹ {course.price}</Text>
-                  </View>
-                  <View style={homestyle.cardBtns}>
-                    <TouchableOpacity
-                      style={homestyle.exploreBtn}
-                      onPress={() =>
-                        navigation.navigate('courseDetail', {
-                          courseId: course._id,
-                        })
-                      }>
-                      <Text style={homestyle.exploreBtnText}>View Course</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        homestyle.buyNow,
-                        payLoading === course._id && {opacity: 0.8},  
-                      ]}
-                      onPress={() => handleOpenModal(course._id)}
-                      disabled={!!payLoading}>  
-                      {payLoading === course._id ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                      ) : (
-                        <Text style={homestyle.buyNowText}>Buy Now</Text>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-          )}
-        </View>
+        {loading && (<HomeScreenSakelton />)}
+        {!loading && (
+          <>
+            <View style={homestyle.coursesContainer}>
+              <Text style={homestyle.coursesTitle}>Available Courses</Text>
+              {courseData && courseData.length > 0 && (
+                <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
+                  {courseData.map(course => (
+                    <View key={course._id} style={homestyle.courseCard}>
+                      <Text style={homestyle.title}>{course.title}</Text>
+                      <View style={homestyle.cImgContainer}>
+                        <Image
+                          source={{ uri: course?.imageUrl }}
+                          style={homestyle.courseImage}
+                        />
+                      </View>
+                      <Text style={homestyle.courseDescription}>
+                        {getShortDescription(course.description, 20)}
+                      </Text>
+                      <View style={homestyle.afterDesc}>
+                        <Text style={homestyle.createdAt}>
+                          {course?.language.name}
+                        </Text>
+                        <Text style={homestyle.price}>₹ {course.price}</Text>
+                      </View>
+                      <View style={homestyle.cardBtns}>
+                        <TouchableOpacity
+                          style={homestyle.exploreBtn}
+                          onPress={() =>
+                            navigation.navigate('courseDetail', {
+                              courseId: course._id,
+                            })
+                          }>
+                          <Text style={homestyle.exploreBtnText}>View Course</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[
+                            homestyle.buyNow,
+                            payLoading === course._id && homestyle.opacitty,
+                          ]}
+                          onPress={() => handleOpenModal(course._id)}
+                          disabled={!!payLoading}>
+                          {payLoading === course._id ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                          ) : (
+                            <Text style={homestyle.buyNowText}>Buy Now</Text>
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+          </>
+        )}
         <Modal visible={showModal} transparent animationType="slide">
           <View style={homestyle.modalBackground}>
             <View style={homestyle.modalContainer}>

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,17 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
-import {Call, Email, Key, Profile} from '../Icons/MyIcon';
+import { Call, Email, Key, Profile } from '../Icons/MyIcon';
 import Toast from 'react-native-toast-message';
-import {signupUser} from './store';
-import {useDispatch, useSelector} from 'react-redux';
-import {AuthContext} from '../../Context/AuthContext';
+import { signupUser } from './store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthContext } from '../../Context/AuthContext';
 
-const SignupScreen = ({navigation}) => {
+const SignupScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -26,11 +27,11 @@ const SignupScreen = ({navigation}) => {
     userType: 'Reader',
   });
   const dispatch = useDispatch();
-  const {userData, loading, error} = useSelector(state => state.rauth);
+  const { userData, loading, error } = useSelector(state => state.rauth);
   const [passwordError, setPasswordError] = useState('');
   const [hasAttemptedSignUp, setHasAttemptedSignUp] = useState(false);
   const [errors, setErrors] = useState({});
-  const {setIsLoggedIn} = useContext(AuthContext);
+  const { setIsLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     if (userData) {
@@ -40,16 +41,16 @@ const SignupScreen = ({navigation}) => {
 
   useEffect(() => {
     if (error && hasAttemptedSignUp) {
-      Alert.alert('SignUp Error', error, [{text: 'OK'}]);
+      Alert.alert('SignUp Error', error, [{ text: 'OK' }]);
       setHasAttemptedSignUp(false);
     }
   }, [error, hasAttemptedSignUp]);
 
   const onInputChange = (value, field) => {
-    setFormData({...formData, [field]: value});
+    setFormData({ ...formData, [field]: value });
 
     if (errors[field]) {
-      setErrors({...errors, [field]: ''});
+      setErrors({ ...errors, [field]: '' });
     }
     if (field === 'cPassword' || field === 'password') {
       if (formData.password !== value && field === 'cPassword') {
@@ -75,21 +76,35 @@ const SignupScreen = ({navigation}) => {
     };
 
     // Check for empty fields
-    Object.keys(requiredFields).forEach(key => {
-      if (!formData[key].trim()) {
+    Object.keys(requiredFields).forEach((key) => {
+      if (!formData[key]?.trim()) {
         fieldErrors[key] = `${requiredFields[key]} is required`;
         valid = false;
       }
     });
 
-    // Validate phone number length
-    if (formData.phone && formData.phone.trim().length < 10) {
-      fieldErrors.phone = 'Phone number is not valid';
+    // Validate phone number (exactly 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone.trim())) {
+      fieldErrors.phone = 'Phone number must be exactly 10 digits';
+      valid = false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email.trim())) {
+      fieldErrors.email = 'Email format is invalid';
+      valid = false;
+    }
+
+    // Validate password length (at least 8 characters)
+    if (formData.password && formData.password.trim().length < 8) {
+      fieldErrors.password = 'Password must be at least 8 characters long';
       valid = false;
     }
 
     // Check password mismatch
-    if (formData.password !== formData.cPassword) {
+    if (formData.password && formData.cPassword && formData.password !== formData.cPassword) {
       fieldErrors.cPassword = 'Passwords do not match';
       valid = false;
     }
@@ -98,12 +113,13 @@ const SignupScreen = ({navigation}) => {
     return valid;
   };
 
+
   const handleContinue = () => {
     const isValid = validateForm();
     if (isValid) {
-      console.log('Form submitted successfully', formData);
-
-      dispatch(signupUser({phone: formData.phone , name: formData.name, email:formData.email, userType:formData.userType, phoneStatus:formData.phoneStatus, password:formData.password}))
+      // console.log('Form submitted successfully', formData);
+      const { phone, name, email, userType, phoneStatus, password } = formData;
+      dispatch(signupUser({ phone, name, email, userType, phoneStatus, password }))
         .unwrap()
         .then(response => {
           // Success message
@@ -111,27 +127,30 @@ const SignupScreen = ({navigation}) => {
             type: 'success',
             text1: 'Welcome Back!',
             text2: `Hello ${response.name}, you are successfully logged in!`,
-            visibilityTime: 5000, // 5 seconds
+            visibilityTime: 5000,
             position: 'top',
           });
         })
-        .catch(errors => {
+        .catch(err => {
+          let errorMessage = err || 'Something went wrong. Please try again.';
           // Error message
           Toast.show({
             type: 'error',
-            text1: 'Login Failed',
-            text2: errors || 'Something went wrong. Please try again.',
-            visibilityTime: 5000, // 5 seconds
+            text1: 'Signup Failed',
+            text2: errorMessage,
+            visibilityTime: 5000,
             position: 'top',
           });
         });
     } else {
       // Missing input fields
+      const invalidFields = Object.values(errors).join(', ');
+
       Toast.show({
-        type: 'error',
-        text1: 'Missing Information',
-        text2: 'Please enter both your mobile number and password to proceed.',
-        visibilityTime: 5000, // 5 seconds
+        type: 'info',
+        text1: 'Invalid Input',
+        text2: `Please check: ${invalidFields}.`,
+        visibilityTime: 5000,
         position: 'top',
       });
     }

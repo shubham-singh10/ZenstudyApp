@@ -83,8 +83,8 @@ android {
         applicationId "com.zenstudy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3.0"
     }
     signingConfigs {
         debug {
@@ -122,7 +122,8 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation 'com.google.firebase:firebase-auth'
-
+    
+    implementation 'com.vdocipher.aegis:vdocipher-android:1.28.4'
     implementation platform('com.google.firebase:firebase-bom:32.0.0')
     implementation 'com.google.firebase:firebase-auth'
 

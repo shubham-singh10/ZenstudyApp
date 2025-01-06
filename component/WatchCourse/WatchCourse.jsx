@@ -6,57 +6,60 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import WebView from 'react-native-webview';
+import { useDispatch, useSelector } from 'react-redux';
+import { VdoPlayerView } from 'vdocipher-rn-bridge';
 import { DownArrow, UpArrow } from '../Icons/MyIcon';
 import { PurchaseWatchCourseData } from './store';
-import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../Loader';
 
 const WatchCourse = ({ route }) => {
   const { courseId } = route.params;
   const dispatch = useDispatch();
-
   const { courseData, loading, error } = useSelector(
     state => state.PurchaseWatchCourseData,
   );
 
-  // Handle cases where courseData or its nested properties may not exist
-  const [activeVideo, setActiveVideo] = useState(
-    courseData?.[0]?.videos?.[0]?.videoUrl || ''
-  );
+  const [playbackInfo, setPlayBackInfo] = useState('');
+  const [videoCode, setVideoCode] = useState('');
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
-  const [expandedModuleIndex, setExpandedModuleIndex] = useState(null);
-  const [moduleVideoIndexes, setModuleVideoIndexes] = useState(
-    Array(courseData?.length || 0).fill(0)
-  );
+  const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
+  const [moduleVideoIndexes, setModuleVideoIndexes] = useState([]);
+
+  const embedInfo = { otp: `${videoCode}`, playbackInfo: `${playbackInfo}` };
+
+  useEffect(() => {
+    // Dispatch the action to fetch course data
+    dispatch(PurchaseWatchCourseData(courseId));
+  }, [dispatch, courseId]);
+
+  useEffect(() => {
+    if (courseData?.length > 0) {
+      // Default to the first module and first video
+      setPlayBackInfo(courseData[0]?.videos?.[0]?.playBackInfo || '');
+      setVideoCode(courseData[0]?.videos?.[0]?.videoCode || '');
+      setActiveModuleIndex(0);
+      setActiveVideoIndex(0);
+      setExpandedModuleIndex(0);
+      setModuleVideoIndexes(Array(courseData.length).fill(0));
+    }
+  }, [courseData]);
 
   const handleModuleSelect = (index) => {
-    if (expandedModuleIndex === index) {
-      setExpandedModuleIndex(null);
-    } else {
-      setExpandedModuleIndex(index);
-      const lastSelectedVideoIndex = moduleVideoIndexes[index];
-      if (courseData?.[index]?.videos?.[lastSelectedVideoIndex]) {
-        setActiveVideo(courseData[index].videos[lastSelectedVideoIndex].url);
-        setActiveVideoIndex(lastSelectedVideoIndex);
-      }
-    }
+    setExpandedModuleIndex(expandedModuleIndex === index ? null : index);
   };
 
-  const handleVideoSelect = (url, videoIndex, moduleIndex) => {
-    setActiveVideo(url);
+  const handleVideoSelect = (videoIndex, moduleIndex, playBackInfo, videoCodeid) => {
+    setPlayBackInfo(playBackInfo);
+    setVideoCode(videoCodeid);
     setActiveVideoIndex(videoIndex);
     setActiveModuleIndex(moduleIndex);
+    setExpandedModuleIndex(moduleIndex);
 
     const newModuleVideoIndexes = [...moduleVideoIndexes];
     newModuleVideoIndexes[moduleIndex] = videoIndex;
     setModuleVideoIndexes(newModuleVideoIndexes);
   };
-
-  useEffect(() => {
-    dispatch(PurchaseWatchCourseData(courseId));
-  }, [dispatch, courseId]);
 
   if (loading) {
     return <Loader />;
@@ -84,14 +87,12 @@ const WatchCourse = ({ route }) => {
         {/* Video Section */}
         <Text style={courseStyle.title}>Introduction</Text>
         <View style={courseStyle.videoContainer}>
-          <WebView
-            style={courseStyle.iframe}
-            source={{ uri: activeVideo }}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            allowsFullscreenVideo={true}
-            mediaPlaybackRequiresUserAction={false}
-          />
+          {embedInfo.otp && (
+            <VdoPlayerView
+              style={courseStyle.iframe}
+              embedInfo={embedInfo}
+            />
+          )}
         </View>
 
         {/* About Video Section */}
@@ -102,8 +103,7 @@ const WatchCourse = ({ route }) => {
           }
         </Text>
 
-        {/* Module Section */
-        }
+        {/* Module Section */}
         {courseData.map((module, moduleIndex) => (
           <View key={moduleIndex} style={courseStyle.moduleContainer}>
             <TouchableOpacity
@@ -119,7 +119,6 @@ const WatchCourse = ({ route }) => {
                   expandedModuleIndex === moduleIndex && courseStyle.activeModuleTitle,
                 ]}
               >
-                <View style={courseStyle.bulletPoint} />{' '}
                 {module.moduleTitle}
               </Text>
               {expandedModuleIndex === moduleIndex ? (
@@ -134,13 +133,14 @@ const WatchCourse = ({ route }) => {
                   <TouchableOpacity
                     key={videoIndex}
                     onPress={() =>
-                      handleVideoSelect(video.videoUrl, videoIndex, moduleIndex)
+                      handleVideoSelect(videoIndex, moduleIndex, video.playBackInfo, video.videoCode)
                     }
                   >
                     <Text
                       style={[
                         courseStyle.videoItem,
                         moduleVideoIndexes[moduleIndex] === videoIndex &&
+                        activeModuleIndex === moduleIndex &&
                         courseStyle.activeVideoItem,
                       ]}
                     >

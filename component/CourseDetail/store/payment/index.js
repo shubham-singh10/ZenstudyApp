@@ -1,16 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API } from '@env';
+import { REACT_APP_API, REACT_APP_API2 } from '@env';
 
 // Async thunk for initiating the payment order
 export const initiatePayment = createAsyncThunk(
     'payment/initiatePayment',
     async ({ amount, userId, courseId }, thunkAPI) => {
-        // console.log('Amount: ', amount);
-        // console.log('UserId: ', userId);
-        // console.log('courseId: ', courseId);
         try {
-            const response = await axios.post(`${REACT_APP_API}zenstudy/api/payment/order`, {
+            const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/order`, {
                 amount,
                 user_id: userId,
                 course_id: courseId,
@@ -33,7 +30,7 @@ export const verifyPayment = createAsyncThunk(
         // console.log('UserId: ', userId);
         // console.log('CourseId: ', courseId);
         try {
-            const response = await axios.post(`${REACT_APP_API}zenstudy/api/payment/verify`, {
+            const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/verify`, {
                 razorpay_order_id: razorpayData.razorpay_order_id,
                 razorpay_payment_id: razorpayData.razorpay_payment_id,
                 razorpay_signature: razorpayData.razorpay_signature,

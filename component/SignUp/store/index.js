@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API2 } from '@env';
+import { REACT_APP_API } from '@env';
 
 // Thunk to register/signup user
 export const signupUser = createAsyncThunk(
@@ -9,7 +9,7 @@ export const signupUser = createAsyncThunk(
     async ({ phone, name, email, userType, phoneStatus, password }, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/auth/signUp`,
+                `${REACT_APP_API}zenstudy/api/auth/signUp`,
                 { phone, password, name, email, userType, phoneStatus },
                 {
                     headers: {
@@ -32,7 +32,7 @@ export const signupUser = createAsyncThunk(
                 errorMessage = error.message;
             }
 
-            console.log('Signup Error:', errorMessage);
+            // console.log('Signup Error:', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage);
         }
     }

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API, REACT_APP_API2 } from '@env';
+import { REACT_APP_API } from '@env';
 
 // Thunk to fetch Meeting data
 export const fetchMeetingDetails = createAsyncThunk(
@@ -8,7 +8,7 @@ export const fetchMeetingDetails = createAsyncThunk(
     async (thunkAPI) => {
         try {
             const response = await axios.get(
-                `${REACT_APP_API2}zenstudy/api/meeting/getMeeting`,
+                `${REACT_APP_API}zenstudy/api/meeting/getMeeting`,
                 {
                     headers: {
                         Accept: 'application/json',

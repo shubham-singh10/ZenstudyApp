@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -8,28 +8,32 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import {Language} from '../Icons/MyIcon';
-import {useDispatch, useSelector} from 'react-redux';
-import {DetailsCourseData} from './store';
-import WebView from 'react-native-webview';
+import { Language } from '../Icons/MyIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailsCourseData } from './store';
 import Loader from '../Loader';
 import RazorpayCheckout from 'react-native-razorpay';
-import {UserData} from '../userData/UserData';
-import {initiatePayment, verifyPayment} from './store/payment';
-import {REACT_APP_RAZORPAY_KEY_ID} from '@env';
+import { UserData } from '../userData/UserData';
+import { initiatePayment, verifyPayment } from './store/payment';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
+import FastImage from 'react-native-fast-image';
+import { VdoPlayerView } from 'vdocipher-rn-bridge';
 
-const CourseDetail = ({navigation, route}) => {
-  const {courseId} = route.params;
-  const {usersData} = UserData();
+const CourseDetail = ({ navigation, route }) => {
+  const { courseId } = route.params;
+  const { usersData } = UserData();
   const dispatch = useDispatch();
   const [payLoading, setPayLoading] = useState(false);
-
-  const {courseData, loading, error} = useSelector(
+  const [imageLoading, setImageLoading] = useState({});
+  const { courseData, loading, error } = useSelector(
     state => state.CourseDetailData,
   );
 
-  const firstModule = courseData?.modules?.[0];
+  const embedInfo = { otp: '20160313versUSE323UMMJcpv7HqvbGuL35Mz1xqV9b2YyKdPYw9Pg2EqGo1UVKY', playbackInfo: 'eyJ2aWRlb0lkIjoiY2U0MGQ4YzFmNGQxNGE3Njg4YmZhMDE2NmFiZTFkODEifQ==' };
 
+  const handleImageLoad = (id, isLoading) => {
+    setImageLoading(prevState => ({ ...prevState, [id]: isLoading }));
+  };
   // Fetch course data on mount
   useEffect(() => {
     dispatch(DetailsCourseData(courseId));
@@ -40,7 +44,7 @@ const CourseDetail = ({navigation, route}) => {
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(
-        initiatePayment({amount, userId, courseId}),
+        initiatePayment({ amount, userId, courseId }),
       ).unwrap();
       //  console.log('OrderData: ', orderData)
       // Handle payment verification after successful initiation
@@ -86,7 +90,7 @@ const CourseDetail = ({navigation, route}) => {
             Alert.alert(
               'Payment Successful',
               `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{text: 'OK'}],
+              [{ text: 'OK' }],
             );
             navigation.navigate('myCourseScreen');
           }
@@ -100,7 +104,7 @@ const CourseDetail = ({navigation, route}) => {
         Alert.alert(
           'Payment Failed',
           'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{text: 'OK'}],
+          [{ text: 'OK' }],
         );
       });
   };
@@ -127,25 +131,39 @@ const CourseDetail = ({navigation, route}) => {
         <View style={courseStyle.aboutCourse}>
           <View style={courseStyle.language}>
             <Language fill="#054bb4" />
-            <Text style={courseStyle.languageText}>{courseData?.language}</Text>
+            <Text style={courseStyle.languageText}>{courseData?.language?.name}</Text>
           </View>
         </View>
       </View>
 
       <View style={courseStyle.card}>
-        {firstModule && firstModule.videos?.length > 0 ? (
-          <WebView
+        {courseData && courseData?.tags === 'notlive' ? (
+          <VdoPlayerView
             style={courseStyle.courseImage}
-            source={{
-              uri: 'https://player.vimeo.com/video/995693386?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479',
-            }}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            allowsFullscreenVideo={true}
-            mediaPlaybackRequiresUserAction={false}
+            embedInfo={embedInfo}
           />
+
         ) : (
-          <Text style={courseStyle.noVideoText}>No videos available</Text>
+          <View style={courseStyle.cImgContainer}>
+            <FastImage
+              source={{
+                uri: courseData?.imageUrl,
+                priority: FastImage.priority.high,
+              }}
+              style={courseStyle.courseImage}
+              onLoadStart={() => handleImageLoad(courseData?._id, true)}
+              onLoad={() => handleImageLoad(courseData?._id, false)}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            {/* Show a loading spinner or placeholder */}
+            {imageLoading[courseData?._id] && (
+              <ActivityIndicator
+                size="large"
+                color="#5f63b8"
+                style={courseStyle.imageLoader}
+              />
+            )}
+          </View>
         )}
 
         <View style={courseStyle.datePriceRow}>
@@ -194,7 +212,7 @@ const CourseDetail = ({navigation, route}) => {
               index={index + 1}
               videoTitle={
                 module.videos.length > 0 ? (
-                  module.videos.map(({num, videoTitle}) => (
+                  module.videos.map(({ num, videoTitle }) => (
                     <Text key={num} style={courseStyle.videoTitleText}>
                       {videoTitle || 'No video title available'}
                     </Text>
@@ -211,7 +229,7 @@ const CourseDetail = ({navigation, route}) => {
   );
 };
 
-const Module = ({title, index, videoTitle}) => {
+const Module = ({ title, index, videoTitle }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -240,6 +258,9 @@ const courseStyle = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
   },
+  noVideoText: {
+    color: '#000000',
+  },
   container: {
     paddingHorizontal: 20,
     backgroundColor: '#e6f0fe',
@@ -252,6 +273,15 @@ const courseStyle = StyleSheet.create({
     fontWeight: '500',
     color: '#054bb4',
     marginBottom: 10,
+  },
+  cImgContainer: {
+    width: '100%',
+    height: 170,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  imageLoader: {
+    position: 'absolute',
   },
   text: {
     fontSize: 14,
@@ -280,7 +310,7 @@ const courseStyle = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: -30,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -318,14 +348,14 @@ const courseStyle = StyleSheet.create({
     fontWeight: '600',
   },
   buyNowLoading: {
-  backgroundColor: '#054bb4',
+    backgroundColor: '#054bb4',
     paddingVertical: 10,
     borderRadius: 30,
     alignItems: 'center',
-    flexDirection:'row',
-    gap:4,
-    justifyContent:'center',
-    opacity:0.9,
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    opacity: 0.9,
   },
   aboutCourseSection: {
     paddingHorizontal: 20,

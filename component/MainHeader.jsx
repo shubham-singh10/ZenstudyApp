@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './Style';
-import { Bell, Search, User } from './Icons/MyIcon';
+import { Search, User } from './Icons/MyIcon';
 import { useNavigation } from '@react-navigation/native';
 import { UserData } from './userData/UserData';
 
@@ -12,7 +12,7 @@ function MainHeader() {
   return (
     <View style={styles.mainHeader}>
       <View style={styles.leftContent}>
-        <TouchableOpacity onPress={() => navigation.navigate('profileScreen')}>
+        <TouchableOpacity>
           <Text style={styles.userIcon}><User fill="white" /></Text>
         </TouchableOpacity>
         <Text style={styles.username}>{usersData?.name}</Text>
