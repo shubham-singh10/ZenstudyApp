@@ -23,7 +23,19 @@ DerivedData
 **/.xcode.env.local
 
 # Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
 
+app/
+google-services.json
 
 # node.js
 #
