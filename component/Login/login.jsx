@@ -106,7 +106,6 @@ const LoginScreen = () => {
         </View>
 
         <View style={formStyles.section2}>
-          <Text style={formStyles.loginText}>Login</Text>
 
           {/* Mobile Number Input */}
           <View style={formStyles.inputContainer}>

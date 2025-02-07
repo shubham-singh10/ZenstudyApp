@@ -57,14 +57,25 @@ const homestyle = StyleSheet.create({
   coursesContainer: {
     marginVertical: 20,
   },
-  exploreCourses:{
-    marginTop:20,
+  exploreCourses: {
+    marginTop: 20,
   },
   coursesTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#000',
+  },
+  HeadText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4A90E2',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 3,
+    marginBottom: 10,
+    alignSelf: 'center',
   },
   courseCard: {
     flexDirection: 'column',
@@ -125,14 +136,14 @@ const homestyle = StyleSheet.create({
     color: '#054bb4',
     fontWeight: 'bold',
   },
-  couponBtn:{
-    marginTop:10,
+  couponBtn: {
+    marginTop: 10,
   },
-  couponBtnText:{
-    color:'#054bb4',
-    fontSize:12,
-    fontWeight:'bold',
-    textDecorationLine:'underline',
+  couponBtnText: {
+    color: '#054bb4',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
   cardBtns: {
     flexDirection: 'row',
@@ -180,58 +191,52 @@ const homestyle = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-exploreContainer: {
-  marginVertical: 20,
-  paddingHorizontal: 20,
-},
 
-exploreHeaderText: {
-  fontSize: 22,
-  fontWeight: 'bold',
-  color: '#000',
-  marginBottom: 15,
-  textAlign: 'center',
-},
+  exploreContainer: {
+    marginVertical: 20,
+  },
 
-exploreIcons: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-},
+ 
 
-exploreContent: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginHorizontal: 10,
-  borderRadius: 15,
-  overflow: 'hidden',
-  elevation: 5, // Android shadow
-},
+  exploreIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 
-gradientButton: {
-  width: '100%',
-  paddingVertical: 18,
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 15,
-},
+  exploreContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
+    borderRadius: 15,
+    overflow: 'hidden',
+    elevation: 5, // Android shadow
+  },
 
-iconWrapper: {
-  borderRadius: 50,
-  alignSelf: 'center',
-  marginBottom: 10,
-},
+  gradientButton: {
+    width: '100%',
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+  },
 
-exploricon:{
-  width: 50,
-  height: 50,
-},
-exploreContentText: {
-  fontSize: 15,
-  fontWeight: '600',
-  color: '#fff',
-  textAlign: 'center',
-},
+  iconWrapper: {
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+
+  exploricon: {
+    width: 50,
+    height: 50,
+  },
+  exploreContentText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
+  },
 
   notfoundText: {
     alignSelf: 'center',

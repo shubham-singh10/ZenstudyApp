@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -12,24 +12,99 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchMeetingDetails } from './store';
 import Loader from '../Loader';
 import { UserData } from '../userData/UserData';
+import axios from 'axios';
 
 const LiveScreen = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const { usersData } = UserData();
-  const { meetingData, loading, error } = useSelector((state) => state.Meeting);
+  const [meetingData, setMeetingData] = useState([]);
 
+  const fetchMeetingDetails = useCallback(
+    async (purchasedCourses) => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API}zenstudy/api/meeting/getMeeting`,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        const meetingData = response.data;
+        
+        // Filter meetings based on purchased course IDs
+        const filteredMeetings = meetingData?.filter((meeting) =>
+          purchasedCourses.some(
+            (course) => course.course_id?._id === meeting.courseId._id
+          )
+        );
+  
+        // Add image URLs for filtered meetings
+        const imageData = filteredMeetings?.map((meeting) => ({
+          ...meeting,
+          imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${meeting.courseId.thumbnail}`,
+        }));
+  
+        setMeetingData(imageData || []);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      }
+    },
+    [] // No external dependencies needed
+  );
+
+  const getPurchasedCourses = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API}zenstudy/api/payment/purchaseCourse`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: usersData?._id }),
+        }
+      );
+  
+      if (response.status === 204) {
+        return [];
+      }
+  
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      const data = await response.json();
+      return data.purchaseCourses || [];
+    } catch (error) {
+      console.error("Error fetching purchased courses:", error);
+      return [];
+    }
+  }, [usersData?._id]);
+
+ 
   useEffect(() => {
-    dispatch(fetchMeetingDetails());
-  }, [dispatch]);
-
+    const initializeData = async () => {
+      setLoading(true);
+      try {
+        const purchasedCourses = await getPurchasedCourses();
+        await fetchMeetingDetails(purchasedCourses);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    initializeData();
+  }, [fetchMeetingDetails, getPurchasedCourses]);
 
   if (loading) {
     return <Loader />;
   }
 
-  if (error) {
-    return <Text style={liveStyle.errorText}>Failed to load meeting details. Please try again later.</Text>;
-  }
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);

@@ -92,7 +92,8 @@ const myCourseStyle = StyleSheet.create({
     },
     buttonContainer:{
       flexDirection:'row',
-      justifyContent:'space-between',
+      marginTop:10,
+      justifyContent:'space-around',
       alignItems:'center',
     },
     progressContainer: {
@@ -109,20 +110,20 @@ const myCourseStyle = StyleSheet.create({
     continueButton: {
       backgroundColor: '#054bb4', // Blue button color
       paddingVertical: 12,
-      paddingHorizontal: 20,
+      paddingHorizontal: 12,
       borderRadius: 25,
       alignItems: 'center',
     },
     continueButtonDisable:{
       backgroundColor:'red',
       paddingVertical: 12,
-      paddingHorizontal: 20,
+      paddingHorizontal: 12,
       borderRadius: 25,
       alignItems: 'center',
     },
     continueButtonText: {
       color: '#fff',
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: 'bold',
     },
     nullmsg:{

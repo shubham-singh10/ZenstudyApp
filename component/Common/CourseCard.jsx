@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Dimensions, StyleSheet} from 'react-native';
@@ -20,7 +21,7 @@ import {
 } from '../CourseDetail/store/payment';
 const {width: screenWidth} = Dimensions.get('window');
 
-function CourseCard({course, navigation}) {
+function CourseCard({course, navigation, setpageLoading}) {
   const {usersData} = UserData();
   const [isModalVisible, setModalVisible] = useState(false);
   const [couponCode, setCouponCode] = useState('');
@@ -51,48 +52,53 @@ function CourseCard({course, navigation}) {
   };
 
   const handlePaymentVerify = async (data, courseId) => {
-    const options = {
-      key: REACT_APP_RAZORPAY_KEY_ID,
-      amount: data.data.amount,
-      currency: data.data.currency,
-      name: 'ZenStudy',
-      description: 'Making Education Imaginative',
-      order_id: data.data.id,
-      theme: {
-        color: '#5f63b8',
-      },
-    };
-
-    RazorpayCheckout.open(options)
-      .then(async response => {
-        try {
-          const verifyData = await dispatch(
-            verifyPayment({
-              razorpayData: response,
-              userId: usersData._id,
-              courseId,
-            }),
-          ).unwrap();
-          if (verifyData.message === 'Payment Successful') {
-            Alert.alert(
-              'Payment Successful',
-              `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{text: 'OK'}],
-            );
-            navigation.navigate('myCourseScreen');
-          }
-        } catch (err) {
-          console.error('Error verifying payment:', err);
-        }
-      })
-      .catch(() => {
+    try {
+      setpageLoading(true);
+  
+      const options = {
+        key: REACT_APP_RAZORPAY_KEY_ID,
+        amount: data.data.amount,
+        currency: data.data.currency,
+        name: 'ZenStudy',
+        description: 'Making Education Imaginative',
+        order_id: data.data.id,
+        theme: { color: '#5f63b8' },
+      };
+  
+      const response = await RazorpayCheckout.open(options);
+  
+      const verifyData = await dispatch(
+        verifyPayment({
+          razorpayData: response,
+          userId: usersData._id,
+          courseId,
+          price: selectedCoursePrice || discountPrice?.subTotal?.toFixed(2),
+          code: couponCode,
+          discount: discountPrice?.discount || 0,
+          subtotal: discountPrice?.subTotal === 0 ? 1 : discountPrice?.subTotal?.toFixed(2),
+        })
+      ).unwrap();
+  
+      if (verifyData.message === 'Payment Successful') {
         Alert.alert(
-          'Payment Failed',
-          'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{text: 'OK'}],
+          'Payment Successful',
+          `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
+          [{ text: 'OK' }]
         );
-      });
+        navigation.navigate('myCourseScreen');
+      }
+    } catch (err) {
+      console.error('Error verifying payment:', err);
+      Alert.alert(
+        'Payment Failed',
+        'Your payment could not be completed. Please try again or contact support if the issue persists.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setpageLoading(false);
+    }
   };
+  
 
   const applyCourse = async () => {
     if (!couponCode.trim()) {
@@ -115,7 +121,7 @@ function CourseCard({course, navigation}) {
       } else {
         setDiscountPrice(null);
       }
-      setCouponCode('');
+      // setCouponCode('');
     } catch (err) {
       Alert.alert(`${err}`);
     } finally {
@@ -136,6 +142,7 @@ function CourseCard({course, navigation}) {
   };
 
   return (
+    
     <Fragment>
       <View key={course._id} style={style.courseCard}>
         <Text style={style.title}>{course.title}</Text>
@@ -406,6 +413,7 @@ const style = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#5f63b8',
   },
 
   couponInput: {
@@ -415,6 +423,7 @@ const style = StyleSheet.create({
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 5,
+    color: '#000',
   },
   modalBtns: {
     flexDirection: 'row',

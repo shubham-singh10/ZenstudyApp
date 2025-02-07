@@ -26,10 +26,15 @@ export const initiatePayment = createAsyncThunk(
 // Async thunk for verifying the payment
 export const verifyPayment = createAsyncThunk(
     'payment/verifyPayment',
-    async ({ razorpayData, userId, courseId }, thunkAPI) => {
-        // console.log('RezorPayData: ', razorpayData);
-        // console.log('UserId: ', userId);
-        // console.log('CourseId: ', courseId);
+    async ({ razorpayData, userId, courseId, price, subtotal, code, discount }, thunkAPI) => {
+        console.log('RezorPayData: ', razorpayData);
+        console.log('UserId: ', userId);
+        console.log('CourseId: ', courseId);
+        console.log('Price: ', price);
+        console.log('Subtotal: ', subtotal);
+        console.log('Code: ', code);
+        console.log('Discount: ', discount);
+        
         try {
             const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/verify`, {
                 razorpay_order_id: razorpayData.razorpay_order_id,
@@ -37,6 +42,12 @@ export const verifyPayment = createAsyncThunk(
                 razorpay_signature: razorpayData.razorpay_signature,
                 user_id: userId,
                 course_id: courseId,
+                coursePrice: price,
+                purchasePrice: subtotal,
+                couponCode: code,
+                couponApplied: code ? true : false,
+                discount: discount,
+                coursevalidation: "2025-03-01",
             });
             return response.data;
         } catch (error) {

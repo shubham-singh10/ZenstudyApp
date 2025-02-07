@@ -233,7 +233,7 @@ const courseStyle = StyleSheet.create({
   },
   videoItem: {
     fontSize: 14,
-    color: '#333',
+    color: '#000',
     lineHeight: 25,
   },
   activeVideoItem: {

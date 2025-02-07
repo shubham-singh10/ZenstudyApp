@@ -29,6 +29,7 @@ const HomeScreen = ({navigation}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pageloading, setpageLoading] = useState(false);
 
   const {courseData} = useSelector(state => state.RecentCourseData);
   const watchCourse = useSelector(state => state.PurchaseCourseDetails);
@@ -82,7 +83,7 @@ const HomeScreen = ({navigation}) => {
       }
     };
     fetchData();
-  }, [usersData, dispatch]);
+  }, [usersData, dispatch, pageloading]);
 
   const getShortDescription = (text, wordLimit) => {
     const words = text.split(' ');
@@ -97,9 +98,9 @@ const HomeScreen = ({navigation}) => {
       <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
         {/* Show Loader while data is loading */}
         {loading && <HomeScreenSakelton />}
+        {pageloading && <HomeScreenSakelton />}
         {!loading && (
           <>
-          <Text>Hello</Text>
             {/* Banner/Carousel */}
             <View style={homestyle.carouselContainer}>
               <ScrollView
@@ -133,14 +134,19 @@ const HomeScreen = ({navigation}) => {
 
             {/* Courses Section */}
             <View style={homestyle.coursesContainer}>
-              <Text style={homestyle.coursesTitle}>Recently Added Courses</Text>
+              <Text style={homestyle.HeadText}>Recently Added Courses</Text>
               {courseData && courseData.length > 0 && (
                 <ScrollView
                   horizontal
                   pagingEnabled
                   showsHorizontalScrollIndicator={false}>
                   {courseData.map(course => (
-                    <CourseCard key={course._id} course={course} navigation={navigation} />
+                    <CourseCard
+                      key={course._id}
+                      course={course}
+                      setpageLoading={setpageLoading}
+                      navigation={navigation}
+                    />
                   ))}
                 </ScrollView>
               )}
@@ -148,7 +154,7 @@ const HomeScreen = ({navigation}) => {
 
             {/* Explore Section */}
             <View style={homestyle.exploreContainer}>
-              <Text style={homestyle.exploreHeaderText}>Explore Our</Text>
+              <Text style={homestyle.HeadText}>Explore Our</Text>
               <View style={homestyle.exploreIcons}>
                 {/* All Courses Button */}
                 <TouchableOpacity
@@ -159,10 +165,10 @@ const HomeScreen = ({navigation}) => {
                     colors={['#054bb4', '#007bff']}
                     style={homestyle.gradientButton}>
                     <View style={homestyle.iconWrapper}>
-                    <Image
-                    style={homestyle.exploricon}
-                    source={require('../../assets/courseicon.png')}
-                  />
+                      <Image
+                        style={homestyle.exploricon}
+                        source={require('../../assets/courseicon.png')}
+                      />
                     </View>
                     <Text style={homestyle.exploreContentText}>
                       All Courses
@@ -181,65 +187,16 @@ const HomeScreen = ({navigation}) => {
                     colors={['#ff0000', '#cc0000']}
                     style={homestyle.gradientButton}>
                     <View style={homestyle.iconWrapper}>
-                    <Image
-                    style={homestyle.exploricon}
-                    source={require('../../assets/youtubeicon.png')}
-                  />
+                      <Image
+                        style={homestyle.exploricon}
+                        source={require('../../assets/youtubeicon.png')}
+                      />
                     </View>
                     <Text style={homestyle.exploreContentText}>YouTube</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
             </View>
-
-            {watchData && watchData.length > 0 && (
-              <View style={homestyle.exploreCourses}>
-                <Text style={homestyle.coursesTitle}>My Courses</Text>
-
-                {watchData.map(course => (
-                  <View style={myCourseStyle.card} key={course._id}>
-                    {/* Title */}
-                    <Text style={myCourseStyle.title}>
-                      {course?.course_id?.title}
-                    </Text>
-
-                    <View style={myCourseStyle.imageContainer}>
-                      <Image
-                        style={myCourseStyle.courseImage}
-                        source={{uri: course?.imageurl}}
-                      />
-                      <View style={myCourseStyle.playButtonContainer}>
-                        <View style={myCourseStyle.playButton}>
-                          <Text style={myCourseStyle.playButtonText}>▶</Text>
-                        </View>
-                      </View>
-                    </View>
-
-                    <View style={myCourseStyle.languageTag}>
-                      <Text style={myCourseStyle.languageText}>
-                        {course?.course_id?.language?.name}
-                      </Text>
-                    </View>
-
-                    <Text style={myCourseStyle.description}>
-                      {getShortDescription(course?.course_id?.description, 25)}
-                    </Text>
-
-                    <TouchableOpacity
-                      style={myCourseStyle.continueButton}
-                      onPress={() =>
-                        navigation.navigate('watchCourse', {
-                          courseId: course?._id,
-                        })
-                      }>
-                      <Text style={myCourseStyle.continueButtonText}>
-                        Continue Learning
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            )}
           </>
         )}
       </ScrollView>

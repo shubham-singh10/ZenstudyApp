@@ -26,6 +26,7 @@ const CourseDetail = ({navigation, route}) => {
   const {usersData} = UserData();
   const dispatch = useDispatch();
   const [payLoading, setPayLoading] = useState(false);
+  const [pageloading, setpageLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState({});
   const [isModalVisible, setModalVisible] = useState(false);
   const [applyCouponLoading, setApplyCouponLoading] = useState(false);
@@ -70,56 +71,57 @@ const CourseDetail = ({navigation, route}) => {
     }
   };
 
-  const handlePaymentVerify = async (data, courseIdd) => {
-    const options = {
-      key: REACT_APP_RAZORPAY_KEY_ID,
-      amount: data.data.amount,
-      currency: data.data.currency,
-      name: 'ZenStudy',
-      description: 'Making Education Imaginative',
-      order_id: data.data.id,
-      theme: {
-        color: '#5f63b8',
-      },
-    };
-
-    // Trigger Razorpay payment UI
-    RazorpayCheckout.open(options)
-      .then(async response => {
-        // Verifying the payment after successful payment
-        try {
-          const verifyData = await dispatch(
-            verifyPayment({
-              razorpayData: response,
-              userId: usersData._id,
-              courseId: courseIdd,
-            }),
-          ).unwrap();
-
-          // Check if the verification was successful
-          // console.log('VerifyData: ', verifyData);
-          if (verifyData.message === 'Payment Successful') {
-            Alert.alert(
-              'Payment Successful',
-              `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
-              [{text: 'OK'}],
-            );
-            navigation.navigate('myCourseScreen');
-          }
-        } catch (err) {
-          console.error('Error verifying payment:', err);
-        }
-      })
-      .catch(errors => {
-        // Handle failure
-        // console.log('Error: ', error);
+  const handlePaymentVerify = async (data, courseId) => {
+    try {
+      setpageLoading(true);
+  
+      const options = {
+        key: REACT_APP_RAZORPAY_KEY_ID,
+        amount: data.data.amount,
+        currency: data.data.currency,
+        name: 'ZenStudy',
+        description: 'Making Education Imaginative',
+        order_id: data.data.id,
+        theme: { color: '#5f63b8' },
+      };
+  
+      // Trigger Razorpay payment UI
+      const response = await RazorpayCheckout.open(options);
+  
+      // Verify the payment after a successful transaction
+      const verifyData = await dispatch(
+        verifyPayment({
+          razorpayData: response,
+          userId: usersData._id,
+          courseId,
+          price: selectedCoursePrice || discountPrice?.subTotal?.toFixed(2),
+          code: couponCode,
+          discount: discountPrice?.discount || 0,
+          subtotal: discountPrice?.subTotal === 0 ? 1 : discountPrice?.subTotal?.toFixed(2),
+        })
+      ).unwrap();
+  
+      // Check if the verification was successful
+      if (verifyData.message === 'Payment Successful') {
         Alert.alert(
-          'Payment Failed',
-          'Your payment could not be completed. Please try again or contact support if the issue persists.',
-          [{text: 'OK'}],
+          'Payment Successful',
+          `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
+          [{ text: 'OK' }]
         );
-      });
+        navigation.navigate('myCourseScreen');
+      }
+    } catch (err) {
+      Alert.alert(
+        'Payment Failed',
+        'Your payment could not be completed. Please try again or contact support if the issue persists.',
+        [{ text: 'OK' }]
+      );
+      console.error('Error during payment verification:', err);
+    } finally {
+      setpageLoading(false);
+    }
   };
+  
 
   const applyCourse = async () => {
     if (!couponCode.trim()) {
@@ -246,7 +248,7 @@ const CourseDetail = ({navigation, route}) => {
             <Text style={courseStyle.buyButtonText}>please wait..</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
+          pageloading ? <ActivityIndicator></ActivityIndicator> :<TouchableOpacity
             style={courseStyle.buyButton}
             onPress={() =>
               handlePayment(
@@ -366,7 +368,7 @@ const Module = ({title, index, videoTitle}) => {
       </TouchableOpacity>
       {isExpanded && (
         <View style={courseStyle.moduleContent} key={index}>
-          {videoTitle}
+          <Text>{videoTitle}</Text>
         </View>
       )}
     </View>
@@ -437,18 +439,18 @@ const courseStyle = StyleSheet.create({
     elevation: 5,
   },
   videoContainer: {
-  width: '100%',
-  height: 230, 
-  borderRadius: 8,
-  overflow: 'hidden', // Prevents content overflow
-  backgroundColor: '#000', // Background for video container
-},
+    width: '100%',
+    height: 230,
+    borderRadius: 8,
+    overflow: 'hidden', // Prevents content overflow
+    backgroundColor: '#000', // Background for video container
+  },
 
-courseVideo: {
-  width: '100%',
-  height: '100%',
-  borderRadius: 8,
-},
+  courseVideo: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
   courseImage: {
     width: '100%',
     height: 150,
@@ -597,6 +599,7 @@ courseVideo: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#5f63b8',
   },
 
   couponInput: {
@@ -606,6 +609,7 @@ courseVideo: {
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 5,
+    color: '#000',
   },
   modalBtns: {
     flexDirection: 'row',

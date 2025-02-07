@@ -100,6 +100,9 @@ const formStyles = StyleSheet.create({
     padding: 5,
     borderRadius: 3,
   },
+  section2:{
+    marginTop: 20,
+  },
   loginText: {
     fontSize: 18, // Increased size for better visibility
     fontWeight: 'bold',
