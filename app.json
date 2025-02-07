@@ -1,0 +1,7 @@
+{
+  "name": "zenstudy",
+  "displayName": "zenstudy",
+  "expo": {
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"]
+  }
+}
