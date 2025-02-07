@@ -117,7 +117,7 @@ const SignupScreen = ({ navigation }) => {
   const handleContinue = () => {
     const isValid = validateForm();
     if (isValid) {
-      // console.log('Form submitted successfully', formData);
+      // //console.log('Form submitted successfully', formData);
       const { phone, name, email, userType, phoneStatus, password } = formData;
       dispatch(signupUser({ phone, name, email, userType, phoneStatus, password }))
         .unwrap()

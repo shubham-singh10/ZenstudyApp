@@ -73,10 +73,10 @@ const SignupScreen = ({ navigation }) => {
   };
 
   const signInWithPhoneNumber = async () => {
-    // console.log('called: ', phone);
+    // //console.log('called: ', phone);
     const confirmations = await auth().signInWithPhoneNumber('+918130325002');
     Alert.alert('Otp send success +918130325002');
-    console.log('Confirmations: ', confirmations);
+    //console.log('Confirmations: ', confirmations);
     setConfirmation(confirmations);
   };
 
@@ -85,9 +85,9 @@ const SignupScreen = ({ navigation }) => {
     setLoading(true);
     if (isValid) {
       if (passwordError) {
-        console.log('Fix password errors first');
+        //console.log('Fix password errors first');
       } else {
-        console.log('Form submitted successfully', formData);
+        //console.log('Form submitted successfully', formData);
         signInWithPhoneNumber(formData.phone);
       }
     }

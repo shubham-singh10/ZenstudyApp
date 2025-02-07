@@ -26,7 +26,7 @@ const SupportScreen = ({ navigation }) => {
       return;
     }
 
-    console.log('Form submitted with:', { name, email, message });
+    //console.log('Form submitted with:', { name, email, message });
   };
 
   return (

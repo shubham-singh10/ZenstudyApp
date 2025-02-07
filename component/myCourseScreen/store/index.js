@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API2 } from '@env';
+import { REACT_APP_API } from '@env';
 
 // Thunk to fetch purchase course data
 export const PurchaseCourseData = createAsyncThunk(
@@ -8,7 +8,7 @@ export const PurchaseCourseData = createAsyncThunk(
     async (userId, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/app/purchaseCourse`,
+                `${REACT_APP_API}zenstudy/api/app/purchaseCourse`,
                 { user_id: userId },
                 {
                     headers: {

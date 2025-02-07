@@ -29,7 +29,7 @@ export const sendOTP = createAsyncThunk('sendOTP', async ({ userId, email }, thu
 
 // Thunk to verify OTP
 export const verifyOTP = createAsyncThunk('verifyOTP', async ({ userId, email, code }, thunkAPI) => {
-    // console.log('jh: ', userId, email, code)
+    // //console.log('jh: ', userId, email, code)
     try {
         const response = await axios.post(
             `${API_BASE_URL}/verify-email`,

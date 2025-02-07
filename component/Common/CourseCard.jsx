@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, { Fragment, useState } from 'react';
 import {
   ActivityIndicator,
   Text,
@@ -9,20 +9,20 @@ import {
   Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {Dimensions, StyleSheet} from 'react-native';
-import {applyCoupon} from '../CourseDetail/store/payment';
-import {useDispatch} from 'react-redux';
-import {UserData} from '../userData/UserData';
-import {REACT_APP_RAZORPAY_KEY_ID} from '@env';
+import { Dimensions, StyleSheet } from 'react-native';
+import { applyCoupon } from '../CourseDetail/store/payment';
+import { useDispatch } from 'react-redux';
+import { UserData } from '../userData/UserData';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
 import {
   initiatePayment,
   verifyPayment,
 } from '../CourseDetail/store/payment';
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
-function CourseCard({course, navigation, setpageLoading}) {
-  const {usersData} = UserData();
+function CourseCard({ course, navigation, setpageLoading }) {
+  const { usersData } = UserData();
   const [isModalVisible, setModalVisible] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [applyCouponLoading, setApplyCouponLoading] = useState(false);
@@ -37,9 +37,9 @@ function CourseCard({course, navigation, setpageLoading}) {
     setPayLoading(courseId);
     try {
       const userId = usersData?._id;
-      console.log('userId:', userId);
+      //console.log('userId:', userId);
       const orderData = await dispatch(
-        initiatePayment({amount, userId, courseId}),
+        initiatePayment({ amount, userId, courseId }),
       ).unwrap();
       if (orderData) {
         handlePaymentVerify(orderData, courseId);
@@ -54,7 +54,7 @@ function CourseCard({course, navigation, setpageLoading}) {
   const handlePaymentVerify = async (data, courseId) => {
     try {
       setpageLoading(true);
-  
+
       const options = {
         key: REACT_APP_RAZORPAY_KEY_ID,
         amount: data.data.amount,
@@ -64,9 +64,9 @@ function CourseCard({course, navigation, setpageLoading}) {
         order_id: data.data.id,
         theme: { color: '#5f63b8' },
       };
-  
+
       const response = await RazorpayCheckout.open(options);
-  
+
       const verifyData = await dispatch(
         verifyPayment({
           razorpayData: response,
@@ -78,7 +78,7 @@ function CourseCard({course, navigation, setpageLoading}) {
           subtotal: discountPrice?.subTotal === 0 ? 1 : discountPrice?.subTotal?.toFixed(2),
         })
       ).unwrap();
-  
+
       if (verifyData.message === 'Payment Successful') {
         Alert.alert(
           'Payment Successful',
@@ -98,7 +98,7 @@ function CourseCard({course, navigation, setpageLoading}) {
       setpageLoading(false);
     }
   };
-  
+
 
   const applyCourse = async () => {
     if (!couponCode.trim()) {
@@ -114,7 +114,7 @@ function CourseCard({course, navigation, setpageLoading}) {
           courseId: selectedCourseId,
         }),
       ).unwrap();
-      console.log('applyCouponData:', applyCouponData);
+      //console.log('applyCouponData:', applyCouponData);
 
       if (applyCouponData?.discount !== undefined) {
         setDiscountPrice(applyCouponData);
@@ -131,18 +131,18 @@ function CourseCard({course, navigation, setpageLoading}) {
   };
 
   const applyCouponm = (course_id, price) => {
-    console.log('course_id:', course_id, price);
+    //console.log('course_id:', course_id, price);
     setSelectedCourseId(course_id);
     setSelectedCoursePrice(price);
     setModalVisible(true);
   };
 
   const handleImageLoad = (id, isLoading) => {
-    setImageLoading(prevState => ({...prevState, [id]: isLoading}));
+    setImageLoading(prevState => ({ ...prevState, [id]: isLoading }));
   };
 
   return (
-    
+
     <Fragment>
       <View key={course._id} style={style.courseCard}>
         <Text style={style.title}>{course.title}</Text>
@@ -170,9 +170,9 @@ function CourseCard({course, navigation, setpageLoading}) {
         </Text>
         <View style={style.afterDesc}>
           <Text style={style.language}>{course?.language.name}</Text>
-          
+
           <Text style={style.price}>
-            
+
             {discountPrice && <Text style={style.crossPrice}>₹ {Math.round(course.price)}</Text>}
             {' '}
             ₹
@@ -254,14 +254,14 @@ function CourseCard({course, navigation, setpageLoading}) {
             )}
 
             {
-            //   discountPrice !== null && (
-            //   <Text style={style.discountMessage}>
-            //     {discountPrice.discount > 0
-            //       ? `Coupon applied! You get Rs.${discountPrice.discount} off.`
-            //       : 'Invalid coupon code'}
-            //   </Text>
-            // )
-          }
+              //   discountPrice !== null && (
+              //   <Text style={style.discountMessage}>
+              //     {discountPrice.discount > 0
+              //       ? `Coupon applied! You get Rs.${discountPrice.discount} off.`
+              //       : 'Invalid coupon code'}
+              //   </Text>
+              // )
+            }
           </View>
         </View>
       </Modal>
@@ -328,7 +328,7 @@ const style = StyleSheet.create({
     color: '#054bb4',
     fontWeight: 'bold',
   },
-  crossPrice:{
+  crossPrice: {
     textDecorationLine: 'line-through',
     color: '#666',
     fontSize: 12,

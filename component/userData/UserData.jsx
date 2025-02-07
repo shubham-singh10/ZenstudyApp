@@ -20,7 +20,7 @@ export const UserData = () => {
                 );
                 const resData = await response.json();
                 const { userdetail } = resData;
-                 console.log('user: ', userdetail.status);
+                 //console.log('user: ', userdetail.status);
                 setUsersData(userdetail || null);
                 setUserStatus(userdetail?.status || null);
             }

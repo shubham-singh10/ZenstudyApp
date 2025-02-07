@@ -2,15 +2,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API2 } from '@env';
+import { REACT_APP_API } from '@env';
 // Thunk to fetch login data
 export const loginData = createAsyncThunk(
     'authentication/login',
     async ({ phone, password }, thunkAPI) => {
-        console.log(phone, password);
+        //console.log(phone, password);
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/app/signin`,
+                `${REACT_APP_API}zenstudy/api/app/signin`,
                 { phone, password },
                 {
                     headers: {
@@ -19,7 +19,7 @@ export const loginData = createAsyncThunk(
                     },
                 }
             );
-            console.log('Login Response: ', response.data);
+            //console.log('Login Response: ', response.data);
             return response.data;
         } catch (error) {
             let errorMessage;
@@ -34,7 +34,7 @@ export const loginData = createAsyncThunk(
                 errorMessage = 'An unexpected error occurred. Please try again.';
             }
 
-            console.log('Login Error: ', errorMessage);
+            //console.log('Login Error: ', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage); // Return the specific error message
         }
     }

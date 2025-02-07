@@ -6,17 +6,17 @@ import { REACT_APP_API, REACT_APP_API2 } from '@env';
 export const initiatePayment = createAsyncThunk(
     'payment/initiatePayment',
     async ({ amount, userId, courseId }, thunkAPI) => {
-        console.log('Amount: ', amount, userId, courseId);
+        //console.log('Amount: ', amount, userId, courseId);
         try {
             const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/order`, {
                 amount,
                 user_id: userId,
                 course_id: courseId,
             });
-            // console.log('Res: ', response.data)
+            // //console.log('Res: ', response.data)
             return response.data;
         } catch (error) {
-            // console.log('Error: ', error.message);
+            // //console.log('Error: ', error.message);
             const errorMessage = error.response?.data?.message || 'Failed to create payment order';
             return thunkAPI.rejectWithValue(errorMessage);
         }
@@ -27,13 +27,13 @@ export const initiatePayment = createAsyncThunk(
 export const verifyPayment = createAsyncThunk(
     'payment/verifyPayment',
     async ({ razorpayData, userId, courseId, price, subtotal, code, discount }, thunkAPI) => {
-        console.log('RezorPayData: ', razorpayData);
-        console.log('UserId: ', userId);
-        console.log('CourseId: ', courseId);
-        console.log('Price: ', price);
-        console.log('Subtotal: ', subtotal);
-        console.log('Code: ', code);
-        console.log('Discount: ', discount);
+        //console.log('RezorPayData: ', razorpayData);
+        //console.log('UserId: ', userId);
+        //console.log('CourseId: ', courseId);
+        //console.log('Price: ', price);
+        //console.log('Subtotal: ', subtotal);
+        //console.log('Code: ', code);
+        //console.log('Discount: ', discount);
         
         try {
             const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/verify`, {
@@ -60,17 +60,17 @@ export const verifyPayment = createAsyncThunk(
 export const applyCoupon = createAsyncThunk(
     'payment/applyCoupon',
     async ({ code, price, courseId }, thunkAPI) => {
-        console.log('Code: ', code, price, courseId);
+        //console.log('Code: ', code, price, courseId);
         try {
             const response = await axios.post(`${REACT_APP_API}zenstudy/api/coupon/applyCoupon`, {
                 code,
                 coursePrice: price,
                 courseId,
             });
-             console.log('Res: ', response.data);
+             //console.log('Res: ', response.data);
             return response.data;
         } catch (error) {
-            console.log('Error: ', error.response?.data?.message);
+            //console.log('Error: ', error.response?.data?.message);
             const errorMessage = error.response?.data?.message || 'Failed to apply coupon';
             return thunkAPI.rejectWithValue(errorMessage);
         }

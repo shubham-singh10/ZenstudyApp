@@ -1,15 +1,15 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {REACT_APP_API2, REACT_APP_API} from '@env';
+import { REACT_APP_API} from '@env';
 
 // Thunk to fetch Profile data
 export const fetchProfileDetails = createAsyncThunk(
   'profile/fetchDetails',
   async (userId, {rejectWithValue}) => {
-    console.log('userId', userId);
+    //console.log('userId', userId);
     try {
       const response = await axios.get(
-        `${REACT_APP_API2}zenstudy/api/app/userdetail/${userId}`,
+        `${REACT_APP_API}zenstudy/api/app/userdetail/${userId}`,
         {
           headers: {
             Accept: 'application/json',
@@ -57,7 +57,7 @@ export const updateProfileDetails = createAsyncThunk(
   async ({userId, userUpdate}, {rejectWithValue}) => {
     try {
       const response = await axios.put(
-        `${REACT_APP_API2}zenstudy/api/app/updateUserN/${userId}`,
+        `${REACT_APP_API}zenstudy/api/app/updateUserN/${userId}`,
         userUpdate,
         {
           headers: {

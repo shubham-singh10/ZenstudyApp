@@ -59,7 +59,7 @@ const CourseDetail = ({navigation, route}) => {
       const orderData = await dispatch(
         initiatePayment({amount, userId, courseId}),
       ).unwrap();
-      //  console.log('OrderData: ', orderData)
+      //  //console.log('OrderData: ', orderData)
       // Handle payment verification after successful initiation
       if (orderData) {
         handlePaymentVerify(orderData, courseId);
@@ -137,7 +137,7 @@ const CourseDetail = ({navigation, route}) => {
           courseId: selectedCourseId,
         }),
       ).unwrap();
-      console.log('applyCouponData:', applyCouponData);
+      //console.log('applyCouponData:', applyCouponData);
 
       if (applyCouponData?.discount !== undefined) {
         setDiscountPrice(applyCouponData);
@@ -153,7 +153,7 @@ const CourseDetail = ({navigation, route}) => {
   };
 
   const applyCouponm = (course_id, price) => {
-    console.log('course_id:', course_id, price);
+    //console.log('course_id:', course_id, price);
     setSelectedCourseId(course_id);
     setSelectedCoursePrice(price);
     setModalVisible(true);

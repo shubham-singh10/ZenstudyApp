@@ -30,7 +30,7 @@ const OtpVerificationScreen = ({navigation}) => {
   };
 
   const handleContinue = () => {
-    console.log('Entered OTP:', otp.join(''));
+    //console.log('Entered OTP:', otp.join(''));
     // Add OTP verification logic
   };
 

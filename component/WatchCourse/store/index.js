@@ -1,16 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API2 } from '@env';
+import { REACT_APP_API } from '@env';
 
 
 // Thunk to fetch watch data
 export const PurchaseWatchCourseData = createAsyncThunk(
     'PurchaseWatchCourseData',
     async (courseId, thunkAPI) => {
-        console.log(courseId);
+        //console.log(courseId);
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/app/watchCourse`,
+                `${REACT_APP_API}zenstudy/api/app/watchCourse`,
                 { id: courseId },
                 {
                     headers: {

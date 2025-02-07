@@ -18,7 +18,7 @@ export const signupUser = createAsyncThunk(
                     },
                 }
             );
-            console.log('response: ', response.data);
+            //console.log('response: ', response.data);
             return response.data.user;
         } catch (error) {
             let errorMessage;
@@ -32,7 +32,7 @@ export const signupUser = createAsyncThunk(
                 errorMessage = error.message;
             }
 
-            // console.log('Signup Error:', errorMessage);
+            // //console.log('Signup Error:', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage);
         }
     }

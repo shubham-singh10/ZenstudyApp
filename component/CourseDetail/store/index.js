@@ -1,15 +1,15 @@
 // index.js in your slice folder
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { REACT_APP_API2, REACT_APP_API } from '@env';
+import { REACT_APP_API } from '@env';
 // Thunk to fetch login data
 export const DetailsCourseData = createAsyncThunk(
     'couredetails',
     async (courseId, thunkAPI) => {
-        console.log(courseId);
+        //console.log(courseId);
         try {
             const response = await axios.get(
-                `${REACT_APP_API2}zenstudy/api/app/coursedetail/${courseId}`,
+                `${REACT_APP_API}zenstudy/api/app/coursedetail/${courseId}`,
                 {
                     headers: {
                         Accept: 'application/json',
@@ -38,7 +38,7 @@ export const DetailsCourseData = createAsyncThunk(
                 errorMessage = error.message;
             }
 
-            console.log('Error: ', errorMessage);
+            //console.log('Error: ', errorMessage);
             return thunkAPI.rejectWithValue(errorMessage); // Return the specific error message
         }
     }
@@ -63,7 +63,7 @@ export const handlePaymentInitiate = createAsyncThunk(
                 }
             );
 
-            console.log('Payment_initiate_Response: ', response.data);
+            //console.log('Payment_initiate_Response: ', response.data);
 
             return response.data;
         } catch (error) {
