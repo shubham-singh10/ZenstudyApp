@@ -99,6 +99,7 @@ const HomeScreen = ({navigation}) => {
         {loading && <HomeScreenSakelton />}
         {!loading && (
           <>
+          <Text>Hello</Text>
             {/* Banner/Carousel */}
             <View style={homestyle.carouselContainer}>
               <ScrollView
