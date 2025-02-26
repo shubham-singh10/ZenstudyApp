@@ -33,7 +33,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const dispatch = useDispatch();
 
-  const handlePayment = async (courseId, amount) => {
+  const handlePayment = async (courseId, amount, originalPrice) => {
     setPayLoading(courseId);
     try {
       const userId = usersData?._id;
@@ -42,7 +42,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
         initiatePayment({ amount, userId, courseId }),
       ).unwrap();
       if (orderData) {
-        handlePaymentVerify(orderData, courseId);
+        handlePaymentVerify(orderData, courseId, originalPrice);
       }
     } catch (err) {
       console.error('Error initiating payment:', err);
@@ -51,7 +51,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
     }
   };
 
-  const handlePaymentVerify = async (data, courseId) => {
+  const handlePaymentVerify = async (data, courseId, originalPrice) => {
     try {
       setpageLoading(true);
 
@@ -67,15 +67,19 @@ function CourseCard({ course, navigation, setpageLoading }) {
 
       const response = await RazorpayCheckout.open(options);
 
+      const subtotalToUse = discountPrice && discountPrice.subTotal !== undefined
+        ? discountPrice.subTotal === 0 ? 1 : discountPrice.subTotal.toFixed(2)
+        : originalPrice;
+
       const verifyData = await dispatch(
         verifyPayment({
           razorpayData: response,
           userId: usersData._id,
           courseId,
-          price: selectedCoursePrice || discountPrice?.subTotal?.toFixed(2),
-          code: couponCode,
+          price: originalPrice,
+          code: couponCode || null,
           discount: discountPrice?.discount || 0,
-          subtotal: discountPrice?.subTotal === 0 ? 1 : discountPrice?.subTotal?.toFixed(2),
+          subtotal: subtotalToUse,
         })
       ).unwrap();
 
@@ -208,6 +212,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
                     ? 1
                     : discountPrice?.subTotal.toFixed(2)
                   : course?.price,
+                course?.price
               )
             }
             disabled={!!payLoading}>

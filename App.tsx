@@ -25,10 +25,11 @@ import CourseDetail from './component/CourseDetail/CourseDetailScreen';
 import WatchCourse from './component/WatchCourse/WatchCourse';
 import SupportScreen from './component/SupportScreen/SupportScreen';
 import OtpVerificationScreen from './component/OTP Screen/OtpVerificationScreen';
-import SignupScreen from './component/SignUp/SignupScreen';
 import ForgotScreen from './component/ForgotPassword/ForgotScreen';
 import AllCourses from './component/AllCourseScreen/AllCourses';
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
+import SignupScreen from './component/SignUp/SignupScreen';
+import { OTPScreen } from './component/SignUpNew/OtpScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -137,6 +138,11 @@ const AuthStack = () => (
     <Stack.Screen
       name="signupScreen"
       component={SignupScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="OTP"
+      component={OTPScreen}
       options={{ headerShown: false }}
     />
 

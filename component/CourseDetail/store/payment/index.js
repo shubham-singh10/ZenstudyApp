@@ -34,7 +34,7 @@ export const verifyPayment = createAsyncThunk(
         //console.log('Subtotal: ', subtotal);
         //console.log('Code: ', code);
         //console.log('Discount: ', discount);
-        
+
         try {
             const response = await axios.post(`${REACT_APP_API2}zenstudy/api/payment/verify`, {
                 razorpay_order_id: razorpayData.razorpay_order_id,
@@ -67,7 +67,7 @@ export const applyCoupon = createAsyncThunk(
                 coursePrice: price,
                 courseId,
             });
-             //console.log('Res: ', response.data);
+            //console.log('Res: ', response.data);
             return response.data;
         } catch (error) {
             //console.log('Error: ', error.response?.data?.message);
