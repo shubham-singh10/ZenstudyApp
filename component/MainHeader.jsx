@@ -12,7 +12,7 @@ function MainHeader() {
   return (
     <View style={styles.mainHeader}>
       <View style={styles.leftContent}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('livecourseDetail')}>
           <Text style={styles.userIcon}><User fill="white" /></Text>
         </TouchableOpacity>
         <Text style={styles.username}>{usersData?.name}</Text>

@@ -15,20 +15,25 @@ import {
     SafeAreaView,
     StatusBar,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+
 // Import MaterialIcons directly with a specific name to avoid undefined issues
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Toast from 'react-native-toast-message';
 import { VdoPlayerView } from 'vdocipher-rn-bridge';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailsCourseData } from './store';
 
 
 const { width } = Dimensions.get('window');
 
-const CourseDetailsScreen = () => {
-    // Navigation and route
-    const navigation = useNavigation();
-    const route = useRoute();
+const LiveCourseDetailsScreen = ({ navigation, route }) => {
+    const dispatch = useDispatch();
+    // const { courseId } = route.params;
+    const courseId = "67c6afd0d79cf3c90ab0d7f7"
     const coursename = route.params?.coursename;
+      const { courseData, loading, error } = useSelector(
+        state => state.CourseDetailData,
+      );
 
     // Refs for scrolling to sections
     const scrollViewRef = useRef(null);
@@ -52,13 +57,11 @@ const CourseDetailsScreen = () => {
     const [showAll, setShowAll] = useState(false);
     const [openIndex, setOpenIndex] = useState(null);
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
-    const [courseData, setCourseData] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [couponCode, setCouponCode] = useState('');
     const [payLoading, setPayLoading] = useState(false);
     const [discount, setDiscount] = useState(null);
     const [couponLoading, setCouponLoading] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [bannerImageLoaded, setBannerImageLoaded] = useState(false);
     const [thumbnailImageLoaded, setThumbnailImageLoaded] = useState(false);
     const [contentVisible] = useState(new Animated.Value(0));
@@ -70,153 +73,7 @@ const CourseDetailsScreen = () => {
     useEffect(() => {
         // Simulate API call
         setTimeout(() => {
-            const mockData = {
-                _id: '123456',
-                title: 'UPSC Comprehensive Course',
-                description:
-                    'A complete preparation course for UPSC Civil Services Examination covering all subjects and topics as per the latest pattern.',
-                price: 9999,
-                value: 14999,
-                language: { name: 'English' },
-                startTime: new Date().toISOString(),
-                endTime: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-                posterUrl: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1974&auto=format&fit=crop',
-                imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1970&auto=format&fit=crop',
-                previewVideo: {
-                    previewVideoUrl: '20160313versUSE323UMMJcpv7HqvbGuL35Mz1xqV9b2YyKdPYw9Pg2EqGo1UVKY',
-                    previewVideoDescription: 'eyJ2aWRlb0lkIjoiY2U0MGQ4YzFmNGQxNGE3Njg4YmZhMDE2NmFiZTFkODEifQ==',
-                },
-                features: [
-                    { features: 'Live Classes: Interactive sessions with experienced faculty' },
-                    { features: 'Study Material: Comprehensive notes and books' },
-                    { features: 'Test Series: Regular mock tests and evaluations' },
-                ],
-                subjects: [
-                    { subject: 'History' },
-                    { subject: 'Geography' },
-                    { subject: 'Polity' },
-                    { subject: 'Economics' },
-                    { subject: 'Science & Technology' },
-                    { subject: 'Environment' },
-                    { subject: 'Current Affairs' },
-                ],
-                schedule: [
-                    {
-                        title: 'Foundation Module',
-                        other2: '45',
-                        startDate: new Date().toISOString(),
-                        endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
-                        description: 'Building strong fundamentals',
-                        lecture: [
-                            { title: 'Introduction to UPSC' },
-                            { title: 'Understanding the Syllabus' },
-                            { title: 'Effective Study Techniques' },
-                        ],
-                    },
-                    {
-                        title: 'Main Subjects',
-                        other2: '120',
-                        startDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
-                        endDate: new Date(new Date().setMonth(new Date().getMonth() + 9)).toISOString(),
-                        description: 'Detailed coverage of all subjects',
-                        lecture: [
-                            { title: 'Indian History and Culture' },
-                            { title: 'Indian Polity and Constitution' },
-                            { title: 'Geography and Environment' },
-                        ],
-                    },
-                    {
-                        title: 'Advanced Topics',
-                        other2: '80',
-                        startDate: new Date(new Date().setMonth(new Date().getMonth() + 9)).toISOString(),
-                        endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-                        description: 'In-depth analysis of complex topics',
-                        lecture: [
-                            { title: 'International Relations' },
-                            { title: 'Economic Development' },
-                            { title: 'Science and Technology' },
-                        ],
-                    },
-                ],
-                Offer: [
-                    {
-                        title: 'Limited Time Offer',
-                        description: 'Enroll now and get 30% off',
-                        refundPolicy: '7-day money-back guarantee',
-                        buttonText: 'Enroll Now',
-                    },
-                ],
-                fAndQ: [
-                    {
-                        question: 'How long will I have access to the course?',
-                        answer: 'You will have access to the course for 18 months from the date of enrollment.',
-                    },
-                    {
-                        question: 'Are the classes live or recorded?',
-                        answer: 'The course includes both live interactive classes and recorded sessions for revision.',
-                    },
-                    {
-                        question: 'Is there any installment option available?',
-                        answer: 'Yes, we offer flexible payment options. Please contact our support team for details.',
-                    },
-                ],
-                dynamicSections: [
-                    {
-                        title: 'Live Classes',
-                        icon: 'MdOndemandVideo',
-                        bgColor: '#e6f7ff',
-                        textColor: '#0066cc',
-                        contents: [
-                            { text: 'Interactive sessions with experienced faculty' },
-                            { text: 'Doubt clearing during class' },
-                            { text: 'Regular assessments and feedback' },
-                        ],
-                    },
-                    {
-                        title: 'Study Material',
-                        icon: 'MdMenuBook',
-                        bgColor: '#fff2e6',
-                        textColor: '#ff8c00',
-                        contents: [
-                            { text: 'Comprehensive notes for all subjects' },
-                            { text: 'Updated current affairs material' },
-                            { text: 'Practice question banks' },
-                        ],
-                    },
-                    {
-                        title: 'Mentorship',
-                        icon: 'MdSupportAgent',
-                        bgColor: '#e6ffe6',
-                        textColor: '#008000',
-                        contents: [
-                            { text: 'One-on-one guidance from UPSC experts' },
-                            { text: 'Personalized study plan' },
-                            { text: 'Regular progress tracking' },
-                        ],
-                    },
-                    {
-                        title: 'Test Series',
-                        icon: 'MdAssignment',
-                        bgColor: '#f0e6ff',
-                        textColor: '#6600cc',
-                        contents: [
-                            { text: 'Regular mock tests as per UPSC pattern' },
-                            { text: 'Detailed performance analysis' },
-                            { text: 'Rank prediction and improvement strategies' },
-                        ],
-                    },
-                ],
-                whyChooseUs: [
-                    { point: 'Experienced faculty with proven track record' },
-                    { point: 'Comprehensive coverage of entire syllabus' },
-                    { point: 'Regular updates as per the latest exam pattern' },
-                    { point: 'Personalized attention and mentorship' },
-                ],
-            };
-
-            setCourseData(mockData);
-            setLoading(false);
-
+            dispatch(DetailsCourseData(courseId));
             // Simulate image loading
             setTimeout(() => {
                 setBannerImageLoaded(true);
@@ -233,7 +90,7 @@ const CourseDetailsScreen = () => {
 
         // Mock authentication status
         setIsAuthenticated(false);
-    }, [contentVisible]);
+    }, [dispatch, courseId, contentVisible]);
 
     // Handle scroll event to update active tab
     const handleScroll = (event) => {
@@ -435,21 +292,7 @@ const CourseDetailsScreen = () => {
                     onScroll={handleScroll}
                     scrollEventThrottle={16} // Important for smooth scroll tracking
                 >
-                    {/* Banner Image */}
-                    <View style={styles.bannerContainer}>
-                        {!bannerImageLoaded && <View style={[styles.bannerPlaceholder, styles.gradientBackground]} />}
-                        {courseData?.posterUrl ? (
-                            <Image
-                                source={{ uri: courseData.posterUrl }}
-                                style={[styles.bannerImage, { opacity: bannerImageLoaded ? 1 : 0 }]}
-                                onLoad={() => setBannerImageLoaded(true)}
-                            />
-                        ) : (
-                            <View style={[styles.bannerPlaceholder, styles.gradientBackground]}>
-                                <Text style={styles.bannerPlaceholderText}>Welcome to the {courseData?.title} Batch</Text>
-                            </View>
-                        )}
-                    </View>
+                   
 
                     {/* Main Content */}
                     <View style={styles.mainContentContainer}>
@@ -883,9 +726,7 @@ const CourseDetailsScreen = () => {
                         </TouchableOpacity>
                     )}
                 </View>
-                <TouchableOpacity style={styles.couponButton} onPress={() => setIsModalOpen(true)}>
-                    <Text style={styles.couponButtonText}>Have a coupon? Apply it here.</Text>
-                </TouchableOpacity>
+                
             </Animated.View>
             <Modal visible={isModalOpen} transparent={true} animationType="fade" onRequestClose={() => setIsModalOpen(false)}>
                 <View style={styles.modalOverlay}>
@@ -1001,6 +842,7 @@ const styles = StyleSheet.create({
     },
     mainContentContainer: {
         padding: 16,
+        marginTop: 20,
     },
     section: {
         marginBottom: 24,
@@ -1546,6 +1388,7 @@ const styles = StyleSheet.create({
     },
     couponButton: {
         marginTop: 8,
+        marginBottom: 1,
         alignSelf: 'flex-start',
     },
     couponButtonText: {
@@ -1614,4 +1457,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CourseDetailsScreen;
+export default LiveCourseDetailsScreen;

@@ -145,6 +145,8 @@ function CourseCard({ course, navigation, setpageLoading }) {
     setImageLoading(prevState => ({ ...prevState, [id]: isLoading }));
   };
 
+  const newPage = course.title?.includes("UPSC Foundation Batch")
+
   return (
 
     <Fragment>
@@ -195,10 +197,12 @@ function CourseCard({ course, navigation, setpageLoading }) {
         <View style={style.cardBtns}>
           <TouchableOpacity
             style={style.exploreBtn}
-            onPress={() =>
+            onPress={() =>{
+              newPage ? navigation.navigate('livecourseDetail') :
               navigation.navigate('courseDetail', {
                 courseId: course._id,
               })
+            }
             }>
             <Text style={style.exploreBtnText}>View Course</Text>
           </TouchableOpacity>
