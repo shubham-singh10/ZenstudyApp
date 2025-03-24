@@ -29,6 +29,7 @@ import ForgotScreen from './component/ForgotPassword/ForgotScreen';
 import AllCourses from './component/AllCourseScreen/AllCourses';
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 import SignupScreen from './component/SignUp/SignupScreen';
+// import CourseDetailsScreen from './component/HomeScreen/CourseDetailsScreen';
 import { OTPScreen } from './component/SignUpNew/OtpScreen';
 
 const Stack = createNativeStackNavigator();

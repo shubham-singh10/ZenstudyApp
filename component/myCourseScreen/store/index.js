@@ -18,35 +18,46 @@ export const PurchaseCourseData = createAsyncThunk(
                 }
             );
 
-            const data = await response.data;
-
-            if (data.message === 'Done') {
-                // Filter valid courses
-                const filteredCourses = data.purchaseCourses.filter(purchase => purchase?.course_id !== null);
-
-                if (filteredCourses.length === 0) {
-                    return thunkAPI.rejectWithValue('No purchased courses found.');
-                }
-
-                // Separate recorded and live courses
-                const recordedCourses = filteredCourses
-                    .filter((course) => course.course_id.tags === 'notlive')
-                    .map((course) => ({
-                        ...course,
-                        imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${course.course_id.thumbnail}`,
-                    }));
-
-                const liveCourses = filteredCourses
-                    .filter((course) => course.course_id.tags === 'live')
-                    .map((course) => ({
-                        ...course,
-                        imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${course.course_id.thumbnail}`,
-                    }));
-
-                // Return both separately
-                return { recordedCourses, liveCourses };
+            const data = response.data;
+            if (data.message !== 'Done' || !data.purchaseCourses) {
+                return thunkAPI.rejectWithValue('No purchased courses found.');
             }
+
+            // Helper function to get image URL
+            const getImageUrl = (thumbnail) =>
+                `${REACT_APP_API}zenstudy/api/image/getimage/${thumbnail}`;
+
+            // Filter valid courses
+            const filteredCourses = data.purchaseCourses.filter(
+                (purchase) => purchase?.course_id !== null
+            );
+
+            if (filteredCourses.length === 0) {
+                return thunkAPI.rejectWithValue('No purchased courses found.');
+            }
+
+            // Separate recorded and live courses with proper image URLs
+            const recordedCourses = [];
+            const liveCourses = [];
+
+            filteredCourses.forEach((course) => {
+                const enrichedCourse = {
+                    ...course,
+                    imageUrl: getImageUrl(course.course_id.thumbnail),
+                };
+
+                if (course.course_id.tags === 'notlive') {
+                    recordedCourses.push(enrichedCourse);
+                } else if (course.course_id.tags === 'live') {
+                    liveCourses.push(enrichedCourse);
+                }
+            });
+
+            // Return both recorded and live courses
+            return { recordedCourses, liveCourses };
         } catch (error) {
+            console.error('Error fetching purchase courses: ', error);
+
             let errorMessage = 'An error occurred. Please try again.';
             if (error.response) {
                 errorMessage = error.response.data.message || errorMessage;
@@ -55,10 +66,12 @@ export const PurchaseCourseData = createAsyncThunk(
             } else {
                 errorMessage = error.message;
             }
+
             return thunkAPI.rejectWithValue(errorMessage);
         }
     }
 );
+
 
 // Define initial state
 const initialState = {

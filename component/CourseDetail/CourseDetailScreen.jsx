@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,20 +10,20 @@ import {
   TextInput,
   Modal,
 } from 'react-native';
-import {Language} from '../Icons/MyIcon';
-import {useDispatch, useSelector} from 'react-redux';
-import {DetailsCourseData} from './store';
+import { Language } from '../Icons/MyIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailsCourseData } from './store';
 import Loader from '../Loader';
 import RazorpayCheckout from 'react-native-razorpay';
-import {UserData} from '../userData/UserData';
-import {applyCoupon, initiatePayment, verifyPayment} from './store/payment';
-import {REACT_APP_RAZORPAY_KEY_ID} from '@env';
+import { UserData } from '../userData/UserData';
+import { applyCoupon, initiatePayment, verifyPayment } from './store/payment';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
 import FastImage from 'react-native-fast-image';
-import {VdoPlayerView} from 'vdocipher-rn-bridge';
+import { VdoPlayerView } from 'vdocipher-rn-bridge';
 
-const CourseDetail = ({navigation, route}) => {
-  const {courseId} = route.params;
-  const {usersData} = UserData();
+const CourseDetail = ({ navigation, route }) => {
+  const { courseId } = route.params;
+  const { usersData } = UserData();
   const dispatch = useDispatch();
   const [payLoading, setPayLoading] = useState(false);
   const [pageloading, setpageLoading] = useState(false);
@@ -34,7 +34,7 @@ const CourseDetail = ({navigation, route}) => {
   const [couponCode, setCouponCode] = useState('');
   const [selectedCoursePrice, setSelectedCoursePrice] = useState(null);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const {courseData, loading, error} = useSelector(
+  const { courseData, loading, error } = useSelector(
     state => state.CourseDetailData,
   );
 
@@ -45,24 +45,24 @@ const CourseDetail = ({navigation, route}) => {
   };
 
   const handleImageLoad = (id, isLoading) => {
-    setImageLoading(prevState => ({...prevState, [id]: isLoading}));
+    setImageLoading(prevState => ({ ...prevState, [id]: isLoading }));
   };
   // Fetch course data on mount
   useEffect(() => {
     dispatch(DetailsCourseData(courseId));
   }, [dispatch, courseId]);
 
-  const handlePayment = async amount => {
+  const handlePayment = async (amount, originalPrice) => {
     setPayLoading(true);
     try {
       const userId = usersData?._id;
       const orderData = await dispatch(
-        initiatePayment({amount, userId, courseId}),
+        initiatePayment({ amount, userId, courseId }),
       ).unwrap();
       //  //console.log('OrderData: ', orderData)
       // Handle payment verification after successful initiation
       if (orderData) {
-        handlePaymentVerify(orderData, courseId);
+        handlePaymentVerify(orderData, courseId, originalPrice);
       }
     } catch (err) {
       console.error('Error initiating payment:', err);
@@ -71,10 +71,10 @@ const CourseDetail = ({navigation, route}) => {
     }
   };
 
-  const handlePaymentVerify = async (data, courseId) => {
+  const handlePaymentVerify = async (data, courseIdd, originalPrice) => {
     try {
       setpageLoading(true);
-  
+
       const options = {
         key: REACT_APP_RAZORPAY_KEY_ID,
         amount: data.data.amount,
@@ -84,23 +84,27 @@ const CourseDetail = ({navigation, route}) => {
         order_id: data.data.id,
         theme: { color: '#5f63b8' },
       };
-  
+
       // Trigger Razorpay payment UI
       const response = await RazorpayCheckout.open(options);
-  
+
+      const subtotalToUse = discountPrice && discountPrice.subTotal !== undefined
+        ? discountPrice.subTotal === 0 ? 1 : discountPrice.subTotal.toFixed(2)
+        : originalPrice;
+
       // Verify the payment after a successful transaction
       const verifyData = await dispatch(
         verifyPayment({
           razorpayData: response,
           userId: usersData._id,
-          courseId,
-          price: selectedCoursePrice || discountPrice?.subTotal?.toFixed(2),
-          code: couponCode,
+          courseId: courseIdd,
+          price: originalPrice,
+          code: couponCode || null,
           discount: discountPrice?.discount || 0,
-          subtotal: discountPrice?.subTotal === 0 ? 1 : discountPrice?.subTotal?.toFixed(2),
+          subtotal: subtotalToUse,
         })
       ).unwrap();
-  
+
       // Check if the verification was successful
       if (verifyData.message === 'Payment Successful') {
         Alert.alert(
@@ -121,7 +125,7 @@ const CourseDetail = ({navigation, route}) => {
       setpageLoading(false);
     }
   };
-  
+
 
   const applyCourse = async () => {
     if (!couponCode.trim()) {
@@ -248,7 +252,7 @@ const CourseDetail = ({navigation, route}) => {
             <Text style={courseStyle.buyButtonText}>please wait..</Text>
           </TouchableOpacity>
         ) : (
-          pageloading ? <ActivityIndicator></ActivityIndicator> :<TouchableOpacity
+          pageloading ? <ActivityIndicator /> : <TouchableOpacity
             style={courseStyle.buyButton}
             onPress={() =>
               handlePayment(
@@ -257,6 +261,7 @@ const CourseDetail = ({navigation, route}) => {
                     ? 1
                     : discountPrice?.subTotal.toFixed(2)
                   : courseData?.price,
+                courseData?.price
               )
             }>
             <Text style={courseStyle.buyButtonText}>Enroll Now</Text>
@@ -335,7 +340,7 @@ const CourseDetail = ({navigation, route}) => {
               index={index + 1}
               videoTitle={
                 module.videos.length > 0 ? (
-                  module.videos.map(({num, videoTitle}) => (
+                  module.videos.map(({ num, videoTitle }) => (
                     <Text key={num} style={courseStyle.videoTitleText}>
                       {videoTitle || 'No video title available'}
                     </Text>
@@ -352,7 +357,7 @@ const CourseDetail = ({navigation, route}) => {
   );
 };
 
-const Module = ({title, index, videoTitle}) => {
+const Module = ({ title, index, videoTitle }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -433,7 +438,7 @@ const courseStyle = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: -30,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

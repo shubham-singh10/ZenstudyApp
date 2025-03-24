@@ -7,15 +7,19 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
 import { Call, Email, Key, Profile } from '../Icons/MyIcon';
 import Toast from 'react-native-toast-message';
-import { signupUser } from './store';
+import { checkUser, signupUser } from './store';
 import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../../Context/AuthContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
+const { width } = Dimensions.get('window');
 const SignupScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,12 +30,25 @@ const SignupScreen = ({ navigation }) => {
     phoneStatus: 'notverified',
     userType: 'Reader',
   });
+  const [step, setStep] = useState(1);
+  const [otp, setOtp] = useState('');
   const dispatch = useDispatch();
   const { userData, loading, error } = useSelector(state => state.rauth);
   const [passwordError, setPasswordError] = useState('');
   const [hasAttemptedSignUp, setHasAttemptedSignUp] = useState(false);
   const [errors, setErrors] = useState({});
   const { setIsLoggedIn } = useContext(AuthContext);
+  const slideAnim = useState(new Animated.Value(0))[0];
+
+  const animate = (direction) => {
+    Animated.timing(slideAnim, {
+      toValue: direction === 'right' ? width : -width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      slideAnim.setValue(0);
+    });
+  };
 
   useEffect(() => {
     if (userData) {
@@ -156,140 +173,213 @@ const SignupScreen = ({ navigation }) => {
     }
   };
 
+  //Handle User Check and send OTP
+  const handleNext = async () => {
+    const isValid = validateForm();
+    if (isValid) {
+      const result = await dispatch(checkUser(formData.email));
+
+      if (result.payload.message === 'Success') {
+        Toast.show({
+          type: 'info',
+          text1: 'Account Already Exists',
+          text2: 'Please log in to continue.',
+          visibilityTime: 5000,
+          position: 'top',
+        });
+        console.log('Result: ', result);
+        console.log('ResultP: ', result.payload.message);
+      }
+      const { phone, name, email, userType, phoneStatus, password } = formData;
+      console.log('Form: ', formData);
+      animate('right');
+      setStep(step + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) {
+      animate('left');
+      setStep(step - 1);
+    }
+  };
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          //Sign Up Section
+          <View style={formStyles.section2}>
+            <Text style={formStyles.loginText}>Sign Up</Text>
+
+            {/* Name Input */}
+            <View style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  <Icon name="person" size={24} color="#fff" />
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder="Enter Your Name"
+                placeholderTextColor="#888"
+                value={formData.name}
+                onChangeText={text => onInputChange(text, 'name')}
+              />
+            </View>
+            {errors.name && <Text style={formStyles.error}>{errors.name}</Text>}
+
+            {/* email Input */}
+            <View style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  <Icon name="email" size={24} color="#fff" />
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder="Enter Your Email"
+                placeholderTextColor="#888"
+                value={formData.email}
+                onChangeText={text => onInputChange(text, 'email')}
+              />
+            </View>
+            {errors.email && <Text style={formStyles.error}>{errors.email}</Text>}
+
+            {/* Mobile Number Input */}
+            <View style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  <Icon name="phone" size={24} color="#fff" />
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder="Enter Your Mobile Number"
+                placeholderTextColor="#888"
+                maxLength={10}
+                keyboardType="phone-pad"
+                value={formData.phone}
+                onChangeText={text => onInputChange(text, 'phone')}
+              />
+            </View>
+            {errors.phone && <Text style={formStyles.error}>{errors.phone}</Text>}
+
+            {/* Password Input */}
+            <View style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  <Icon name="lock" size={24} color="#fff" />
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder="Enter Your Password"
+                placeholderTextColor="#888"
+                secureTextEntry={true}
+                value={formData.password}
+                onChangeText={text => onInputChange(text, 'password')}
+              />
+            </View>
+            {errors.password && (
+              <Text style={formStyles.error}>{errors.password}</Text>
+            )}
+
+            {/* Confirm Password Input */}
+            <View style={formStyles.inputContainer}>
+              <View style={formStyles.inputlogo}>
+                <Text style={formStyles.inputlogoContent}>
+                  <Icon name="check-circle" size={24} color="#fff" />
+                </Text>
+              </View>
+              <TextInput
+                style={formStyles.input}
+                placeholder="Confirm Your Password"
+                placeholderTextColor="#888"
+                secureTextEntry={true}
+                value={formData.cPassword}
+                onChangeText={text => onInputChange(text, 'cPassword')}
+              />
+            </View>
+
+            {/* Error Message for Password Mismatch */}
+            {errors.cPassword && (
+              <Text style={formStyles.error}>{errors.cPassword}</Text>
+            )}
+            {passwordError ? (
+              <Text style={formStyles.error}>{passwordError}</Text>
+            ) : null}
+          </View>
+        );
+      case 2:
+        return (
+          <View style={formStyles.inputContainer}>
+            <View style={formStyles.inputlogo}>
+              <Text style={formStyles.inputlogoContent}>
+                <Icon name="vpn-key" size={24} color="#fff" />
+              </Text>
+            </View>
+            <TextInput
+              style={formStyles.input}
+              placeholder="Enter OTP"
+              placeholderTextColor="#888"
+              onChangeText={setOtp}
+              maxLength={6}
+            />
+          </View>
+        );
+    }
+  };
+
   return (
     <ScrollView
       style={formStyles.scrollView}
       contentContainerStyle={formStyles.scrollContent}>
       <Header />
 
-      <View style={formStyles.container}>
-        {/* Sign Up Section */}
-        <View style={formStyles.section2}>
-          <Text style={formStyles.loginText}>Sign Up</Text>
+      <Animated.View
+        style={[
+          formStyles.container,
+          {
+            transform: [{ translateX: slideAnim }],
+          },
+        ]}
+      >
 
-          {/* Name Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="white" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Enter Your Name"
-              placeholderTextColor="#888"
-              value={formData.name}
-              onChangeText={text => onInputChange(text, 'name')}
-            />
-          </View>
-          {errors.name && <Text style={formStyles.error}>{errors.name}</Text>}
-
-          {/* email Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Email fill="white" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Enter Your Email"
-              placeholderTextColor="#888"
-              value={formData.email}
-              onChangeText={text => onInputChange(text, 'email')}
-            />
-          </View>
-          {errors.email && <Text style={formStyles.error}>{errors.email}</Text>}
-
-          {/* Mobile Number Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Call fill="#fff" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Enter Your Mobile Number"
-              placeholderTextColor="#888"
-              maxLength={10}
-              keyboardType="phone-pad"
-              value={formData.phone}
-              onChangeText={text => onInputChange(text, 'phone')}
-            />
-          </View>
-          {errors.phone && <Text style={formStyles.error}>{errors.phone}</Text>}
-
-          {/* Password Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Key fill="white" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Enter Your Password"
-              placeholderTextColor="#888"
-              secureTextEntry={true}
-              value={formData.password}
-              onChangeText={text => onInputChange(text, 'password')}
-            />
-          </View>
-          {errors.password && (
-            <Text style={formStyles.error}>{errors.password}</Text>
-          )}
-
-          {/* Confirm Password Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Key fill="white" />
-              </Text>
-            </View>
-            <TextInput
-              style={formStyles.input}
-              placeholder="Confirm Your Password"
-              placeholderTextColor="#888"
-              secureTextEntry={true}
-              value={formData.cPassword}
-              onChangeText={text => onInputChange(text, 'cPassword')}
-            />
-          </View>
-
-          {/* Error Message for Password Mismatch */}
-          {errors.cPassword && (
-            <Text style={formStyles.error}>{errors.cPassword}</Text>
-          )}
-          {passwordError ? (
-            <Text style={formStyles.error}>{passwordError}</Text>
-          ) : null}
-
-          {/* Continue Button */}
-          {loading ? (
-            <TouchableOpacity
-              style={[formStyles.continueButton, formStyles.loadingButton]}
-              disabled={true}>
-              <ActivityIndicator size="small" color="#fff" />
-            </TouchableOpacity>
-          ) : (
+        {renderStep()}
+        {/* Continue Button */}
+        {loading ? (
+          <TouchableOpacity
+            style={[formStyles.continueButton, formStyles.loadingButton]}
+            disabled={true}>
+            <ActivityIndicator size="small" color="#fff" />
+          </TouchableOpacity>
+        ) : (
+          <View>
+            {step > 1 && (
+              <TouchableOpacity style={formStyles.backButton} onPress={handleBack}>
+                <Icon name="arrow-back" size={24} color="#000" />
+                <Text style={formStyles.backText}>Back</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={formStyles.button}
-              onPress={handleContinue}>
-              <Text style={formStyles.buttonText}>Continue</Text>
-            </TouchableOpacity>
-          )}
-
-          {/* Existing User Link */}
-          <View style={formStyles.signupContainer}>
-            <Text style={formStyles.signupText}>Existing User? </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('loginScreen')}>
-              <Text style={formStyles.signupLink}> Login</Text>
+              onPress={handleNext}>
+              <Text style={formStyles.buttonText}>{step === 2 ? 'Sign Up' : 'Next'}</Text>
+              <Icon name={step === 2 ? 'check' : 'arrow-forward'} size={24} color="#fff" />
             </TouchableOpacity>
           </View>
+        )}
+
+        {/* Existing User Link */}
+        <View style={formStyles.signupContainer}>
+          <Text style={formStyles.signupText}>Existing User? </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('loginScreen')}>
+            <Text style={formStyles.signupLink}> Login</Text>
+          </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Footer */}
       <View style={formStyles.footer}>

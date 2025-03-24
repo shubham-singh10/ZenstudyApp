@@ -47,7 +47,7 @@ export const verifyPayment = createAsyncThunk(
                 couponCode: code,
                 couponApplied: code ? true : false,
                 discount: discount,
-                coursevalidation: "2025-03-01",
+                coursevalidation: '2026-03-01',
             });
             return response.data;
         } catch (error) {

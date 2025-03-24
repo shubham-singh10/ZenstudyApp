@@ -100,7 +100,7 @@ const formStyles = StyleSheet.create({
     padding: 5,
     borderRadius: 3,
   },
-  section2:{
+  section2: {
     marginTop: 20,
   },
   loginText: {
@@ -156,7 +156,10 @@ const formStyles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 5,
     marginTop: 10,
-    marginBottom: 20, // added bottom margin for spacing
+    marginBottom: 20,
+    flexDirection: 'row', // Ensures items are in a row
+    alignItems: 'center', // Vertically aligns text and icon
+    justifyContent: 'center', // Centers content horizontally
   },
   forgotText: {
     color: '#054bb4',
@@ -168,6 +171,21 @@ const formStyles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginRight: 8,
+  },
+  backButton: {
+    backgroundColor: '#ccc',
+    paddingVertical: 15,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  backText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
   },
   signupContainer: {
     flexDirection: 'row',

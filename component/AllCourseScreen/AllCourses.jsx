@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import homestyle from '../HomeScreen/homeStyle';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -35,15 +35,14 @@ const AllCourses = ({ navigation }) => {
               {courseData && courseData.length > 0 && (
                 <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
                   {courseData.map(course => (
-                    <CourseCard key={course._id} course={course} navigation={navigation}/>
-                    
+                    <CourseCard key={course._id} course={course} navigation={navigation} />
                   ))}
                 </ScrollView>
               )}
             </View>
           </>
         )}
-       
+
       </ScrollView>
     </View>
   );
