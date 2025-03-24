@@ -4,6 +4,7 @@ import axios from 'axios';
 import { REACT_APP_API, REACT_APP_API2 } from '@env';
 
 // Thunk to register/signup user
+// 4. Register User
 export const signupUser = createAsyncThunk(
     'authentication/signupUser',
     async ({ phone, name, email, userType, phoneStatus, password }, thunkAPI) => {
@@ -39,13 +40,12 @@ export const signupUser = createAsyncThunk(
 );
 
 // 1. Check if User Exists
-export const handleUserFlow = createAsyncThunk(
-    'authentication/handleUserFlow',
-    async ({ email }, thunkAPI) => {
+export const checkUser = createAsyncThunk(
+    'authentication/checkUser', async ({email, phone}, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API}zenstudy/api/auth/user-check`,
-                { data: email },
+                `${REACT_APP_API2}zenstudy/api/app/user-check`,
+                { email, phone },
                 {
                     headers: {
                         Accept: 'application/json',
@@ -53,23 +53,15 @@ export const handleUserFlow = createAsyncThunk(
                     },
                 }
             );
-            const resdata = response.data;
-            if (resdata.message === 'Success') {
-                return { step: 'login' };
-            }
+            return response.data;
         } catch (error) {
-            if (error.response?.status === 404) {
-                await thunkAPI.dispatch(sendOtp(email));
-                return { step: 'otp' };
-            } else if (error.response?.status === 403) {
-                return { step: 'setPassword' };
-            } else {
-                return thunkAPI.rejectWithValue('Something went wrong. Please try again later.');
-            }
+            if (error.response) {
+                return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to check user. Please try again.');
+              }
+              return thunkAPI.rejectWithValue('Failed to check user. Please try again.');
         }
     }
 );
-
 
 // 2. Send OTP
 export const sendOtp = createAsyncThunk(
@@ -77,7 +69,7 @@ export const sendOtp = createAsyncThunk(
     async (email, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API}zenstudy/api/email/send-otpNew`,
+                `${REACT_APP_API2}zenstudy/api/email/send-otpNew`,
                 { email },
                 {
                     headers: {
@@ -97,9 +89,10 @@ export const sendOtp = createAsyncThunk(
 export const verifyOtp = createAsyncThunk(
     'authentication/verifyOtp',
     async ({ email, otp }, thunkAPI) => {
+        console.log('email, otp: ', email, otp);
         try {
             const response = await axios.post(
-                `${REACT_APP_API}zenstudy/api/auth/signUpDynamicVerify`,
+                `${REACT_APP_API2}zenstudy/api/auth/signUpDynamicVerify`,
                 { email, otp, userType: 'Reader' },
                 {
                     headers: {
@@ -108,6 +101,7 @@ export const verifyOtp = createAsyncThunk(
                     },
                 }
             );
+            console.log('response: ', response.data);
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue('Invalid OTP. Please try again.');
@@ -115,18 +109,6 @@ export const verifyOtp = createAsyncThunk(
     }
 );
 
-
-// 4. Register User
-export const registerUser = createAsyncThunk('authentication/registerUser', async ({ email }, thunkAPI) => {
-    try {
-        const response = await axios.post(`${REACT_APP_API}zenstudy/api/auth/signUpDynamic`, { email, userType: 'Reader' }, { withCredentials: true });
-        const user = response.data.user;
-        AsyncStorage.setItem('userData', JSON.stringify(user));
-        return user;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data?.message || 'Registration failed.');
-    }
-});
 
 // Slice for authentication
 const appUsersSlice = createSlice({
@@ -137,7 +119,6 @@ const appUsersSlice = createSlice({
         error: null,
         otpSent: false,
         otpVerified: false,
-        step: 'checkUser',
         isAuthenticated: false,
     },
     reducers: {
@@ -152,9 +133,9 @@ const appUsersSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // check user
-            .addCase(handleUserFlow.pending, (state) => { state.loading = true; })
-            .addCase(handleUserFlow.fulfilled, (state, action) => { state.loading = false; state.step = action.payload.step; })
-            .addCase(handleUserFlow.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+            .addCase(checkUser.pending, (state) => { state.loading = true; })
+            .addCase(checkUser.fulfilled, (state, action) => { state.loading = false; })
+            .addCase(checkUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
              // Send OTP
              .addCase(sendOtp.pending, (state) => { state.loading = true; })
@@ -167,14 +148,6 @@ const appUsersSlice = createSlice({
             .addCase(verifyOtp.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
             // Register User
-            .addCase(registerUser.pending, (state) => { state.loading = true; })
-            .addCase(registerUser.fulfilled, (state, action) => {
-                state.loading = false;
-                state.isAuthenticated = true;
-                state.userData = action.payload;
-            })
-            .addCase(registerUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
             .addCase(signupUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;

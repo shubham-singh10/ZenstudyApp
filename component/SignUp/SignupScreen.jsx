@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import Header from '../Header';
 import formStyles from '../Login/formStyles';
-import { Call, Email, Key, Profile } from '../Icons/MyIcon';
 import Toast from 'react-native-toast-message';
-import { checkUser, signupUser } from './store';
+import { checkUser, sendOtp, signupUser, verifyOtp } from './store';
 import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../../Context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,9 +28,9 @@ const SignupScreen = ({ navigation }) => {
     cPassword: '',
     phoneStatus: 'notverified',
     userType: 'Reader',
+    otp: '',
   });
   const [step, setStep] = useState(1);
-  const [otp, setOtp] = useState('');
   const dispatch = useDispatch();
   const { userData, loading, error } = useSelector(state => state.rauth);
   const [passwordError, setPasswordError] = useState('');
@@ -172,14 +171,33 @@ const SignupScreen = ({ navigation }) => {
       });
     }
   };
-
   //Handle User Check and send OTP
   const handleNext = async () => {
     const isValid = validateForm();
-    if (isValid) {
-      const result = await dispatch(checkUser(formData.email));
-
-      if (result.payload.message === 'Success') {
+    if (step === 1 && isValid) {
+      const result = await dispatch(checkUser({ email: formData.email, phone: formData.phone }));
+      if (result.payload === 'User not found.') {
+        const otpResult = await dispatch(sendOtp(formData.email));
+        if (otpResult.payload.message === 'OTP sent successfully') {
+          Toast.show({
+            type: 'success',
+            text1: 'OTP Sent',
+            text2: 'OTP has been sent successfully.',
+            visibilityTime: 5000,
+            position: 'top',
+          });
+          animate('right');
+          setStep(2);
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'OTP Error',
+            text2: otpResult.payload.message || 'Failed to send OTP.',
+            visibilityTime: 5000,
+            position: 'top',
+          });
+        }
+      } else {
         Toast.show({
           type: 'info',
           text1: 'Account Already Exists',
@@ -187,13 +205,22 @@ const SignupScreen = ({ navigation }) => {
           visibilityTime: 5000,
           position: 'top',
         });
-        console.log('Result: ', result);
-        console.log('ResultP: ', result.payload.message);
+        navigation.navigate('loginScreen');
       }
-      const { phone, name, email, userType, phoneStatus, password } = formData;
-      console.log('Form: ', formData);
-      animate('right');
-      setStep(step + 1);
+    } else if (step === 2 && formData.otp) {
+      // Verify OTP
+      const otpResult = await dispatch(verifyOtp({ email: formData.email, otp: formData.otp }));
+      if (otpResult.payload.message === 'Success') {
+        handleContinue();
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'OTP Verification Failed',
+          text2: otpResult.payload.message || 'Failed to verify OTP.',
+          visibilityTime: 5000,
+          position: 'top',
+        });
+      }
     }
   };
 
@@ -203,6 +230,8 @@ const SignupScreen = ({ navigation }) => {
       setStep(step - 1);
     }
   };
+
+  const isNextDisabled = step === 2 && formData.otp.length !== 6;
 
   const renderStep = () => {
     switch (step) {
@@ -323,9 +352,10 @@ const SignupScreen = ({ navigation }) => {
               style={formStyles.input}
               placeholder="Enter OTP"
               placeholderTextColor="#888"
-              onChangeText={setOtp}
+              onChangeText={text => onInputChange(text, 'otp')}
               maxLength={6}
             />
+            {errors.otp && <Text style={formStyles.error}>{errors.otp}</Text>}
           </View>
         );
     }
@@ -363,10 +393,17 @@ const SignupScreen = ({ navigation }) => {
               </TouchableOpacity>
             )}
             <TouchableOpacity
-              style={formStyles.button}
+              style={[formStyles.button, isNextDisabled && formStyles.disabledButton]}
+              disabled={isNextDisabled}
               onPress={handleNext}>
-              <Text style={formStyles.buttonText}>{step === 2 ? 'Sign Up' : 'Next'}</Text>
-              <Icon name={step === 2 ? 'check' : 'arrow-forward'} size={24} color="#fff" />
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <>
+                  <Text style={formStyles.buttonText}>{step === 2 ? 'Sign Up' : 'Next'}</Text>
+                  <Icon name={step === 2 ? 'check' : 'arrow-forward'} size={24} color="#fff" />
+                </>
+              )}
             </TouchableOpacity>
           </View>
         )}
