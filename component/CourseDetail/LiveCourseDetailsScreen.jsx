@@ -2,11 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    Image,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
-    Dimensions,
     ActivityIndicator,
     Modal,
     TextInput,
@@ -14,6 +12,7 @@ import {
     Animated,
     SafeAreaView,
     StatusBar,
+    Alert,
 } from 'react-native';
 
 // Import MaterialIcons directly with a specific name to avoid undefined issues
@@ -22,18 +21,15 @@ import Toast from 'react-native-toast-message';
 import { VdoPlayerView } from 'vdocipher-rn-bridge';
 import { useDispatch, useSelector } from 'react-redux';
 import { DetailsCourseData } from './store';
+import { UserData } from '../userData/UserData';
+import { applyCoupon, initiatePayment, verifyPayment } from './store/payment';
+import { REACT_APP_RAZORPAY_KEY_ID } from '@env';
+import RazorpayCheckout from 'react-native-razorpay';
 
-
-const { width } = Dimensions.get('window');
 
 const LiveCourseDetailsScreen = ({ navigation, route }) => {
     const dispatch = useDispatch();
-    // const { courseId } = route.params;
-    const courseId = "67c6afd0d79cf3c90ab0d7f7"
-    const coursename = route.params?.coursename;
-      const { courseData, loading, error } = useSelector(
-        state => state.CourseDetailData,
-      );
+    const { courseId } = route.params;
 
     // Refs for scrolling to sections
     const scrollViewRef = useRef(null);
@@ -60,36 +56,42 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [couponCode, setCouponCode] = useState('');
     const [payLoading, setPayLoading] = useState(false);
-    const [discount, setDiscount] = useState(null);
-    const [couponLoading, setCouponLoading] = useState(false);
-    const [bannerImageLoaded, setBannerImageLoaded] = useState(false);
-    const [thumbnailImageLoaded, setThumbnailImageLoaded] = useState(false);
     const [contentVisible] = useState(new Animated.Value(0));
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userStatus, setUserStatus] = useState({ emailStatus: 'unverified' });
+    const { usersData, userStatus } = UserData();
+    const [discountPrice, setDiscountPrice] = useState(null);
+    const [pageloading, setpageLoading] = useState(false);
     const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
+    const [selectedCoursePrice, setSelectedCoursePrice] = useState(null);
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
+    const [applyCouponLoading, setApplyCouponLoading] = useState(false);
 
-    // Mock data for demonstration
+    const { courseData, loading, error } = useSelector(
+        state => state.CourseDetailData,
+    );
+
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            dispatch(DetailsCourseData(courseId));
-            // Simulate image loading
-            setTimeout(() => {
-                setBannerImageLoaded(true);
-                setThumbnailImageLoaded(true);
+        const fetchCourseDetails = async () => {
+            try {
+                await dispatch(DetailsCourseData(courseId));
+            } catch (err) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error fetching course data',
+                    text2: err.message || 'Please try again later.',
+                });
+            } finally {
+                // Simulate image loading if needed
+                setTimeout(() => {
+                    Animated.timing(contentVisible, {
+                        toValue: 1,
+                        duration: 500,
+                        useNativeDriver: true,
+                    }).start();
+                }, 1000);
+            }
+        };
 
-                // Fade in content
-                Animated.timing(contentVisible, {
-                    toValue: 1,
-                    duration: 500,
-                    useNativeDriver: true,
-                }).start();
-            }, 1000);
-        }, 2000);
-
-        // Mock authentication status
-        setIsAuthenticated(false);
+        fetchCourseDetails();
     }, [dispatch, courseId, contentVisible]);
 
     // Handle scroll event to update active tab
@@ -148,47 +150,8 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
         setShowAll(!showAll);
     };
 
-    // Apply coupon code
-    const handleApplyCoupon = () => {
-        if (!couponCode.trim()) {
-            Toast.show({
-                type: 'error',
-                text1: 'Please enter a coupon code',
-            });
-            return;
-        }
-
-        setCouponLoading(true);
-
-        // Simulate API call
-        setTimeout(() => {
-            // Mock successful coupon application
-            if (couponCode.toLowerCase() === 'discount20') {
-                const discountAmount = courseData.price * 0.2;
-                setDiscount({
-                    subTotal: courseData.price - discountAmount,
-                    discount: discountAmount,
-                });
-
-                Toast.show({
-                    type: 'success',
-                    text1: 'Discount applied successfully!',
-                });
-
-                setIsModalOpen(false);
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Invalid coupon code',
-                });
-            }
-
-            setCouponLoading(false);
-        }, 1500);
-    };
-
     // Handle payment
-    const handlePayment = () => {
+    const handlePayment = async (amount, originalPrice) => {
         if (userStatus.emailStatus !== 'verified') {
             // Show alert for unverified email
             Toast.show({
@@ -198,40 +161,159 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
             });
             return;
         }
-
         setPayLoading(true);
-
-        // Simulate payment process
-        setTimeout(() => {
-            // In a real app, you would integrate with Razorpay or another payment gateway
+        try {
+            const userId = usersData?._id;
+            const orderData = await dispatch(
+                initiatePayment({ amount, userId, courseId }),
+            ).unwrap();
+            //  //console.log('OrderData: ', orderData)
+            // Handle payment verification after successful initiation
+            if (orderData) {
+                handlePaymentVerify(orderData, courseId, originalPrice);
+            }
+        } catch (err) {
+            console.error('Error initiating payment:', err);
             Toast.show({
-                type: 'success',
-                text1: 'Payment Initiated',
-                text2: 'Redirecting to payment gateway...',
+                type: 'info',
+                text1: err,
+                text2: 'Visit "My Course" to access this course.',
+                zIndex: 9999,
+                topOffset: 80,
             });
-
-            setPayLoading(false);
-
-            // Navigate to payment screen or open payment gateway
-            // navigation.navigate('Payment', { courseId: courseData._id });
-        }, 1500);
+        } finally {
+            setPayLoading(false); // End loading
+        }
     };
 
-    // Handle login navigation
-    const handleLoginNavigation = () => {
-        navigation.navigate('Login', { redirectTo: 'CourseDetails', coursename });
+    //Handle Payment Verify
+    const handlePaymentVerify = async (data, courseIdd, originalPrice) => {
+        try {
+            setpageLoading(true);
+
+            const options = {
+                key: REACT_APP_RAZORPAY_KEY_ID,
+                amount: data.data.amount,
+                currency: data.data.currency,
+                name: 'ZenStudy',
+                description: 'Making Education Imaginative',
+                order_id: data.data.id,
+                theme: { color: '#5f63b8' },
+            };
+
+            // Trigger Razorpay payment UI
+            const response = await RazorpayCheckout.open(options);
+
+            const subtotalToUse = discountPrice && discountPrice.subTotal !== undefined
+                ? discountPrice.subTotal === 0 ? 1 : discountPrice.subTotal.toFixed(2)
+                : originalPrice;
+
+            // Verify the payment after a successful transaction
+            const verifyData = await dispatch(
+                verifyPayment({
+                    razorpayData: response,
+                    userId: usersData._id,
+                    courseId: courseIdd,
+                    price: originalPrice,
+                    code: couponCode || null,
+                    discount: discountPrice?.discount || 0,
+                    subtotal: subtotalToUse,
+                })
+            ).unwrap();
+
+            // Check if the verification was successful
+            if (verifyData.message === 'Payment Successful') {
+                Alert.alert(
+                    'Payment Successful',
+                    `Your payment with ID: ${response.razorpay_payment_id} has been completed successfully.`,
+                    [{ text: 'OK' }]
+                );
+                navigation.navigate('myCourseScreen');
+            }
+        } catch (err) {
+            Alert.alert(
+                'Payment Failed',
+                'Your payment could not be completed. Please try again or contact support if the issue persists.',
+                [{ text: 'OK' }]
+            );
+            console.error('Error during payment verification:', err);
+        } finally {
+            setpageLoading(false);
+        }
+    };
+
+    // Apply coupon code
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) {
+            Alert.alert('Please enter a coupon code');
+            return;
+        }
+        setApplyCouponLoading(true);
+        try {
+            const applyCouponData = await dispatch(
+                applyCoupon({
+                    code: couponCode,
+                    price: selectedCoursePrice,
+                    courseId: selectedCourseId,
+                }),
+            ).unwrap();
+            //console.log('applyCouponData:', applyCouponData);
+
+            if (applyCouponData?.discount !== undefined) {
+                setDiscountPrice(applyCouponData);
+            } else {
+                setDiscountPrice(null);
+            }
+        } catch (err) {
+            Alert.alert(`${err}`);
+        } finally {
+            setApplyCouponLoading(false);
+            setIsModalOpen(false);
+            setCouponCode('');
+        }
+    };
+
+    const applyCouponm = (course_id, price) => {
+        //console.log('course_id:', course_id, price);
+        setSelectedCourseId(course_id);
+        setSelectedCoursePrice(price);
+        setIsModalOpen(true);
+    };
+
+    const tailwindColors = {
+        'text-purple-600': { icon: '#9333ea', bg: '#ede9fe' },
+        'text-blue-600': { icon: '#2563eb', bg: '#dbeafe' },
+        'text-yellow-600': { icon: '#ca8a04', bg: '#fef9c3' },
+        'text-green-600': { icon: '#16a34a', bg: '#dcfce7' },
     };
 
     // Helper function to get the appropriate icon for dynamic sections
     const renderIcon = (name, color) => {
-        // Safe fallback to a known icon if the requested one doesn't exist
-        try {
-            return <MaterialIcons name={name} size={20} color={color} />;
-        } catch (error) {
-            console.warn(`Icon not found: ${name}, using default`);
-            return <MaterialIcons name="school" size={20} color={color} />;
-        }
+        const nativeColors = tailwindColors[color] || { icon: '#000', bg: '#f3f4f6' }; // Default to gray bg
+
+        return (
+            <View
+                style={[styles.iconContainer, {backgroundColor: nativeColors.bg}]}
+            >
+                <MaterialIcons name={name} size={20} color={nativeColors.icon} />
+            </View>
+        );
     };
+
+    useEffect(() => {
+        const sections = Object.keys(sectionPositions.current);
+        for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            const position = sectionPositions.current[section];
+
+            if (currentScrollPosition >= position - 50) {
+                if (activeTab !== section) {
+                    setActiveTab(section);
+                }
+                break;
+            }
+        }
+    }, [currentScrollPosition, activeTab]);
 
     if (loading) {
         return (
@@ -242,10 +324,26 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
         );
     }
 
+    if (error) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text style={styles.errorText}>Failed to load course details.</Text>
+                <TouchableOpacity onPress={() => dispatch(DetailsCourseData(courseId))}>
+                    <Text style={styles.retryText}>Retry</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
-
+            {pageloading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#5f63b8" />
+                    <Text style={styles.loadingText}>Loading course details...</Text>
+                </View>
+            )}
             {/* Tabs Section - Sticky Header */}
             <View style={styles.tabsContainer}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -292,7 +390,6 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                     onScroll={handleScroll}
                     scrollEventThrottle={16} // Important for smooth scroll tracking
                 >
-                   
 
                     {/* Main Content */}
                     <View style={styles.mainContentContainer}>
@@ -301,16 +398,17 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                             {/* Video Preview - Using VdocipherRNBridge instead of WebView */}
                             <View style={styles.videoContainer}>
                                 {/* Replace WebView with VdocipherRNBridge */}
-                                <VdoPlayerView
+                                {courseData && (<VdoPlayerView
                                     style={styles.video}
                                     embedInfo={{
-                                        otp: courseData?.previewVideo?.previewVideoUrl || 'sample-otp',
-                                        playbackInfo: courseData?.previewVideo?.previewVideoDescription || 'sample-playback-info',
+                                        otp: courseData?.previewVideo.previewVideoUrl,
+                                        playbackInfo: courseData?.previewVideo.previewVideoDescription,
                                         embedInfoOptions: {
                                             autoplay: false,
                                         },
                                     }}
                                 />
+                                )}
                             </View>
                         </View>
 
@@ -508,19 +606,21 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                                         </View>
                                     </View>
 
-                                    {isAuthenticated ? (
-                                        <TouchableOpacity
-                                            style={[styles.offerButton, payLoading && styles.offerButtonDisabled]}
-                                            onPress={handlePayment}
-                                            disabled={payLoading}
-                                        >
-                                            <Text style={styles.offerButtonText}>{payLoading ? 'Wait...' : item.buttonText}</Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity style={styles.offerButton} onPress={handleLoginNavigation}>
-                                            <Text style={styles.offerButtonText}>{item.buttonText}</Text>
-                                        </TouchableOpacity>
-                                    )}
+
+                                    <TouchableOpacity
+                                        style={[styles.offerButton, payLoading && styles.offerButtonDisabled]}
+                                        onPress={() => handlePayment(
+                                            discountPrice
+                                                ? discountPrice?.subTotal === 0
+                                                    ? 1
+                                                    : discountPrice?.subTotal.toFixed(2)
+                                                : courseData?.price,
+                                            courseData?.price
+                                        )}
+                                        disabled={payLoading}
+                                    >
+                                        <Text style={styles.offerButtonText}>{payLoading ? 'Wait...' : item.buttonText}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         ))}
@@ -559,17 +659,16 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                             <View style={styles.featuresGrid}>
                                 {courseData?.dynamicSections?.map((section, index) => {
                                     const isMentorship = section.title.toLowerCase().includes('mentorship');
-
                                     return (
                                         <View key={index} style={styles.featureCard}>
                                             <View style={styles.featureCardHeader}>
                                                 <View style={[styles.featureCardIcon, { backgroundColor: section.bgColor || '#f0f0f0' }]}>
                                                     {/* Use the helper function to get the right icon */}
                                                     {renderIcon(
-                                                        section.icon === 'MdOndemandVideo' ? 'ondemand-video' :
-                                                            section.icon === 'MdMenuBook' ? 'menu-book' :
-                                                                section.icon === 'MdSupportAgent' ? 'support-agent' :
-                                                                    section.icon === 'MdAssignment' ? 'assignment' : 'school',
+                                                        section.icon === 'MdOutlineSchool' ? 'school' :
+                                                            section.icon === 'BiBook' ? 'menu-book' :
+                                                                section.icon === 'MdOutlineQuiz' ? 'support-agent' :
+                                                                    section.icon === 'MdOutlinePeople' ? 'people' : 'school',
                                                         section.textColor
                                                     )}
                                                 </View>
@@ -662,21 +761,22 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                                 </View>
 
                                 <View style={styles.whyChooseUsButtonContainer}>
-                                    {isAuthenticated ? (
-                                        <TouchableOpacity
-                                            style={[styles.whyChooseUsButton, payLoading && styles.whyChooseUsButtonDisabled]}
-                                            onPress={handlePayment}
-                                            disabled={payLoading}
-                                        >
-                                            <Text style={styles.whyChooseUsButtonText}>
-                                                {payLoading ? 'Wait...' : 'Enroll Now and Start Your UPSC Journey!'}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity style={styles.whyChooseUsButton} onPress={handleLoginNavigation}>
-                                            <Text style={styles.whyChooseUsButtonText}>Enroll Now and Start Your UPSC Journey!</Text>
-                                        </TouchableOpacity>
-                                    )}
+                                    <TouchableOpacity
+                                        style={[styles.whyChooseUsButton, payLoading && styles.whyChooseUsButtonDisabled]}
+                                        onPress={() => handlePayment(
+                                            discountPrice
+                                                ? discountPrice?.subTotal === 0
+                                                    ? 1
+                                                    : discountPrice?.subTotal.toFixed(2)
+                                                : courseData?.price,
+                                            courseData?.price
+                                        )}
+                                        disabled={payLoading}
+                                    >
+                                        <Text style={styles.whyChooseUsButtonText}>
+                                            {payLoading ? 'Wait...' : 'Enroll Now and Start Your UPSC Journey!'}
+                                        </Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
@@ -689,44 +789,54 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                         <View>
                             <View style={styles.priceContainer}>
                                 <Text style={styles.currentPrice}>
-                                    ₹{discount?.subTotal ? discount.subTotal.toFixed(2) : courseData?.price}
+                                    ₹{discountPrice !== null ? (discountPrice.subTotal.toFixed(2)) : courseData?.price}
                                 </Text>
                                 <Text style={styles.originalPrice}>₹{courseData?.value}</Text>
                             </View>
 
-                            {discount?.subTotal && (
+                            {discountPrice !== null && (
                                 <Text style={styles.discountText}>
-                                    Extra discount applied! You saved ₹{(courseData?.price - discount?.subTotal).toFixed(2)}
+                                    Extra discount applied! You saved ₹{(courseData?.price - discountPrice?.subTotal).toFixed(2)}
                                 </Text>
                             )}
-
-                            <Text style={styles.savingsText}>
-                                Save {Math.round(((courseData?.value - courseData?.price) / courseData?.value) * 100)}%
-                            </Text>
+                            {discountPrice !== null ? (
+                                <Text style={styles.savingsText}>
+                                    Save {Math.round(((courseData?.value - discountPrice?.subTotal) / courseData?.value) * 100)}%
+                                </Text>
+                            ) : (
+                                <Text style={styles.savingsText}>
+                                    Save {Math.round(((courseData?.value - courseData?.price) / courseData?.value) * 100)}%
+                                </Text>
+                            )}
                         </View>
-
-                        {isAuthenticated ? (
+                        {payLoading ? (
+                            <TouchableOpacity disabled={true} style={styles.purchaseButton}>
+                                <Text style={styles.purchaseButtonText}>please wait..</Text>
+                            </TouchableOpacity>
+                        ) : (
                             <TouchableOpacity
                                 style={[styles.purchaseButton, payLoading && styles.purchaseButtonDisabled]}
-                                onPress={handlePayment}
+                                onPress={() => handlePayment(
+                                    discountPrice
+                                        ? discountPrice?.subTotal === 0
+                                            ? 1
+                                            : discountPrice?.subTotal.toFixed(2)
+                                        : courseData?.price,
+                                    courseData?.price
+                                )}
                                 disabled={payLoading}
                             >
                                 <Text style={styles.purchaseButtonText}>{payLoading ? 'Wait...' : 'Enroll Now'}</Text>
                             </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity style={styles.purchaseButton} onPress={handleLoginNavigation}>
-                                <Text style={styles.purchaseButtonText}>Login to Purchase</Text>
-                            </TouchableOpacity>
                         )}
                     </View>
 
-                    {isAuthenticated && (
-                        <TouchableOpacity style={styles.couponButton} onPress={() => setIsModalOpen(true)}>
-                            <Text style={styles.couponButtonText}>Have a coupon? Apply it here.</Text>
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity style={styles.couponButton} onPress={() => applyCouponm(courseData._id, courseData.price)}>
+                        <Text style={styles.couponButtonText}>Have a coupon? Apply it here.</Text>
+                    </TouchableOpacity>
+
                 </View>
-                
+
             </Animated.View>
             <Modal visible={isModalOpen} transparent={true} animationType="fade" onRequestClose={() => setIsModalOpen(false)}>
                 <View style={styles.modalOverlay}>
@@ -747,11 +857,11 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={[styles.modalApplyButton, couponLoading && styles.modalApplyButtonDisabled]}
+                                style={[styles.modalApplyButton, applyCouponLoading && styles.modalApplyButtonDisabled]}
                                 onPress={handleApplyCoupon}
-                                disabled={couponLoading}
+                                disabled={applyCouponLoading}
                             >
-                                <Text style={styles.modalApplyButtonText}>{couponLoading ? 'Applying...' : 'Apply'}</Text>
+                                <Text style={styles.modalApplyButtonText}>{applyCouponLoading ? 'Applying...' : 'Apply'}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -766,6 +876,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
+    },
+    iconContainer: {
+        borderRadius: 10,
+        padding: 6,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
     },
     loadingContainer: {
         flex: 1,
@@ -804,6 +927,22 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: '#666',
+    },
+    buyButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    buyNowLoading: {
+        backgroundColor: '#054bb4',
+        paddingVertical: 12,
+        borderRadius: 30,
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 4,
+        justifyContent: 'center',
+        opacity: 0.9,
+        width: '100%', // Match button width
     },
     activeTabText: {
         color: '#0066cc',
@@ -1112,7 +1251,7 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     featureCard: {
-        width: '48%',
+        width: '100%',
         backgroundColor: '#fff',
         borderRadius: 12,
         padding: 16,
@@ -1198,9 +1337,11 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     mentorshipFeatureText: {
-        fontSize: 13,
-        fontWeight: '500',
+        fontSize: 14,
+        paddingHorizontal: 1,
+        fontWeight: '400',
         color: '#333',
+
     },
     subjectsCard: {
         backgroundColor: '#fff',
@@ -1426,6 +1567,7 @@ const styles = StyleSheet.create({
         padding: 12,
         fontSize: 16,
         marginBottom: 16,
+        color: '#000',
     },
     modalButtons: {
         flexDirection: 'row',

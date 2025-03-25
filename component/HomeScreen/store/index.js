@@ -49,7 +49,7 @@ export const RecentCourseData = createAsyncThunk(
 const appRecentcourseSlice = createSlice({
     name: 'recentcourse',
     initialState: {
-        courseData: null,
+        courseData: [],
         error: null,
         loading: false,
     },

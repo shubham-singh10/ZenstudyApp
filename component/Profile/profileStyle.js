@@ -46,6 +46,9 @@ const profileStyle = StyleSheet.create({
     borderRadius: 20,
     width: '80%',
     alignSelf: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 5,
   },
   editButtonText: {
     color: '#fff',

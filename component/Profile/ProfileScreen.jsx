@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { UserData } from '../userData/UserData';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfileDetails } from '../EditScreen/store';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '../Loader';
 
 const ProfileScreen = ({ onLogout }) => {
@@ -75,6 +76,7 @@ const ProfileScreen = ({ onLogout }) => {
               <TouchableOpacity
                 style={profileStyle.editButton}
                 onPress={() => navigation.navigate('editScreen')}>
+                <MaterialIcons name="edit" size={20} color="#fff" />
                 <Text style={profileStyle.editButtonText}>Edit Profile</Text>
               </TouchableOpacity>
             </View>

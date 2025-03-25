@@ -27,6 +27,7 @@ const SignupScreen = ({ navigation }) => {
     password: '',
     cPassword: '',
     phoneStatus: 'notverified',
+    emailStatus: 'verified',
     userType: 'Reader',
     otp: '',
   });
@@ -134,8 +135,8 @@ const SignupScreen = ({ navigation }) => {
     const isValid = validateForm();
     if (isValid) {
       // //console.log('Form submitted successfully', formData);
-      const { phone, name, email, userType, phoneStatus, password } = formData;
-      dispatch(signupUser({ phone, name, email, userType, phoneStatus, password }))
+      const { phone, name, email, userType, phoneStatus, emailStatus, password } = formData;
+      dispatch(signupUser({ phone, name, email, userType, phoneStatus, emailStatus, password }))
         .unwrap()
         .then(response => {
           // Success message

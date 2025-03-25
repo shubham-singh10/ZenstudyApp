@@ -7,11 +7,11 @@ import { REACT_APP_API, REACT_APP_API2 } from '@env';
 // 4. Register User
 export const signupUser = createAsyncThunk(
     'authentication/signupUser',
-    async ({ phone, name, email, userType, phoneStatus, password }, thunkAPI) => {
+    async ({ phone, name, email, userType, phoneStatus,emailStatus, password }, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API}zenstudy/api/auth/signUp`,
-                { phone, password, name, email, userType, phoneStatus },
+                `${REACT_APP_API}zenstudy/api/app/register`,
+                { phone, password, name, email, userType, phoneStatus, emailStatus },
                 {
                     headers: {
                         Accept: 'application/json',
@@ -44,7 +44,7 @@ export const checkUser = createAsyncThunk(
     'authentication/checkUser', async ({email, phone}, thunkAPI) => {
         try {
             const response = await axios.post(
-                `${REACT_APP_API2}zenstudy/api/app/user-check`,
+                `${REACT_APP_API}zenstudy/api/app/user-check`,
                 { email, phone },
                 {
                     headers: {

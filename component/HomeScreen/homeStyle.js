@@ -11,6 +11,30 @@ const homestyle = StyleSheet.create({
   opacity: {
     opacity: 0.8,
   },
+  noCourseCard: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  noCourseText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginTop: 10,
+  },
+  noCourseSubText: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 5,
+  },
   scrollViewContent: {
     flexGrow: 1,
     backgroundColor: '#fff',
@@ -196,7 +220,7 @@ const homestyle = StyleSheet.create({
     marginVertical: 20,
   },
 
- 
+
 
   exploreIcons: {
     flexDirection: 'row',

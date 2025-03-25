@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -9,36 +9,34 @@ import {
   Linking,
 } from 'react-native';
 import homestyle from './homeStyle';
-import {useDispatch, useSelector} from 'react-redux';
-import {RecentCourseData} from './store';
-import {UserData} from '../userData/UserData';
-import {PurchaseCourseData} from '../myCourseScreen/store';
-import myCourseStyle from '../myCourseScreen/myCourseStyle';
+import { useDispatch, useSelector } from 'react-redux';
+import { RecentCourseData } from './store';
+import { UserData } from '../userData/UserData';
+import { PurchaseCourseData } from '../myCourseScreen/store';
 import PurchaseModal from '../purchaseCheck/PurchaseModal';
-import {HomeScreenSakelton} from './HomeScreenSakelton';
+import { HomeScreenSakelton } from './HomeScreenSakelton';
 import CourseCard from '../Common/CourseCard';
 import LinearGradient from 'react-native-linear-gradient';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
   const bannerScrollViewRef = useRef(null);
   const dispatch = useDispatch();
-  const {usersData, refreshUserData} = UserData();
+  const { usersData, refreshUserData } = UserData();
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pageloading, setpageLoading] = useState(false);
 
-  const {courseData} = useSelector(state => state.RecentCourseData);
-  const watchCourse = useSelector(state => state.PurchaseCourseDetails);
-  const watchData = watchCourse.courseData;
+  const { courseData } = useSelector(state => state.RecentCourseData);
 
   const images = [
-    {id: 1, image: {uri: 'https://zenstudy.in/assets/1.webp'}},
-    {id: 2, image: {uri: 'https://zenstudy.in/assets/2.webp'}},
-    {id: 3, image: {uri: 'https://zenstudy.in/assets/3.webp'}},
+    { id: 1, image: { uri: 'https://zenstudy.in/assets/1.webp' } },
+    { id: 2, image: { uri: 'https://zenstudy.in/assets/2.webp' } },
+    { id: 3, image: { uri: 'https://zenstudy.in/assets/3.webp' } },
   ];
 
   const handleBannerScroll = event => {
@@ -85,14 +83,6 @@ const HomeScreen = ({navigation}) => {
     fetchData();
   }, [usersData, dispatch, pageloading]);
 
-  const getShortDescription = (text, wordLimit) => {
-    const words = text.split(' ');
-    if (words.length > wordLimit) {
-      return words.slice(0, wordLimit).join(' ') + '...';
-    }
-    return text;
-  };
-
   return (
     <View style={homestyle.container}>
       <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
@@ -135,11 +125,12 @@ const HomeScreen = ({navigation}) => {
             {/* Courses Section */}
             <View style={homestyle.coursesContainer}>
               <Text style={homestyle.HeadText}>Recently Added Courses</Text>
-              {courseData && courseData.length > 0 && (
+              {courseData && courseData.length > 0 ? (
                 <ScrollView
                   horizontal
                   pagingEnabled
-                  showsHorizontalScrollIndicator={false}>
+                  showsHorizontalScrollIndicator={false}
+                >
                   {courseData.map(course => (
                     <CourseCard
                       key={course._id}
@@ -149,7 +140,14 @@ const HomeScreen = ({navigation}) => {
                     />
                   ))}
                 </ScrollView>
+              ) : (
+                <View style={homestyle.noCourseCard}>
+                  <MaterialIcons name="school" size={50} color="#5f63b8" />
+                  <Text style={homestyle.noCourseText}>No Courses Available</Text>
+                  <Text style={homestyle.noCourseSubText}>Please check back later!</Text>
+                </View>
               )}
+
             </View>
 
             {/* Explore Section */}

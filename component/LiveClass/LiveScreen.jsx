@@ -8,14 +8,12 @@ import {
   Text,
   Linking,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchMeetingDetails } from './store';
 import Loader from '../Loader';
 import { UserData } from '../userData/UserData';
 import axios from 'axios';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const LiveScreen = () => {
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { usersData } = UserData();
   const [meetingData, setMeetingData] = useState([]);
@@ -27,30 +25,30 @@ const LiveScreen = () => {
           `${process.env.REACT_APP_API}zenstudy/api/meeting/getMeeting`,
           {
             headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
             },
           }
         );
-  
-        const meetingData = response.data;
-        
+
+        const meetData = response.data;
+
         // Filter meetings based on purchased course IDs
-        const filteredMeetings = meetingData?.filter((meeting) =>
+        const filteredMeetings = meetData?.filter((meeting) =>
           purchasedCourses.some(
             (course) => course.course_id?._id === meeting.courseId._id
           )
         );
-  
+
         // Add image URLs for filtered meetings
         const imageData = filteredMeetings?.map((meeting) => ({
           ...meeting,
           imageUrl: `${process.env.REACT_APP_API}zenstudy/api/image/getimage/${meeting.courseId.thumbnail}`,
         }));
-  
+
         setMeetingData(imageData || []);
       } catch (error) {
-        console.error("Error fetching meetings:", error);
+        console.error('Error fetching meetings:', error);
       }
     },
     [] // No external dependencies needed
@@ -61,32 +59,32 @@ const LiveScreen = () => {
       const response = await fetch(
         `${process.env.REACT_APP_API}zenstudy/api/payment/purchaseCourse`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ user_id: usersData?._id }),
         }
       );
-  
+
       if (response.status === 204) {
         return [];
       }
-  
+
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
-  
+
       const data = await response.json();
       return data.purchaseCourses || [];
     } catch (error) {
-      console.error("Error fetching purchased courses:", error);
+      console.error('Error fetching purchased courses:', error);
       return [];
     }
   }, [usersData?._id]);
 
- 
+
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
@@ -97,7 +95,7 @@ const LiveScreen = () => {
         setLoading(false);
       }
     };
-  
+
     initializeData();
   }, [fetchMeetingDetails, getPurchasedCourses]);
 
@@ -184,7 +182,13 @@ const LiveScreen = () => {
           );
         })
       ) : (
-        <Text style={liveStyle.noClassText}>No Live Classes Scheduled</Text>
+        <View style={liveStyle.noClassContainer}>
+          <MaterialIcons name="videocam-off" size={60} color="#5f63b8" />
+          <Text style={liveStyle.noClassText}>No Live Classes Scheduled</Text>
+          <Text style={liveStyle.noClassSubText}>
+            Check back later for upcoming classes!
+          </Text>
+        </View>
       )}
     </ScrollView>
   );
@@ -288,11 +292,32 @@ const liveStyle = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  noClassContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f0f0f5',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3, // Android shadow
+    marginHorizontal: 20,
+    marginTop: 50,
+  },
   noClassText: {
-    textAlign: 'center',
-    color: 'red',
+    fontSize: 20,
+    color: '#5f63b8',
     fontWeight: 'bold',
-    marginTop: 20,
+    marginTop: 10,
+  },
+  noClassSubText: {
+    fontSize: 14,
+    color: '#7d7d7d',
+    marginTop: 5,
+    textAlign: 'center',
   },
 });
 

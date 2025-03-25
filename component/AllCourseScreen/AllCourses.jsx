@@ -10,6 +10,7 @@ import { UserData } from '../userData/UserData';
 import { RecentCourseData } from '../HomeScreen/store';
 import { HomeScreenSakelton } from '../HomeScreen/HomeScreenSakelton';
 import CourseCard from '../Common/CourseCard';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const AllCourses = ({ navigation }) => {
   const { usersData } = UserData();
@@ -32,12 +33,18 @@ const AllCourses = ({ navigation }) => {
           <>
             <View style={homestyle.coursesContainer}>
               <Text style={homestyle.coursesTitle}>Available Courses</Text>
-              {courseData && courseData.length > 0 && (
+              {courseData && courseData.length > 0 ? (
                 <ScrollView contentContainerStyle={homestyle.scrollViewContent}>
                   {courseData.map(course => (
                     <CourseCard key={course._id} course={course} navigation={navigation} />
                   ))}
                 </ScrollView>
+              ) : (
+                <View style={homestyle.noCourseCard}>
+                  <MaterialIcons name="school" size={50} color="#5f63b8" />
+                  <Text style={homestyle.noCourseText}>No Courses Available</Text>
+                  <Text style={homestyle.noCourseSubText}>Please check back later!</Text>
+                </View>
               )}
             </View>
           </>

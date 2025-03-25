@@ -20,6 +20,7 @@ import {
   verifyPayment,
 } from '../CourseDetail/store/payment';
 const { width: screenWidth } = Dimensions.get('window');
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 function CourseCard({ course, navigation, setpageLoading }) {
   const { usersData } = UserData();
@@ -145,7 +146,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
     setImageLoading(prevState => ({ ...prevState, [id]: isLoading }));
   };
 
-  const newPage = course.title?.includes("UPSC Foundation Batch")
+  const newPage = course.title?.includes('UPSC Foundation Batch');
 
   return (
 
@@ -197,13 +198,16 @@ function CourseCard({ course, navigation, setpageLoading }) {
         <View style={style.cardBtns}>
           <TouchableOpacity
             style={style.exploreBtn}
-            onPress={() =>{
-              newPage ? navigation.navigate('livecourseDetail') :
-              navigation.navigate('courseDetail', {
+            onPress={() => {
+              newPage ? navigation.navigate('livecourseDetail', {
                 courseId: course._id,
-              })
+              }) :
+                navigation.navigate('courseDetail', {
+                  courseId: course._id,
+                });
             }
             }>
+            <MaterialIcons name="visibility" size={20} color="#054bb4" />
             <Text style={style.exploreBtnText}>View Course</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -223,7 +227,10 @@ function CourseCard({ course, navigation, setpageLoading }) {
             {payLoading === course._id ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
+              <>
+              <MaterialIcons name="lock-open" size={20} color="#fff" />
               <Text style={style.buyNowText}>Enroll Now</Text>
+              </>
             )}
           </TouchableOpacity>
         </View>
@@ -261,16 +268,6 @@ function CourseCard({ course, navigation, setpageLoading }) {
                 </TouchableOpacity>
               </View>
             )}
-
-            {
-              //   discountPrice !== null && (
-              //   <Text style={style.discountMessage}>
-              //     {discountPrice.discount > 0
-              //       ? `Coupon applied! You get Rs.${discountPrice.discount} off.`
-              //       : 'Invalid coupon code'}
-              //   </Text>
-              // )
-            }
           </View>
         </View>
       </Modal>
@@ -370,6 +367,9 @@ const style = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     width: '45%',
+    flexDirection: 'row',
+    gap: 5,
+    justifyContent: 'center',
   },
   exploreBtnText: {
     color: '#054bb4',
@@ -386,6 +386,9 @@ const style = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     width: '45%',
+    flexDirection: 'row',
+    gap: 5,
+    justifyContent: 'center',
   },
   buyNowLoading: {
     backgroundColor: '#054bb2',

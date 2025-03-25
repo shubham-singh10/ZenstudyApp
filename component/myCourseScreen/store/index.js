@@ -40,15 +40,16 @@ export const PurchaseCourseData = createAsyncThunk(
             const recordedCourses = [];
             const liveCourses = [];
 
-            filteredCourses.forEach((course) => {
+            filteredCourses.forEach((purchase) => {
                 const enrichedCourse = {
-                    ...course,
-                    imageUrl: getImageUrl(course.course_id.thumbnail),
+                    ...purchase.course,
+                    paymentId: purchase.paymentId,
+                    imageUrl: getImageUrl(purchase.course.thumbnail),
                 };
 
-                if (course.course_id.tags === 'notlive') {
+                if (purchase.course.tags === 'notlive') {
                     recordedCourses.push(enrichedCourse);
-                } else if (course.course_id.tags === 'live') {
+                } else if (purchase.course.tags === 'live') {
                     liveCourses.push(enrichedCourse);
                 }
             });
