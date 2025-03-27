@@ -31,6 +31,13 @@ import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-mess
 import SignupScreen from './component/SignUp/SignupScreen';
 import LiveCourseDetailsScreen from './component/CourseDetail/LiveCourseDetailsScreen';
 import { OTPScreen } from './component/SignUpNew/OtpScreen';
+import LandingScreen from './component/HomeScreen/LandingPage';
+import AudioLecturesScreen from './component/HomeScreen/AudioLecturesScreen';
+import CurrentAffairsScreen from './component/HomeScreen/CurrentAffairsScreen';
+import TestSeriesScreen from './component/HomeScreen/TestSeriesScreen';
+import VideoCoursesScreen from './component/HomeScreen/VideoCoursesScreen';
+import StudyMaterialScreen from './component/HomeScreen/StudyMaterialScreen';
+import DoubtSolvingScreen from './component/HomeScreen/DoubtSolvingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -134,7 +141,42 @@ const AuthStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="loginScreen"
+      component={LandingScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="loginScreenNew"
       component={LoginScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="audioLecturesScreen"
+      component={AudioLecturesScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="currentAffairsScreen"
+      component={CurrentAffairsScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="testSeriesScreen"
+      component={TestSeriesScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="videoCoursesScreen"
+      component={VideoCoursesScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="studyMaterialScreen"
+      component={StudyMaterialScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="doubtSolvingScreen"
+      component={DoubtSolvingScreen}
       options={{ headerShown: false }}
     />
     <Stack.Screen
@@ -195,6 +237,12 @@ const Navigation = () => {
       'loginScreen',
       'signupScreen',
       'forgotPassword',
+      'audioLecturesScreen',
+      'currentAffairsScreen',
+      'testSeriesScreen',
+      'videoCoursesScreen',
+      'studyMaterialScreen',
+      'doubtSolvingScreen',
     ].includes(currentRoute ?? '');
   };
 
