@@ -25,7 +25,6 @@ import CourseDetail from './component/CourseDetail/CourseDetailScreen';
 import WatchCourse from './component/WatchCourse/WatchCourse';
 import SupportScreen from './component/SupportScreen/SupportScreen';
 import OtpVerificationScreen from './component/OTP Screen/OtpVerificationScreen';
-import ForgotScreen from './component/ForgotPassword/ForgotScreen';
 import AllCourses from './component/AllCourseScreen/AllCourses';
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 import SignupScreen from './component/SignUp/SignupScreen';
@@ -38,6 +37,11 @@ import TestSeriesScreen from './component/HomeScreen/TestSeriesScreen';
 import VideoCoursesScreen from './component/HomeScreen/VideoCoursesScreen';
 import StudyMaterialScreen from './component/HomeScreen/StudyMaterialScreen';
 import DoubtSolvingScreen from './component/HomeScreen/DoubtSolvingScreen';
+import DashboardScreen from './component/HomeScreen/DashboardScreen';
+import ProfileScreenNew from './component/HomeScreen/ProfileScreen';
+import StudyMaterialScreenNew from './component/HomeScreen/StudyNew';
+import ProgressScreen from './component/HomeScreen/ProgressScreen';
+import ForgotPassword from './component/ForgotPassword/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -141,13 +145,48 @@ const AuthStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="loginScreen"
-      component={LandingScreen}
+      component={ForgotPassword}
+      options={{ headerShown: false }}
+    />
+     <Stack.Screen
+      name="otpScreen"
+      component={OtpVerificationScreen}
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      name="loginScreenNew"
-      component={LoginScreen}
+      name="signupScreen"
+      component={SignupScreen}
       options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="OTP"
+      component={OTPScreen}
+      options={{ headerShown: false }}
+    />
+
+    {/* <Stack.Screen
+      name="forgotPassword"
+      component={ForgotScreen}
+      options={{ headerShown: false }}
+    /> */}
+    <Stack.Screen
+      name="Dashboard"
+      component={LandingScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="loginScreenNew"
+      component={DashboardScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Progress"
+      component={ProgressScreen}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       name="audioLecturesScreen"
@@ -180,25 +219,18 @@ const AuthStack = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      name="otpScreen"
-      component={OtpVerificationScreen}
-      options={{ headerShown: false }}
+      name="Profile"
+      component={ProfileScreenNew}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
-      name="signupScreen"
-      component={SignupScreen}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      name="OTP"
-      component={OTPScreen}
-      options={{ headerShown: false }}
-    />
-
-    <Stack.Screen
-      name="forgotPassword"
-      component={ForgotScreen}
-      options={{ headerShown: false }}
+      name="StudyMaterial"
+      component={StudyMaterialScreenNew}
+      options={{
+        headerShown: false,
+      }}
     />
   </Stack.Navigator>
 );
