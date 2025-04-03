@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Toast from 'react-native-toast-message';
@@ -188,6 +188,7 @@ export default function ForgotPassword({ navigation }) {
                 <View style={{ width: 24 }} />
             </View>
 
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <Animated.View
                 style={[
                     styles.content,
@@ -198,6 +199,7 @@ export default function ForgotPassword({ navigation }) {
             >
                 {renderStep()}
             </Animated.View>
+            </ScrollView>
 
             <View style={styles.footer}>
                 <View style={styles.progressContainer}>
