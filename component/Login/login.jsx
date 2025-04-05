@@ -18,7 +18,7 @@ import { loginData } from './store';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../Context/AuthContext';
 import Toast from 'react-native-toast-message';
-
+import Icon from 'react-native-vector-icons/Feather';
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -27,6 +27,11 @@ const LoginScreen = () => {
   const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
   const { userData, loading, error } = useSelector((state) => state.auth);
   const { setIsLoggedIn } = useContext(AuthContext);
+
+  const isValidPhoneNumber = (input) => {
+    const phoneRegex = /^[0-9]{10}$/; // Example: Validate 10 digits phone number
+    return phoneRegex.test(input);
+  };
 
   useEffect(() => {
     if (userData) {
@@ -107,16 +112,21 @@ const LoginScreen = () => {
 
         <View style={formStyles.section2}>
 
-          {/* Mobile Number Input */}
+          {/* Mobile Number or email Input */}
           <View style={formStyles.inputContainer}>
             <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}> <Call fill="#fff" /> </Text>
+              {isValidPhoneNumber(mobileNumber) ? (
+                // If it's a valid phone number, show the phone icon
+                <Icon name="phone" size={24} color="#fff" />
+              ) : (
+                // Otherwise, show the email icon
+                <Icon name="mail" size={24} color="#fff" />
+              )}
             </View>
             <TextInput
               style={formStyles.input}
-              placeholder="Enter Your Mobile Number"
+              placeholder="Enter Your Mobile Number or email"
               placeholderTextColor="#888"
-              keyboardType="phone-pad"
               value={mobileNumber}
               onChangeText={setMobileNumber}
             />
@@ -137,7 +147,9 @@ const LoginScreen = () => {
             />
           </View>
 
-          {/* <TouchableOpacity onPress={() => navigation.navigate('forgotPassword')}><Text style={formStyles.forgotText}>Forgot Password ?</Text></TouchableOpacity> */}
+          <TouchableOpacity onPress={() => navigation.navigate('forgotPassword')}>
+            <Text style={formStyles.forgotText}>Forgot Password ?</Text>
+          </TouchableOpacity>
 
           {/* Login Button */}
           {loading ? (
@@ -147,6 +159,7 @@ const LoginScreen = () => {
           ) : (
             <TouchableOpacity style={formStyles.button} onPress={handleLogin}>
               <Text style={formStyles.buttonText}>Continue</Text>
+              <Icon name="arrow-right" size={24} color="#fff" style={formStyles.icon} />
             </TouchableOpacity>
           )}
 

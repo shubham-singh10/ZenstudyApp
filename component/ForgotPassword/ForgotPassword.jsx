@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useDispatch, useSelector } from 'react-redux';
+import { resendOtp, resetpassword, sendOtp, verifyOtp } from './store/actions/otpActions';
 
 export default function ForgotPassword({ navigation }) {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
+    const [timer, setTimer] = useState(30); // 30 seconds timer
+    const [canResend, setCanResend] = useState(true);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showcPassword, setShowcPassword] = useState(false);
+    const [hasRequestedOtp, setHasRequestedOtp] = useState(false);
+
     const slideAnim = useState(new Animated.Value(0))[0];
+
+    // Access state from Redux store
+    const { loading } = useSelector(state => state.otpReducer);
+    const dispatch = useDispatch();
 
     const animate = (direction) => {
         Animated.timing(slideAnim, {
@@ -22,7 +35,7 @@ export default function ForgotPassword({ navigation }) {
         });
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (step === 1) {
             if (!email) {
                 Toast.show({
@@ -32,14 +45,46 @@ export default function ForgotPassword({ navigation }) {
                 });
                 return;
             }
+            setHasRequestedOtp(true);
+            setTimer(30); // Reset timer
+            setCanResend(false);
+
             // Simulate email verification
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'OTP sent to your email!',
-            });
-            animate('right');
-            setStep(2);
+            const response = await dispatch(sendOtp(email));
+            if (response && response.message) {
+                // Success: OTP sent successfully
+                if (response.message === 'OTP sent successfully') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Success',
+                        text2: 'OTP has been sent to your email! Please check your inbox.',
+                    });
+                    animate('right');
+                    setStep(2);
+                }
+                // Info: User not found
+                else if (response.message === 'User not found') {
+                    Toast.show({
+                        type: 'info',
+                        text1: 'User Not Found',
+                        text2: 'No account exists with this email. Please sign up first.',
+                    });
+                    navigation.navigate('signupScreen', { email });
+                }
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Something went wrong. Please try again later.',
+                    });
+                }
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Something went wrong. Please try again later.',
+                });
+            }
         } else if (step === 2) {
             if (!otp) {
                 Toast.show({
@@ -49,16 +94,42 @@ export default function ForgotPassword({ navigation }) {
                 });
                 return;
             }
-            if (otp !== '123456') { // Demo OTP
+            // Simulate OTP verification
+            const response = await dispatch(verifyOtp(otp, email));
+            if (response && response.message) {
+                // Success: OTP verified successfully
+                if (response.message === 'OTP verified successfully') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Success',
+                        text2: 'OTP verified successfully!',
+                    });
+                    animate('right');
+                    setStep(3);
+                }
+                // Info: Invalid OTP
+                else if (response.message === 'Invalid OTP') {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Invalid OTP. Please try again.',
+                    });
+                }
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Something went wrong. Please try again later.',
+                    });
+                }
+            } else {
                 Toast.show({
                     type: 'error',
                     text1: 'Error',
-                    text2: 'Invalid OTP',
+                    text2: 'Something went wrong. Please try again later.',
                 });
-                return;
             }
-            animate('right');
-            setStep(3);
+
         } else if (step === 3) {
             if (!password || !confirmPassword) {
                 Toast.show({
@@ -76,31 +147,98 @@ export default function ForgotPassword({ navigation }) {
                 });
                 return;
             }
+
+            if (password.length < 8) {
+                Toast.show({
+                    type: 'info',
+                    text1: 'Error',
+                    text2: 'Password must be at least 6 characters long',
+                });
+                return;
+            }
             // Password reset success
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Password reset successfully!',
-            });
-            navigation.navigate('Auth');
+            const response = await dispatch(resetpassword(email, password));
+            if (response && response.message) {
+                // Success: Password reset successfully
+                if (response.message === 'Password reset successfully') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Success',
+                        text2: 'Password reset successfully!. Please log in with your new password.',
+                    });
+                    navigation.navigate('loginScreen', { email });
+                } else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: response.message || 'Something went wrong. Please try again later.',
+                    });
+                }
+
+            }
         }
     };
 
     const handleBack = () => {
-        if (step > 1) {
-            animate('left');
-            setStep(step - 1);
-        } else {
-            navigation.goBack();
-        }
+        navigation.goBack();
+
     };
 
-    const Resend = () => {
-        Toast.show({
-            type: 'info',
-            text1: 'OTP resent!',
-            text2: 'A new OTP has been sent to your email!',
-        });
+    // Timer countdown effect
+    useEffect(() => {
+        let interval;
+        if (!canResend && timer > 0) {
+            interval = setInterval(() => {
+                setTimer(prev => prev - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            clearInterval(interval);
+            setCanResend(true);
+        }
+
+        return () => clearInterval(interval);
+    }, [canResend, timer]);
+
+    const Resend = async () => {
+        if (canResend) {
+            // Simulate OTP resend
+            setTimer(30);
+            setCanResend(false);
+            setHasRequestedOtp(true);
+            const response = await dispatch(resendOtp(email));
+            if (response && response.message) {
+                // Success: OTP sent successfully
+                if (response.message === 'OTP sent successfully') {
+                    Toast.show({
+                        type: 'info',
+                        text1: 'OTP resent!',
+                        text2: 'A new OTP has been sent to your email!',
+                    });
+                }
+                // Info: User not found
+                else if (response.message === 'User not found') {
+                    Toast.show({
+                        type: 'info',
+                        text1: 'User Not Found',
+                        text2: 'No account exists with this email. Please sign up first.',
+                    });
+                    navigation.navigate('signupScreen', { email });
+                }
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Something went wrong. Please try again later.',
+                    });
+                }
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Something went wrong. Please try again later.',
+                });
+            }
+        }
     };
 
     const renderStep = () => {
@@ -109,7 +247,7 @@ export default function ForgotPassword({ navigation }) {
                 return (
                     <View style={styles.stepContainer}>
                         <Image
-                            source={{ uri: 'https://api.a0.dev/assets/image?text=forgot%20password%20email%20verification&aspect=1:1' }}
+                            source={require('../../assets/logo.png')}
                             style={styles.stepImage}
                         />
                         <Text style={styles.stepTitle}>Reset Password</Text>
@@ -129,22 +267,32 @@ export default function ForgotPassword({ navigation }) {
                 return (
                     <View style={styles.stepContainer}>
                         <Image
-                            source={{ uri: 'https://api.a0.dev/assets/image?text=otp%20verification%20secure&aspect=1:1' }}
+                            source={require('../../assets/logo.png')}
                             style={styles.stepImage}
                         />
                         <Text style={styles.stepTitle}>Enter OTP</Text>
                         <Text style={styles.stepDescription}>Enter the 6-digit code sent to your email.</Text>
+                        {hasRequestedOtp && (
+                            <Text style={styles.timerText}>
+                                {canResend
+                                    ? 'You can now enter the OTP.'
+                                    : `Please wait ${timer}s before try another OTP again.`}
+                            </Text>
+                        )}
                         <TextInput
                             style={styles.input}
                             placeholder="Enter OTP"
                             value={otp}
                             onChangeText={setOtp}
                             placeholderTextColor={'#999'}
-                            keyboardType="number-pad"
                             maxLength={6}
                         />
-                        <TouchableOpacity onPress={() => Resend()}>
-                            <Text style={styles.resendText}>Resend OTP</Text>
+                        <TouchableOpacity onPress={() => Resend()} disabled={!canResend}>
+                            <Text style={styles.resendText}>
+                                {canResend
+                                    ? 'Resend OTP'
+                                    : `Resend available in ${timer}s`}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 );
@@ -152,27 +300,48 @@ export default function ForgotPassword({ navigation }) {
                 return (
                     <View style={styles.stepContainer}>
                         <Image
-                            source={{ uri: 'https://api.a0.dev/assets/image?text=new%20password%20setup%20secure&aspect=1:1' }}
+                            source={require('../../assets/logo.png')}
                             style={styles.stepImage}
                         />
                         <Text style={styles.stepTitle}>New Password</Text>
                         <Text style={styles.stepDescription}>Create a new password for your account.</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="New Password"
-                            placeholderTextColor={'#999'}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Confirm Password"
-                            placeholderTextColor={'#999'}
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry
-                        />
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="New Password"
+                                placeholderTextColor={'#999'}
+                                value={password}
+                                onChangeText={setPassword}
+                                minLength={6}
+                                textContentType="password"
+                                secureTextEntry={!showPassword}
+                                autoCapitalize="none"
+                            />
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
+                                style={styles.eyeIcon}
+                            >
+                                <Icon name={showPassword ? 'eye-slash' : 'eye'} size={24} color="#999" />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Confirm Password"
+                                placeholderTextColor={'#999'}
+                                value={confirmPassword}
+                                minLength={6}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry={!showcPassword}
+                                autoCapitalize="none"
+                            />
+                            <TouchableOpacity
+                                onPress={() => setShowcPassword(!showcPassword)} // Toggle showPassword state
+                                style={styles.eyeIcon}
+                            >
+                                <Icon name={showcPassword ? 'eye-slash' : 'eye'} size={24} color="#999" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 );
         }
@@ -185,20 +354,20 @@ export default function ForgotPassword({ navigation }) {
                     <MaterialIcons name="arrow-back" size={24} color="#1a1a1a" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Forgot Password</Text>
-                <View style={{ width: 24 }} />
+                <View style={styles.width} />
             </View>
 
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <Animated.View
-                style={[
-                    styles.content,
-                    {
-                        transform: [{ translateX: slideAnim }],
-                    },
-                ]}
-            >
-                {renderStep()}
-            </Animated.View>
+            <ScrollView contentContainerStyle={styles.flexGrow}>
+                <Animated.View
+                    style={[
+                        styles.content,
+                        {
+                            transform: [{ translateX: slideAnim }],
+                        },
+                    ]}
+                >
+                    {renderStep()}
+                </Animated.View>
             </ScrollView>
 
             <View style={styles.footer}>
@@ -214,10 +383,21 @@ export default function ForgotPassword({ navigation }) {
                         />
                     ))}
                 </View>
-                <TouchableOpacity style={styles.button} onPress={handleNext}>
-                    <Text style={styles.buttonText}>
-                        {step === 3 ? 'Reset Password' : 'Continue'}
-                    </Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleNext}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <Icon name="spinner" size={24} color="#fff" style={styles.icon} />
+                    ) : (
+                        <>
+                            <Text style={styles.buttonText}>
+                                {step === 3 ? 'Reset Password' : 'Continue'}
+                            </Text>
+                            <Icon name="arrow-right" size={24} color="#fff" style={styles.icon} />
+                        </>
+                    )}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -228,6 +408,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    width: {
+        width: 24,
+    },
+    flexGrow: {
+        flexGrow: 1,
+    },
+    timerText: {
+        color: '#f00',
+        fontSize: 16,
+        textAlign: 'center',
+        marginVertical: 10,
     },
     header: {
         flexDirection: 'row',
@@ -269,6 +461,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 30,
     },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
     input: {
         width: '100%',
         borderWidth: 1,
@@ -280,9 +477,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f8f8',
         marginBottom: 15,
     },
+    eyeIcon: {
+        position: 'absolute',
+        right: 10,
+        top: 15,
+        padding: 5,
+    },
     resendText: {
         color: '#007AFF',
         fontSize: 16,
+        textAlign: 'center',
         marginTop: 10,
     },
     footer: {
@@ -312,10 +516,16 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 12,
         alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     buttonText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
+        marginRight: 10,
+    },
+    icon: {
+        marginLeft: 10, // Adds space between text and icon
     },
 });

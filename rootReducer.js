@@ -9,6 +9,7 @@ import Payment from './component/CourseDetail/store/payment';
 import ProfileData from './component/EditScreen/store';
 import Meeting from './component/LiveClass/store';
 import OTP from './component/purchaseCheck/store';
+import otpReducer from './component/ForgotPassword/store/reducers/otpReducer';
 
 // Combine your reducers into a single root reducer
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   ProfileData,
   Meeting,
   OTP,
+  otpReducer,
 });
 
 export default rootReducer;

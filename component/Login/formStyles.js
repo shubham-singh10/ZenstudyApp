@@ -9,6 +9,9 @@ const formStyles = StyleSheet.create({
   background: {
     backgroundColor: '#fff',
   },
+  icon: {
+    marginLeft: 2,
+  },
   flex: {
     flexGrow: 1,
   },
@@ -162,9 +165,12 @@ const formStyles = StyleSheet.create({
     justifyContent: 'center', // Centers content horizontally
   },
   forgotText: {
-    color: '#054bb4',
-    fontSize: 14,
-    fontWeight: '500',
+    marginTop: 10, // Adjust space above the link
+    textAlign: 'right', // Align to the right side, you can adjust as needed
+    color: '#0066CC', // Blue color for the link
+    fontSize: 14, // Font size for the link
+    fontWeight: 'bold', // Optional, to make it stand out
+    textDecorationLine: 'underline',
   },
   buttonText: {
     textAlign: 'center',

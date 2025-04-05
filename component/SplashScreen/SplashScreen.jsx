@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 import componentscss from './style';
 
 const SplashScreen = () => {
@@ -10,4 +10,4 @@ const SplashScreen = () => {
   );
 };
 
-export default SplashScreen;
+export default SplashScreen;

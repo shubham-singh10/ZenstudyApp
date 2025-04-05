@@ -145,7 +145,7 @@ const AuthStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="loginScreen"
-      component={ForgotPassword}
+      component={LoginScreen}
       options={{ headerShown: false }}
     />
      <Stack.Screen
@@ -164,11 +164,11 @@ const AuthStack = () => (
       options={{ headerShown: false }}
     />
 
-    {/* <Stack.Screen
+    <Stack.Screen
       name="forgotPassword"
-      component={ForgotScreen}
+      component={ForgotPassword}
       options={{ headerShown: false }}
-    /> */}
+    />
     <Stack.Screen
       name="Dashboard"
       component={LandingScreen}
