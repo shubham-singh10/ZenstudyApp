@@ -183,7 +183,7 @@ const EmailVerificationModal = ({ isModalVisible, setIsModalVisible, setIsModalV
                         />
                         {isVerifyLoading ? (
                             <View style={styles.verifyButtonL}>
-                                <Text style={styles.verifyButtonText}>Please wait....</Text>
+                                <Text style={styles.verifyButtonText} numberOfLines={1} ellipsizeMode="tail">Please wait....</Text>
                             </View>
                         ) : (
                             <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyOtp}>
@@ -194,7 +194,7 @@ const EmailVerificationModal = ({ isModalVisible, setIsModalVisible, setIsModalV
                 ) : (
                     isLoading ? (
                         <View style={styles.verifyButtonL}>
-                            <Text style={styles.verifyButtonText}>Please wait....</Text>
+                            <Text style={styles.verifyButtonText} numberOfLines={1} ellipsizeMode="tail">Please wait....</Text>
                         </View>
                     ) : (
                         <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyEmail}>

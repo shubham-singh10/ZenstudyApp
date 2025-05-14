@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#054BB4',
   },
+  logosection: {
+    paddingHorizontal: 10,
+    width: '60%',
+  },
   helpText: {
     fontSize: 16,
     color: '#007BFF',

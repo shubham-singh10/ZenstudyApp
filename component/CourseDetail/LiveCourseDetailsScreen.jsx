@@ -811,7 +811,7 @@ const LiveCourseDetailsScreen = ({ navigation, route }) => {
                         </View>
                         {payLoading ? (
                             <TouchableOpacity disabled={true} style={styles.purchaseButton}>
-                                <Text style={styles.purchaseButtonText}>please wait..</Text>
+                                <Text style={styles.purchaseButtonText} numberOfLines={1} ellipsizeMode="tail">please wait..</Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity

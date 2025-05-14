@@ -11,6 +11,8 @@ import { VdoPlayerView } from 'vdocipher-rn-bridge';
 import { DownArrow, UpArrow } from '../Icons/MyIcon';
 import { PurchaseWatchCourseData } from './store';
 import Loader from '../Loader';
+import DashVideoPlayer from './VideoPlayer';
+import { REACT_APP_CLOUDFRONT_DOMAIN } from '@env';
 
 const WatchCourse = ({ route }) => {
   const { courseId } = route.params;
@@ -26,6 +28,7 @@ const WatchCourse = ({ route }) => {
   const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
   const [moduleVideoIndexes, setModuleVideoIndexes] = useState([]);
 
+  console.log('Course Data:', playbackInfo, videoCode);
   const embedInfo = { otp: `${videoCode}`, playbackInfo: `${playbackInfo}` };
 
   useEffect(() => {
@@ -86,14 +89,26 @@ const WatchCourse = ({ route }) => {
       <View style={courseStyle.container}>
         {/* Video Section */}
         <Text style={courseStyle.title}>Introduction</Text>
+        {
+          // <View style={courseStyle.videoContainer}>
+        //   {embedInfo.otp && (
+        //     <VdoPlayerView
+        //       style={courseStyle.iframe}
+        //       embedInfo={embedInfo}
+        //     />
+        //   )}
+        // </View>
+        }
+
         <View style={courseStyle.videoContainer}>
-          {embedInfo.otp && (
-            <VdoPlayerView
-              style={courseStyle.iframe}
-              embedInfo={embedInfo}
-            />
-          )}
-        </View>
+  {playbackInfo && (
+    <DashVideoPlayer
+      videoUrl={`https://${REACT_APP_CLOUDFRONT_DOMAIN}/${videoCode}/index.m3u8`}
+      thumbnailUrl={courseData[activeModuleIndex]?.videos?.[activeVideoIndex]?.playbackInfo}
+    />
+  )}
+</View>
+
 
         {/* About Video Section */}
         <Text style={courseStyle.subtitle}>About Video</Text>

@@ -249,7 +249,7 @@ const CourseDetail = ({ navigation, route }) => {
         {payLoading ? (
           <TouchableOpacity disabled={true} style={courseStyle.buyNowLoading}>
             <ActivityIndicator size="small" color="#fff" />
-            <Text style={courseStyle.buyButtonText}>please wait..</Text>
+            <Text style={courseStyle.buyButtonText} numberOfLines={1} ellipsizeMode="tail">please wait..</Text>
           </TouchableOpacity>
         ) : (
           pageloading ? <ActivityIndicator /> : <TouchableOpacity

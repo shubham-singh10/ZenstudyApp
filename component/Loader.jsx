@@ -5,7 +5,7 @@ const Loader = () => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#00ff00" />
-      <Text style={styles.loadingText}>Please wait...</Text>
+      <Text style={styles.loadingText} numberOfLines={1} ellipsizeMode="tail">Please wait...</Text>
     </View>
   );
 };
