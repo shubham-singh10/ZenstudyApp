@@ -1,43 +1,88 @@
-// components/DashVideoPlayer.js
-import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import Video from 'react-native-video';
+import Orientation from 'react-native-orientation-locker';
 
-const DashVideoPlayer = ({ videoUrl, thumbnailUrl }) => {
-  if (!videoUrl) {
+const VideoPlayer = ({ videopath, thumbnailUrl }) => {
+  const [cookiesSet, setCookiesSet] = useState(false);
+  const playerRef = useRef(null);
+
+  useEffect(() => {
+    const getSignedCookies = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API}/zenstudy/api/app/get-signed-url?videoPath=${encodeURIComponent(videopath)}`,
+          { credentials: 'include' } // Ensure cookies are handled
+        );
+        if (!response.ok) {
+          throw new Error('Failed to get signed cookies');
+        }
+        setCookiesSet(true);
+      } catch (error) {
+        console.error('Error fetching signed cookies:', error);
+      }
+    };
+
+    getSignedCookies();
+
+    // Unlock orientation on unmount
+    return () => {
+      Orientation.unlockAllOrientations();
+    };
+  }, [videopath]);
+
+  const manifestUrl = `https://${process.env.REACT_APP_CLOUDFRONT_DOMAIN}/${videopath}/index.m3u8`;
+
+  const handleFullscreenChange = (isFullscreen) => {
+    if (isFullscreen) {
+      Orientation.lockToLandscape();
+    } else {
+      Orientation.lockToPortrait();
+    }
+  };
+
+  if (!cookiesSet) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
 
   return (
-    <Video
-      source={{ uri: videoUrl }}
-      controls
-      poster={thumbnailUrl}
-      posterResizeMode="cover"
-      resizeMode="contain"
-      style={styles.video}
-      automaticallyWaitsToMinimizeStalling
-      onError={(e) => console.log('Video error:', e)}
-    />
+    <View style={styles.container}>
+      <Video
+        ref={playerRef}
+        source={{ uri: manifestUrl }}
+        controls
+        poster={thumbnailUrl}
+        posterResizeMode="cover"
+        resizeMode="contain"
+        fullscreenAutorotate
+        fullscreenOrientation="landscape"
+        onFullscreenPlayerWillPresent={() => handleFullscreenChange(true)}
+        onFullscreenPlayerWillDismiss={() => handleFullscreenChange(false)}
+        style={styles.video}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
   video: {
     width: '100%',
     height: '100%',
-    borderRadius: 10,
-    backgroundColor: '#000',
   },
   loader: {
-    height: 220,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'black',
   },
 });
 
-export default DashVideoPlayer;
+export default VideoPlayer;

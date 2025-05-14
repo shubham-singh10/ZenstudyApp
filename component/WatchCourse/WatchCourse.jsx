@@ -7,12 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { VdoPlayerView } from 'vdocipher-rn-bridge';
 import { DownArrow, UpArrow } from '../Icons/MyIcon';
 import { PurchaseWatchCourseData } from './store';
 import Loader from '../Loader';
-import DashVideoPlayer from './VideoPlayer';
-import { REACT_APP_CLOUDFRONT_DOMAIN } from '@env';
+import VideoPlayer from './VideoPlayer';
 
 const WatchCourse = ({ route }) => {
   const { courseId } = route.params;
@@ -28,19 +26,18 @@ const WatchCourse = ({ route }) => {
   const [expandedModuleIndex, setExpandedModuleIndex] = useState(0);
   const [moduleVideoIndexes, setModuleVideoIndexes] = useState([]);
 
-  console.log('Course Data:', playbackInfo, videoCode);
-  const embedInfo = { otp: `${videoCode}`, playbackInfo: `${playbackInfo}` };
-
   useEffect(() => {
     // Dispatch the action to fetch course data
     dispatch(PurchaseWatchCourseData(courseId));
   }, [dispatch, courseId]);
-
   useEffect(() => {
     if (courseData?.length > 0) {
-      // Default to the first module and first video
-      setPlayBackInfo(courseData[0]?.videos?.[0]?.playBackInfo || '');
-      setVideoCode(courseData[0]?.videos?.[0]?.videoCode || '');
+      const introModule = courseData.find(module => module.moduleTitle.toLowerCase() === 'introduction') || courseData[0];
+      // Filter videos with status "ready"
+      const readyVideos = introModule.videos.filter(video => video.status === 'ready');
+      const firstVideo = readyVideos[0];
+      setPlayBackInfo(firstVideo?.playBackInfo || '');
+      setVideoCode(firstVideo?.videoCode || '');
       setActiveModuleIndex(0);
       setActiveVideoIndex(0);
       setExpandedModuleIndex(0);
@@ -88,26 +85,17 @@ const WatchCourse = ({ route }) => {
     <ScrollView contentContainerStyle={courseStyle.scrollContainer}>
       <View style={courseStyle.container}>
         {/* Video Section */}
-        <Text style={courseStyle.title}>Introduction</Text>
-        {
-          // <View style={courseStyle.videoContainer}>
-        //   {embedInfo.otp && (
-        //     <VdoPlayerView
-        //       style={courseStyle.iframe}
-        //       embedInfo={embedInfo}
-        //     />
-        //   )}
-        // </View>
-        }
-
+        <Text style={courseStyle.title}>
+          {courseData?.[activeModuleIndex]?.videos?.[activeVideoIndex]?.videoTitle || ''}
+        </Text>
         <View style={courseStyle.videoContainer}>
-  {playbackInfo && (
-    <DashVideoPlayer
-      videoUrl={`https://${REACT_APP_CLOUDFRONT_DOMAIN}/${videoCode}/index.m3u8`}
-      thumbnailUrl={courseData[activeModuleIndex]?.videos?.[activeVideoIndex]?.playbackInfo}
-    />
-  )}
-</View>
+          {videoCode && (
+            <VideoPlayer
+              videopath={videoCode}
+              thumbnailUrl={`https://${process.env.REACT_APP_CLOUDFRONT_DOMAIN}/${playbackInfo}`}
+            />
+          )}
+        </View>
 
 
         {/* About Video Section */}
@@ -144,7 +132,7 @@ const WatchCourse = ({ route }) => {
             </TouchableOpacity>
             {expandedModuleIndex === moduleIndex && (
               <View style={courseStyle.videoList}>
-                {module.videos.map((video, videoIndex) => (
+                {module.videos.filter(video => video.status === 'ready').map((video, videoIndex) => (
                   <TouchableOpacity
                     key={videoIndex}
                     onPress={() =>
@@ -185,6 +173,7 @@ const courseStyle = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#000',
   },
   videoContainer: {
     width: '100%',
