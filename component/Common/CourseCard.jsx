@@ -156,7 +156,7 @@ function CourseCard({ course, navigation, setpageLoading }) {
         <View style={style.cImgContainer}>
           <FastImage
             source={{
-              uri: course?.imageUrl,
+              uri: course?.thumbnailS3,
               priority: FastImage.priority.high,
             }}
             style={style.courseImage}

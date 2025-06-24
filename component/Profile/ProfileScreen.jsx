@@ -62,17 +62,16 @@ const ProfileScreen = ({ onLogout }) => {
               )}
             </View>
             <View style={profileStyle.profileText}>
-              <View>
-                <Text style={profileStyle.greeting}>
-                  Hi,{' '}
-                  <Text style={profileStyle.userName}>
-                    {usersData?.name || 'Guest'}
-                  </Text>
+              <Text style={profileStyle.greeting}>
+                Hi,{' '}
+                <Text style={profileStyle.userName}>
+                  {usersData?.name || 'Guest'}
                 </Text>
-                <Text style={profileStyle.welcomeText}>
-                  Welcome to ZenStudy
-                </Text>
-              </View>
+              </Text>
+              <Text style={profileStyle.welcomeText}>
+                Welcome to ZenStudy
+              </Text>
+
               <TouchableOpacity
                 style={profileStyle.editButton}
                 onPress={() => navigation.navigate('editScreen')}>

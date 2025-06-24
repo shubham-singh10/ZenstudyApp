@@ -5,107 +5,167 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import formStyles from '../Login/formStyles';
-import { BackArrow, Email, MessageIcon, Profile } from '../Icons/MyIcon';
+import formStyles from './supportStyles';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-toast-message';
 
 const SupportScreen = ({ navigation }) => {
   // State variables for form inputs
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle form submission
-  const handleContinue = () => {
+  const handleContinue = async () => {
     setErrorMessage('');
 
     // Basic form validation example
-    if (!name || !email || !message) {
+    if (!name || !email || !message || !phone) {
       setErrorMessage('All fields are required.');
       return;
     }
+    setIsLoading(true);
+    const sendData = {
+      name: name,
+      email: email,
+      phone: phone,
+      type: 'enquiry',
+      message: message,
+    };
+    try {
+      const response = await fetch(
+        'https://api.zenstudy.in/zenstudy/api/contact',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendData),
+        }
+      );
 
-    //console.log('Form submitted with:', { name, email, message });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        Toast.show({
+          type: 'success',
+          text1: 'Message Sent',
+          text2: 'Thank you for reaching out. We will get back to you soon.',
+        });
+
+        // Optionally clear form
+        setName('');
+        setEmail('');
+        setPhone('');
+        setMessage('');
+      }
+    } catch (error) {
+      // console.error('Error sending support form:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Something went wrong. Please try again later.',
+      });
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <ScrollView
-      style={formStyles.background}
-      contentContainerStyle={formStyles.flex}>
-      <View style={[formStyles.container, formStyles.paddingHorizontal]}>
-        {/* Header Section */}
-        <View style={formStyles.section2}>
-          <View style={formStyles.TopHead}>
-            <TouchableOpacity onPress={() => navigation.navigate('profileScreen')}>
-              <Text style={formStyles.backbtn}>
-                <BackArrow fill="white" />
-              </Text>
-            </TouchableOpacity>
-            <Text style={formStyles.loginText}>Support</Text>
-          </View>
+    <ScrollView style={formStyles.background}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={formStyles.flexContainer}
+      >
+        <View style={formStyles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="arrow-back" size={24} color="#004aad" />
+          </TouchableOpacity>
+          <Text style={formStyles.headerTitle}>Support</Text>
+        </View>
 
-          {/* Name Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Profile fill="#fff" />
-              </Text>
-            </View>
+        <View style={formStyles.card}>
+          {/* Name */}
+          <View style={formStyles.inputWrapper}>
+            <MaterialIcons name="person" size={24} color="#004aad" />
             <TextInput
+              placeholder="Full Name"
               style={formStyles.input}
-              placeholder="Enter Your Name"
               placeholderTextColor="#888"
               value={name}
               onChangeText={setName}
             />
           </View>
 
-          {/* Email Input */}
-          <View style={formStyles.inputContainer}>
-            <View style={formStyles.inputlogo}>
-              <Text style={formStyles.inputlogoContent}>
-                <Email fill="white" />
-              </Text>
-            </View>
+          {/* Email */}
+          <View style={formStyles.inputWrapper}>
+            <MaterialIcons name="email" size={24} color="#004aad" />
             <TextInput
+              placeholder="Email Address"
               style={formStyles.input}
-              placeholder="Enter Your Email"
               placeholderTextColor="#888"
+              keyboardType="email-address"
               value={email}
               onChangeText={setEmail}
             />
           </View>
 
-          {/* Message TextArea (multiline input) */}
-          <View style={formStyles.inputContainer}>
-            <View style={[formStyles.inputlogo, formStyles.height]}>
-              <Text style={formStyles.inputlogoContent}>
-                <MessageIcon fill="white" />
-              </Text>
-            </View>
+          {/* Phone */}
+          <View style={formStyles.inputWrapper}>
+            <MaterialIcons name="phone" size={24} color="#004aad" />
             <TextInput
-              style={[formStyles.input, formStyles.textInput]}  // Adjust height for textarea effect
-              placeholder="Enter Your Message"
+              placeholder="Phone Number"
+              style={formStyles.input}
               placeholderTextColor="#888"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+            />
+          </View>
+
+          {/* Message */}
+          <View style={[formStyles.inputWrapper, formStyles.textAreaWrapper]}>
+            <MaterialIcons name="message" size={24} color="#004aad" />
+            <TextInput
+              placeholder="Your Message"
+              style={[formStyles.input, formStyles.textArea]}
+              placeholderTextColor="#888"
+              multiline
+              numberOfLines={5}
               value={message}
               onChangeText={setMessage}
-              multiline={true}
-              numberOfLines={6}  // Define number of lines for textarea effect
             />
           </View>
 
           {/* Error Message */}
           {errorMessage ? (
-            <Text style={formStyles.errormessText}>{errorMessage}</Text>
+            <Text style={formStyles.errorText}>{errorMessage}</Text>
           ) : null}
 
-          {/* Continue Button */}
-          <TouchableOpacity style={formStyles.button} onPress={handleContinue}>
-            <Text style={formStyles.buttonText}>Continue</Text>
+          {/* Button */}
+          <TouchableOpacity
+            style={formStyles.button}
+            onPress={handleContinue}
+            disabled={isLoading}
+          >
+            <Text style={formStyles.buttonText}>
+              {isLoading ? 'Please wait...' : 'Submit'}
+            </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ScrollView>
   );
 };

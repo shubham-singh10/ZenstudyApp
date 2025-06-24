@@ -16,20 +16,25 @@ const profileStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  imageWrapper: {
+    marginRight: 15,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 60,
-    marginRight: 15,
   },
   profileText: {
-    gap: 25,
+    flex: 1,
+    flexShrink: 1,
+    justifyContent: 'space-between',
   },
   greeting: {
     fontSize: 18,
     color: '#000',
-    textAlign: 'right',
+    flexWrap: 'wrap',
   },
   userName: {
     fontWeight: 'bold',
@@ -44,11 +49,11 @@ const profileStyle = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
-    width: '80%',
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 5,
+    alignItems: 'center',
+    marginTop: 10,
   },
   editButtonText: {
     color: '#fff',
