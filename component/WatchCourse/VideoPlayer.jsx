@@ -11,7 +11,7 @@ const VideoPlayer = ({ videopath, thumbnailUrl }) => {
     const getSignedCookies = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API}/zenstudy/api/app/get-signed-url?videoPath=${encodeURIComponent(videopath)}`,
+          `${process.env.REACT_APP_API}zenstudy/api/app/get-signed-url?videoPath=${encodeURIComponent(videopath)}`,
           { credentials: 'include' } // Ensure cookies are handled
         );
         if (!response.ok) {
